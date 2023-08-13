@@ -8,11 +8,85 @@
     ".NETCoreApp,Version=v7.0": {
       "RenderMaster/1.0.0": {
         "dependencies": {
+          "DearImGui": "1.89.3",
+          "DearImGui.OpenTK": "1.0.0.1",
           "OpenTK": "4.8.0",
           "StbImageSharp": "2.27.13"
         },
         "runtime": {
           "RenderMaster.dll": {}
+        }
+      },
+      "CppSharp.Runtime/1.0.45.22293": {
+        "runtime": {
+          "lib/netstandard2.0/CppSharp.Runtime.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "DearImGui/1.89.3": {
+        "dependencies": {
+          "CppSharp.Runtime": "1.0.45.22293",
+          "System.Numerics.Vectors": "4.5.0"
+        },
+        "runtime": {
+          "lib/net6.0/DearImGui.dll": {
+            "assemblyVersion": "1.89.3.0",
+            "fileVersion": "1.89.3.0"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win-x64/native/imgui.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "1.89.3.0"
+          },
+          "runtimes/win-x64/native/imgui.pdb": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          },
+          "runtimes/win-x86/native/imgui.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "1.89.3.0"
+          },
+          "runtimes/win-x86/native/imgui.pdb": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      },
+      "DearImGui.OpenTK/1.0.0.1": {
+        "dependencies": {
+          "DearImGui": "1.89.3",
+          "OpenTK": "4.8.0",
+          "PInvoke.User32": "0.7.124",
+          "System.Drawing.Common": "7.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/DearImGui.OpenTK.dll": {
+            "assemblyVersion": "1.0.0.1",
+            "fileVersion": "1.0.0.1"
+          }
+        }
+      },
+      "Microsoft.Win32.SystemEvents/7.0.0": {
+        "runtime": {
+          "lib/net7.0/Microsoft.Win32.SystemEvents.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net7.0/Microsoft.Win32.SystemEvents.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
         }
       },
       "OpenTK/4.8.0": {
@@ -159,6 +233,54 @@
           }
         }
       },
+      "PInvoke.Kernel32/0.7.124": {
+        "dependencies": {
+          "PInvoke.Windows.Core": "0.7.124",
+          "System.Threading.Tasks.Extensions": "4.5.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/PInvoke.Kernel32.dll": {
+            "assemblyVersion": "0.7.0.0",
+            "fileVersion": "0.7.124.52293"
+          }
+        }
+      },
+      "PInvoke.User32/0.7.124": {
+        "dependencies": {
+          "PInvoke.Kernel32": "0.7.124",
+          "PInvoke.Windows.Core": "0.7.124",
+          "PInvoke.Windows.ShellScalingApi": "0.7.124",
+          "Validation": "2.4.15"
+        },
+        "runtime": {
+          "lib/netstandard2.0/PInvoke.User32.dll": {
+            "assemblyVersion": "0.7.0.0",
+            "fileVersion": "0.7.124.52293"
+          }
+        }
+      },
+      "PInvoke.Windows.Core/0.7.124": {
+        "dependencies": {
+          "System.Memory": "4.5.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/PInvoke.Windows.Core.dll": {
+            "assemblyVersion": "0.7.0.0",
+            "fileVersion": "0.7.124.52293"
+          }
+        }
+      },
+      "PInvoke.Windows.ShellScalingApi/0.7.124": {
+        "dependencies": {
+          "PInvoke.Windows.Core": "0.7.124"
+        },
+        "runtime": {
+          "lib/netstandard2.0/PInvoke.Windows.ShellScalingApi.dll": {
+            "assemblyVersion": "0.7.0.0",
+            "fileVersion": "0.7.124.52293"
+          }
+        }
+      },
       "StbImageSharp/2.27.13": {
         "runtime": {
           "lib/netstandard2.0/StbImageSharp.dll": {
@@ -167,7 +289,37 @@
           }
         }
       },
-      "System.Runtime.CompilerServices.Unsafe/5.0.0": {}
+      "System.Drawing.Common/7.0.0": {
+        "dependencies": {
+          "Microsoft.Win32.SystemEvents": "7.0.0"
+        },
+        "runtime": {
+          "lib/net7.0/System.Drawing.Common.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net7.0/System.Drawing.Common.dll": {
+            "rid": "win",
+            "assetType": "runtime",
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        }
+      },
+      "System.Memory/4.5.4": {},
+      "System.Numerics.Vectors/4.5.0": {},
+      "System.Runtime.CompilerServices.Unsafe/5.0.0": {},
+      "System.Threading.Tasks.Extensions/4.5.4": {},
+      "Validation/2.4.15": {
+        "runtime": {
+          "lib/netstandard1.3/Validation.dll": {
+            "assemblyVersion": "2.4.0.0",
+            "fileVersion": "2.4.15.30595"
+          }
+        }
+      }
     }
   },
   "libraries": {
@@ -175,6 +327,34 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "CppSharp.Runtime/1.0.45.22293": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2cSMh0P2o8bjl2Ad9Msb/aYde+z4sfmPZwy9e/uHUvkPekbzbYeQKcZALzgXY4IGFRzdrNreqbWh+yY37029zg==",
+      "path": "cppsharp.runtime/1.0.45.22293",
+      "hashPath": "cppsharp.runtime.1.0.45.22293.nupkg.sha512"
+    },
+    "DearImGui/1.89.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-NwsERqZFf27lsHx/ydJu2Gy2nX5wwvifL3Eh3JnR9vt46nJbv2tfrt/9HtHdyyPv1MaVkp1Aca8O4rniORX7fg==",
+      "path": "dearimgui/1.89.3",
+      "hashPath": "dearimgui.1.89.3.nupkg.sha512"
+    },
+    "DearImGui.OpenTK/1.0.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FnL3d60HDzL4Vi4CqMm4VgVPAtgCFlw78sILDk+9TkEMiP9GRRqiaB8XmaUhfX1/zjjqi1AKvJEtJA7X9ooUpQ==",
+      "path": "dearimgui.opentk/1.0.0.1",
+      "hashPath": "dearimgui.opentk.1.0.0.1.nupkg.sha512"
+    },
+    "Microsoft.Win32.SystemEvents/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-2nXPrhdAyAzir0gLl8Yy8S5Mnm/uBSQQA7jEsILOS1MTyS7DbmV1NgViMtvV1sfCD1ebITpNwb1NIinKeJgUVQ==",
+      "path": "microsoft.win32.systemevents/7.0.0",
+      "hashPath": "microsoft.win32.systemevents.7.0.0.nupkg.sha512"
     },
     "OpenTK/4.8.0": {
       "type": "package",
@@ -253,6 +433,34 @@
       "path": "opentk.windowing.graphicslibraryframework/4.8.0",
       "hashPath": "opentk.windowing.graphicslibraryframework.4.8.0.nupkg.sha512"
     },
+    "PInvoke.Kernel32/0.7.124": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3yQudp7J20HH8oW2WsGdNlcRCJAG6Slens3n4P7c6m53m0SkXLyD5ry/bXYAFXYeIym9b0LIOvrmKjmzptmkWw==",
+      "path": "pinvoke.kernel32/0.7.124",
+      "hashPath": "pinvoke.kernel32.0.7.124.nupkg.sha512"
+    },
+    "PInvoke.User32/0.7.124": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Xgrt/IFJWZhLT0S0MdP4ZU48gqgKVs+O+WmXb9Qge1T+me3oR5fhOl812qvLm2+D6DoHPxbUWTIc8MrH5i78Vw==",
+      "path": "pinvoke.user32/0.7.124",
+      "hashPath": "pinvoke.user32.0.7.124.nupkg.sha512"
+    },
+    "PInvoke.Windows.Core/0.7.124": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-er/PkwUBie3nXlwiKOfOxmdAj6ae8eFCLUgI5g6+9RAbyMoXMQnwAPx1atq0ZxU2LeozBdWtMQjogqcMNJhg1w==",
+      "path": "pinvoke.windows.core/0.7.124",
+      "hashPath": "pinvoke.windows.core.0.7.124.nupkg.sha512"
+    },
+    "PInvoke.Windows.ShellScalingApi/0.7.124": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-mVKSSuvBcJUwWvfGAfJK05AXH0QEbiDdxYqN4wjCZBeXv4ewM2/N6U2wt5uCac8RFIvsd9MAsIdTnjMLqdkNZg==",
+      "path": "pinvoke.windows.shellscalingapi/0.7.124",
+      "hashPath": "pinvoke.windows.shellscalingapi.0.7.124.nupkg.sha512"
+    },
     "StbImageSharp/2.27.13": {
       "type": "package",
       "serviceable": true,
@@ -260,12 +468,47 @@
       "path": "stbimagesharp/2.27.13",
       "hashPath": "stbimagesharp.2.27.13.nupkg.sha512"
     },
+    "System.Drawing.Common/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KIX+oBU38pxkKPxvLcLfIkOV5Ien8ReN78wro7OF5/erwcmortzeFx+iBswlh2Vz6gVne0khocQudGwaO1Ey6A==",
+      "path": "system.drawing.common/7.0.0",
+      "hashPath": "system.drawing.common.7.0.0.nupkg.sha512"
+    },
+    "System.Memory/4.5.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-1MbJTHS1lZ4bS4FmsJjnuGJOu88ZzTT2rLvrhW7Ygic+pC0NWA+3hgAen0HRdsocuQXCkUTdFn9yHJJhsijDXw==",
+      "path": "system.memory/4.5.4",
+      "hashPath": "system.memory.4.5.4.nupkg.sha512"
+    },
+    "System.Numerics.Vectors/4.5.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QQTlPTl06J/iiDbJCiepZ4H//BVraReU4O4EoRw1U02H5TLUIT7xn3GnDp9AXPSlJUDyFs4uWjWafNX6WrAojQ==",
+      "path": "system.numerics.vectors/4.5.0",
+      "hashPath": "system.numerics.vectors.4.5.0.nupkg.sha512"
+    },
     "System.Runtime.CompilerServices.Unsafe/5.0.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-ZD9TMpsmYJLrxbbmdvhwt9YEgG5WntEnZ/d1eH8JBX9LBp+Ju8BSBhUGbZMNVHHomWo2KVImJhTDl2hIgw/6MA==",
       "path": "system.runtime.compilerservices.unsafe/5.0.0",
       "hashPath": "system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
+    },
+    "System.Threading.Tasks.Extensions/4.5.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-zteT+G8xuGu6mS+mzDzYXbzS7rd3K6Fjb9RiZlYlJPam2/hU7JCBZBVEcywNuR+oZ1ncTvc/cq0faRr3P01OVg==",
+      "path": "system.threading.tasks.extensions/4.5.4",
+      "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
+    },
+    "Validation/2.4.15": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-KQFOtJKKhaXzuSiZhkFaFzQEdYsA+EN/XqKZDYwsGDOrS0Nxu6qzCvNTsDF4xtkiZbBA6u7I59QnsuP2O2fZgg==",
+      "path": "validation/2.4.15",
+      "hashPath": "validation.2.4.15.nupkg.sha512"
     }
   }
 }

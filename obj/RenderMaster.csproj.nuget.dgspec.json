@@ -40,6 +40,14 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "DearImGui": {
+              "target": "Package",
+              "version": "[1.89.3, )"
+            },
+            "DearImGui.OpenTK": {
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
             "OpenTK": {
               "target": "Package",
               "version": "[4.8.0, )"

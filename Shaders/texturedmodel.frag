@@ -8,5 +8,6 @@ uniform sampler2D ourTexture; // Texture to sample
 
 void main()
 {
-    FragColor = texture(ourTexture, TexCoord) * vec4(VertexColor, 1.0); // Sample the texture and multiply by the vertex color
+    //had to flip because blender fucking sucks????
+    FragColor = texture(ourTexture, vec2(TexCoord.x, 1.0 - TexCoord.y)); // Sample the texture, flipping the y-coordinate
 }
