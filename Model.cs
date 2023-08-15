@@ -10,6 +10,42 @@ namespace RenderMaster
     {
         public void Render(Camera camera);
     }
+    
+    public class BasicLightingRenderer : IRenderer
+    {
+        private Model model;
+        private BasicTexturedShader shader;
+        private VertexConfiguration vertexConfiguration;
+
+        public BasicLightingRenderer(Model model, BasicTexturedShader shader)
+        {
+            this.model = model;
+            this.shader = shader;
+            this.vertexConfiguration = model.vertexConfiguration;
+        }
+
+        public void Render(Camera camera)
+        {
+            shader.Bind();
+            vertexConfiguration.Bind();
+            Matrix4 modelMatrix = model.GetModelMatrix();
+
+            shader.SetUniformMatrix4("model", modelMatrix);
+            shader.SetUniformMatrix4("view", camera.View);
+            shader.SetUniformMatrix4("projection", camera.Projection);
+            shader.SetUniformVec3("lightColor", new Vector3(1,1,1));
+            shader.SetUniformVec3("lightPos", new Vector3(0, 1, 0));
+            shader.SetUniformVec3("objectColor", new Vector3(1, 1, 1));
+
+            GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 9); // Divided by 8, assuming 3 for position, 3 for color, 2 for texture coordinates
+
+            // Unbind everything
+            vertexConfiguration.Unbind();
+            shader.Unbind();
+        }
+
+
+    }
 
     public class BasicTexturedModelRenderer : IRenderer
     {
@@ -54,7 +90,7 @@ namespace RenderMaster
     {
         VertType vertType;
         ModelShaderType modelShaderType;
-        public VertColorTextureConfiguration vertexConfiguration;
+        public VertexConfiguration vertexConfiguration;
         string modelPath;
         string? imagePath;
         public float[] verts;
@@ -68,13 +104,19 @@ namespace RenderMaster
             renderer.Render(camera);
         }
 
-        public Model(VertType vertType, string modelPath)
+        public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath)
         {
             //This should be a color based vert layout
             this.vertType = vertType;
             this.modelPath = modelPath;
             this.verts = loadVerticesTextureFromPath(modelPath, vertType);
             //not implemented yet, but we'll have a vertex color configuration here
+            this.vertexConfiguration = new VertColorNormalConfiguration(this.verts);
+            this.modelShaderType = modelShaderType;
+            this.renderer = new BasicLightingRenderer(
+                this,
+                new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "lightingtest.vert"), Path.Combine(EngineConfig.ShaderDirectory, "lightingtest.frag"))
+                );
         }
 
         public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, string imagePath)
@@ -85,11 +127,15 @@ namespace RenderMaster
             this.verts = loadVerticesTextureFromPath(modelPath, vertType);
             this.vertexConfiguration = new VertColorTextureConfiguration(this.verts);
 
-            this.renderer = new BasicTexturedModelRenderer(
-                this,
-                new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.vert"), Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.frag")),
-                new BasicImageTexture(imagePath)
-            );
+            if (modelShaderType == ModelShaderType.BasicTextured)
+            {
+                this.renderer = new BasicTexturedModelRenderer(
+                    this,
+                    new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.vert"), Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.frag")),
+                    new BasicImageTexture(imagePath)
+                );
+            }
+
         }
 
         public Matrix4 GetModelMatrix()
