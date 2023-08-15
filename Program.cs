@@ -18,9 +18,11 @@ namespace RenderMaster
         {
             this.engineConfig = new EngineConfig();
             this.mainScene = new Scene("main testing scene");
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\uv_check.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(engineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(engineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(engineConfig.ModelDirectory, "HouseThing\\House.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(engineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
         }
 
         Scene mainScene;
@@ -42,7 +44,11 @@ namespace RenderMaster
         {
             mainScene.sceneModels[0].Position = new OpenTK.Mathematics.Vector3(-10, 0, 0);
             mainScene.sceneModels[1].Position = new Vector3(-10, 3, 1);
-            mainScene.sceneModels[2].Position = new Vector3(-100, 1, -5);
+            mainScene.sceneModels[2].Position = new Vector3(-200, 1, -5);
+            mainScene.sceneModels[2].Rotation = new Vector3(4.7f, 0, 0);
+
+            mainScene.sceneModels[4].Scale = new Vector3(5);
+            mainScene.sceneModels[4].Position = new Vector3(0, -5, 0);
 
             mainScene.sceneModels[2].Scale = new Vector3(3);
             mainScene.RenderScene(args);
@@ -97,6 +103,13 @@ namespace RenderMaster
         public void ProcessKeyEvents(KeyboardKeyEventArgs e)
         {
             float moveSpeed = 0.2f;
+
+            // Check if Shift is being held down
+            if (e.Shift)
+            {
+                moveSpeed *= 5.0f; // 5 times faster if Shift is held down
+            }
+
             Vector3 forward = LookingAt - Position;
 
             // Ensure forward direction is normalized, if not zero
@@ -150,7 +163,7 @@ namespace RenderMaster
         {
             this.name = name;
             this.sceneModels = new List<Model>();
-            this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 0.90f, 1, 1, 100000);
+            this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 00.90f, 1, 1, 100000000);
 
         }
 
@@ -172,8 +185,10 @@ namespace RenderMaster
             foreach (Model model in sceneModels)
             {
                 model.Render(args, camera);
-                model.Rotation += new Vector3(0, 0, (float)(0.5f * args.Time));
+                
             }
+            sceneModels[0].Rotation += new Vector3(0, 0, (float)(0.5f * args.Time));
+            sceneModels[1].Rotation += new Vector3(0, 0, (float)(0.5f * args.Time));
             sceneModels[2].Rotation += new Vector3((float)(0.8f * args.Time), 0, 0);
         }
 
