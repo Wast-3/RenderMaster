@@ -2,17 +2,17 @@
 {
     public class EngineConfig
     {
-        public List<String> Directories;
-        public string BaseDirectory;
-        public string ShaderDirectory;
-        public string ModelDirectory;
-        public string TextureDirectory;
-        public string LoggingDirectory;
-        public string FontDirectory;
+        public static List<String> Directories;
+        public static string BaseDirectory;
+        public static string ShaderDirectory;
+        public static string ModelDirectory;
+        public static string TextureDirectory;
+        public static string LoggingDirectory;
+        public static string FontDirectory;
 
-        public EngineConfig()
+        static EngineConfig()
         {
-            BaseDirectory = "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\EngineBaseDir";
+            BaseDirectory = "C:\\Users\\chris\\dev\\RenderMaster\\EngineBaseDir";
             ShaderDirectory = Path.Combine(BaseDirectory, "Shaders");
             ModelDirectory = Path.Combine(BaseDirectory, "Models");
             TextureDirectory = Path.Combine(BaseDirectory, "Textures");

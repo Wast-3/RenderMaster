@@ -13,16 +13,14 @@ namespace RenderMaster
 
     public class Game : GameWindow
     {
-        public EngineConfig engineConfig;
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
-            this.engineConfig = new EngineConfig();
             this.mainScene = new Scene("main testing scene");
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(engineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(engineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(engineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(engineConfig.ModelDirectory, "HouseThing\\House.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(engineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(engineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
+            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
         }
 
         Scene mainScene;

@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using static System.Formats.Asn1.AsnWriter;
 using OpenTK.Windowing.Common;
-
+ 
 namespace RenderMaster
 {
     public interface IRenderer
@@ -87,7 +87,7 @@ namespace RenderMaster
 
             this.renderer = new BasicTexturedModelRenderer(
                 this,
-                new BasicTexturedShader("H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\Shaders\\texturedmodel.vert", "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\Shaders\\texturedmodel.frag"),
+                new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.vert"), Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.frag")),
                 new BasicImageTexture(imagePath)
             );
         }
