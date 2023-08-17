@@ -36,7 +36,7 @@ namespace RenderMaster
             if (location != -1)
             {
                 // Set the uniform value
-                GL.Uniform3(location, value);
+                GL.Uniform3(location, ref value);
             }
             else
             {

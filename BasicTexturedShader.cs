@@ -61,8 +61,7 @@ namespace RenderMaster
 
         public override void Bind()
         {
-            // Set uniforms here
-            
+
             // Simply use the program
             GL.UseProgram(programID);
         }

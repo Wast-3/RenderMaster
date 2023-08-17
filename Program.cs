@@ -21,7 +21,7 @@ namespace RenderMaster
                         mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
                         mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
             */
-            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testcube.verttxt")));
+            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
         }
 
         Scene mainScene;
@@ -40,7 +40,7 @@ namespace RenderMaster
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            mainScene.sceneModels[0].Position = new Vector3(5, 0, 0);
+            mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
             mainScene.RenderScene(args);
             SwapBuffers();
         }
