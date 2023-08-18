@@ -6,6 +6,8 @@ using OpenTK.Compute.OpenCL;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using ImGuiNET;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace RenderMaster
 {
@@ -58,6 +60,44 @@ namespace RenderMaster
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
         {
             mainScene.camera.ProcessKeyEvents(e);
+            var io = ImGui.GetIO();
+            io.KeysDown[(int)e.Key] = true;
+            io.AddInputCharacter((uint)e.Key);
+            io.KeyCtrl = e.Control;
+            io.KeyShift = e.Shift;
+            io.KeyAlt = e.Alt;
+        }
+
+        protected override void OnMouseMove(MouseMoveEventArgs e)
+        {
+            var io = ImGui.GetIO();
+            float scaleFactor = io.DisplayFramebufferScale.Y; // Or Y if you need to scale by the Y axis
+            
+            io.MousePos = new System.Numerics.Vector2(MouseState.X * scaleFactor, MouseState.Y * scaleFactor);
+        }
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            var io = ImGui.GetIO();
+            io.MouseDown[(int)e.Button] = true;
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            var io = ImGui.GetIO();
+            io.MouseDown[(int)e.Button] = false;
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            var io = ImGui.GetIO();
+            io.MouseWheel = e.OffsetY;
+            io.MouseWheelH = e.OffsetX;
+        }
+
+        protected override void OnKeyUp(KeyboardKeyEventArgs e)
+        {
+            var io = ImGui.GetIO();
+            io.KeysDown[(int)e.Key] = false; // Set the state of the key to "not pressed."
         }
 
         protected override void OnUnload()
@@ -68,8 +108,20 @@ namespace RenderMaster
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
+
+            // Resize user interface if applicable
             userInterface.Resize(e);
-            GL.Viewport(0, 0, Size.X, Size.Y);
+
+            // Update ImGui display size
+            var io = ImGui.GetIO();
+            io.DisplaySize = new System.Numerics.Vector2(e.Width, e.Height);
+
+            // If you have a high-DPI setting, you may need to calculate the framebuffer size accordingly
+            var framebufferWidth = (int)(e.Width * io.DisplayFramebufferScale.X);
+            var framebufferHeight = (int)(e.Height * io.DisplayFramebufferScale.Y);
+
+            // Set the OpenGL viewport to cover the entire framebuffer
+            GL.Viewport(0, 0, framebufferWidth, framebufferHeight);
         }
     }
 

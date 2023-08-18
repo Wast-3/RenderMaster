@@ -31,8 +31,8 @@ namespace RenderMaster
         public VertexConfiguration()
         {
             //Right now this overload is only being used by ImGui. Anyways, I'm manually setting the size of these buffers here
-            int vertexBufferSize = 1000 * Unsafe.SizeOf<ImDrawVert>();
-            int indexBufferSize = 2000 * sizeof(ushort);
+            int vertexBufferSize = 100000 * Unsafe.SizeOf<ImDrawVert>();
+            int indexBufferSize = 200000 * sizeof(ushort);
 
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
 
+
 namespace RenderMaster
 {
     public interface IUserInterface
@@ -51,6 +52,7 @@ namespace RenderMaster
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.ScissorTest);
         }
 
         public void Resize(ResizeEventArgs e)
@@ -118,6 +120,7 @@ namespace RenderMaster
             drawData.ScaleClipRects(io.DisplayFramebufferScale);
 
 
+
             // Render command lists
             if (drawData.Valid == false)
             {
@@ -145,7 +148,7 @@ namespace RenderMaster
 
                         // We do _windowHeight - (int)clip.W instead of (int)clip.Y because gl has flipped Y when it comes to these coordinates
                         var clip = pcmd.ClipRect;
-                        GL.Scissor((int)clip.X, (int)io.DisplaySize.Y - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
+                        //GL.Scissor((int)clip.X, (int)io.DisplaySize.Y - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
 
                         if ((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0)
                         {
