@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
-
 
 namespace RenderMaster
 {
@@ -35,10 +35,17 @@ namespace RenderMaster
         private BasicTexturedShader shader;
         private IntPtr context;
         private int fontTexture;
+        private TimingInterceptor timingInterceptor;
 
-        public UI()
+        public UI(TimingInterceptor timingInterceptor)
         {
+            this.timingInterceptor = timingInterceptor; // Store it as a field
             Setup();
+        }
+
+        public Dictionary<string, double> GetTimings()
+        {
+            return timingInterceptor.Timings; // Return the timings recorded by the interceptor
         }
 
         public void Bind()
@@ -53,6 +60,7 @@ namespace RenderMaster
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.ScissorTest);
+
         }
 
         public void Resize(ResizeEventArgs e)
@@ -97,16 +105,67 @@ namespace RenderMaster
             io.Fonts.ClearTexData();
         }
 
+        private List<Type> GetAllLoadedTypes()
+        {
+            List<Type> types = new List<Type>();
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                types.AddRange(assembly.GetTypes());
+            }
+            return types;
+        }
 
         public void Render(FrameEventArgs args, Camera camera)
         {
             ImGui.SetCurrentContext(context);
+            ImGuiIOPtr io = ImGui.GetIO();
             ImGui.NewFrame();
             ImGui.ShowDemoWindow();
+
+            // Calculate frame rate (you might want to do this outside the Render method, updating once per frame)
+            double frameRate = 1.0 / args.Time; // Assuming args.Time is the time taken for the frame in seconds
+
+            // Create FPS string
+            string fpsString = frameRate.ToString("F2"); // "F2" formats the number with two decimal places
+
+            // Position the text in the top right corner
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(io.DisplaySize.X - 100, 0));
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(100, 20));
+
+            // Set window flags to make it borderless, non-movable, etc.
+            ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground;
+            if (ImGui.Begin("FPS Counter", windowFlags))
+            {
+                // Set text color (optional)
+                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f)); // White color
+                ImGui.Text(fpsString);
+                ImGui.PopStyleColor(); // Revert to previous color
+            }
+
+            if (ImGui.Begin("Debug Window"))
+            {
+                ImGui.Text($"RENDERMASTER");
+                ImGui.Text($"Current FPS: {fpsString}");
+
+                // Additional code to display the timings
+                // Additional code to display the timings
+                if (ImGui.Begin("Timings"))
+                {
+                    var timings = GetTimings();
+                    if (timings.ContainsKey("Render")) ImGui.Text($"Render Time: {timings["Render"]} ms");
+                    if (timings.ContainsKey("Bind")) ImGui.Text($"Bind Time: {timings["Bind"]} ms");
+                    if (timings.ContainsKey("Unbind")) ImGui.Text($"Unbind Time: {timings["Unbind"]} ms");
+                }
+                ImGui.End(); // End Timings window
+
+                // ... rest of your code ...
+            }
+            ImGui.End(); // End Debug Window
+
             ImGui.Render();
             var drawData = ImGui.GetDrawData();
             
-            ImGuiIOPtr io = ImGui.GetIO();
+            
             Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
                 0.0f,
                 io.DisplaySize.X,
@@ -176,7 +235,8 @@ namespace RenderMaster
             io.Fonts.AddFontDefault();
             io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
             io.Fonts.Flags = ImFontAtlasFlags.None;
-            
+            io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+
             //Set style?
             ImGui.StyleColorsDark();
         }
@@ -188,4 +248,13 @@ namespace RenderMaster
             
         }
     }
+
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+    public class MeasureTimeAttribute : Attribute
+    {
+        // This attribute is a marker; it doesn't need to contain any properties or methods
+    }
+    
+
 }
+

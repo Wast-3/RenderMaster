@@ -1,6 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
+using ImGuiNET;
 
 namespace RenderMaster
 {
@@ -25,7 +26,7 @@ namespace RenderMaster
             shader.Bind();
             vertexConfiguration.Bind();
             Matrix4 modelMatrix = model.GetModelMatrix();
-
+            
             timeSoFar = timeSoFar + e.Time;
 
             Vector3 lightColor = new Vector3(
