@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\Models\TexturedCylinder\" />
+    <Folder Include="Blender\" />
     <Folder Include="Shaders\" />
   </ItemGroup>
 

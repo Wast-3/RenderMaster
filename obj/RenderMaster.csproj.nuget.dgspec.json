@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj": {}
+    "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj": {}
   },
   "projects": {
-    "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj": {
+    "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj",
+        "projectUniqueName": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
         "projectName": "RenderMaster",
-        "projectPath": "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj",
+        "projectPath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
         "packagesPath": "C:\\Users\\chris\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\chris\\dev\\RenderMaster\\obj\\",
+        "outputPath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -73,7 +73,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

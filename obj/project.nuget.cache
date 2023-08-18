@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OSGBLhm4AQNAwvOnZetfCK+yMGTp5/RtBWsLW+gUrQLFsxqegR5pORAuB3aZcMlrzs4dpmnpsCt2k3dWqCzdXg==",
+  "dgSpecHash": "XaQBIkXr2Lm1AIZOtkKFvquUQ3JCUrIMRaCWk5gEK/ZNMvKUBqGmEoVoFe4sFrGuKuR2JK/IBnoCFI9Rry57IQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj",
+  "projectFilePath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\chris\\.nuget\\packages\\cppsharp.runtime\\1.0.45.22293\\cppsharp.runtime.1.0.45.22293.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\dearimgui\\1.89.3\\dearimgui.1.89.3.nupkg.sha512",
