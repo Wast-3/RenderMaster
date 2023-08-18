@@ -28,7 +28,7 @@ namespace RenderMaster
 
         static void Main(string[] args)
         {
-            Game game = new Game(800, 600, "OpenTK testing");
+            Game game = new Game(2560, 1440, "RENDERMASTER ENGINE");
             game.Run();
         }
 
@@ -76,7 +76,7 @@ namespace RenderMaster
         {
             this.name = name;
             this.sceneModels = new List<Model>();
-            this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 00.90f, 1, 1, 100000000);
+            this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 2560.0f/1440.0f, 1, 1, 100000000);
 
         }
 

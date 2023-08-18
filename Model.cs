@@ -8,7 +8,7 @@ namespace RenderMaster
 {
     public interface IRenderer
     {
-        public void Render(Camera camera);
+        public void Render(FrameEventArgs e, Camera camera);
     }
     
     public class BasicLightingRenderer : IRenderer
@@ -16,6 +16,9 @@ namespace RenderMaster
         private Model model;
         private BasicTexturedShader shader;
         private VertexConfiguration vertexConfiguration;
+        private Vector3 currentLightColor;
+        private Vector3 currentObjectColor;
+        private double timeSoFar;
 
         public BasicLightingRenderer(Model model, BasicTexturedShader shader)
         {
@@ -24,18 +27,28 @@ namespace RenderMaster
             this.vertexConfiguration = model.vertexConfiguration;
         }
 
-        public void Render(Camera camera)
+        public void Render(FrameEventArgs e, Camera camera)
         {
             shader.Bind();
             vertexConfiguration.Bind();
             Matrix4 modelMatrix = model.GetModelMatrix();
+
+            timeSoFar = timeSoFar + e.Time;
+
+            Vector3 lightColor = new Vector3(
+                (float)Math.Sin(timeSoFar * 0.12),
+                (float)Math.Sin(timeSoFar * 0.3),
+                (float)Math.Sin(timeSoFar * 0.6)
+            );
 
             shader.SetUniformMatrix4("model", modelMatrix);
             shader.SetUniformMatrix4("view", camera.View);
             shader.SetUniformMatrix4("projection", camera.Projection);
             shader.SetUniformVec3("lightColor", new Vector3(1,1,1));
             shader.SetUniformVec3("lightPos", new Vector3(0, 1, 0));
-            shader.SetUniformVec3("objectColor", new Vector3(1, 1, 1));
+            shader.SetUniformVec3("objectColor", lightColor);
+
+            
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 9); // Divided by 8, assuming 3 for position, 3 for color, 2 for texture coordinates
 
@@ -63,7 +76,7 @@ namespace RenderMaster
 
         }
 
-        public void Render(Camera camera)
+        public void Render(FrameEventArgs e, Camera camera)
         {
             // Bind necessary components
             shader.Bind();
@@ -101,7 +114,7 @@ namespace RenderMaster
 
         public void Render(FrameEventArgs args, Camera camera)
         {
-            renderer.Render(camera);
+            renderer.Render(args, camera);
         }
 
         public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath)
