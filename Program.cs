@@ -22,9 +22,11 @@ namespace RenderMaster
                         mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
             */
             mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
+            
         }
 
         Scene mainScene;
+        UI userInterface;
 
         static void Main(string[] args)
         {
@@ -35,13 +37,21 @@ namespace RenderMaster
         protected override void OnLoad()
         {
             base.OnLoad();
+            OpenGLState.ReadState();
+            userInterface = new UI();
             mainScene.RenderSceneSetup();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
+            //Reset user interface to initially recorded state:
+            //OpenGLState.ResetState();
+
             mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
             mainScene.RenderScene(args);
+            userInterface.Bind();
+            userInterface.Render(args, this.mainScene.camera);
+            userInterface.Unbind();
             SwapBuffers();
         }
 
@@ -58,7 +68,7 @@ namespace RenderMaster
         protected override void OnResize(ResizeEventArgs e)
         {
             base.OnResize(e);
-
+            userInterface.Resize(e);
             GL.Viewport(0, 0, Size.X, Size.Y);
         }
     }
@@ -92,9 +102,8 @@ namespace RenderMaster
 
         public void RenderScene(FrameEventArgs args)
         {
-
+            GL.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             foreach (Model model in sceneModels)
             {
                 model.Render(args, camera);

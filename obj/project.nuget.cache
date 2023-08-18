@@ -1,13 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "XaQBIkXr2Lm1AIZOtkKFvquUQ3JCUrIMRaCWk5gEK/ZNMvKUBqGmEoVoFe4sFrGuKuR2JK/IBnoCFI9Rry57IQ==",
+  "dgSpecHash": "i/bF7IcJsZ2eAym6Ef87iR/RzAKMhZXJZzFPc+6hb5j7loOFCLmrLbEwG0Okm75FG1L7Xe2tGag8wnyDhoZAvw==",
   "success": true,
   "projectFilePath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\chris\\.nuget\\packages\\cppsharp.runtime\\1.0.45.22293\\cppsharp.runtime.1.0.45.22293.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\dearimgui\\1.89.3\\dearimgui.1.89.3.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\dearimgui.opentk\\1.0.0.1\\dearimgui.opentk.1.0.0.1.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\microsoft.win32.systemevents\\7.0.0\\microsoft.win32.systemevents.7.0.0.nupkg.sha512",
+    "C:\\Users\\chris\\.nuget\\packages\\imgui.net\\1.89.7.1\\imgui.net.1.89.7.1.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk\\4.8.0\\opentk.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk.audio.openal\\4.8.0\\opentk.audio.openal.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk.compute\\4.8.0\\opentk.compute.4.8.0.nupkg.sha512",
@@ -19,17 +16,10 @@
     "C:\\Users\\chris\\.nuget\\packages\\opentk.windowing.common\\4.8.0\\opentk.windowing.common.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk.windowing.desktop\\4.8.0\\opentk.windowing.desktop.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.8.0\\opentk.windowing.graphicslibraryframework.4.8.0.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\pinvoke.kernel32\\0.7.124\\pinvoke.kernel32.0.7.124.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\pinvoke.user32\\0.7.124\\pinvoke.user32.0.7.124.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\pinvoke.windows.core\\0.7.124\\pinvoke.windows.core.0.7.124.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\pinvoke.windows.shellscalingapi\\0.7.124\\pinvoke.windows.shellscalingapi.0.7.124.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\stbimagesharp\\2.27.13\\stbimagesharp.2.27.13.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.memory\\4.5.4\\system.memory.4.5.4.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\validation\\2.4.15\\validation.2.4.15.nupkg.sha512"
+    "C:\\Users\\chris\\.nuget\\packages\\system.buffers\\4.4.0\\system.buffers.4.4.0.nupkg.sha512",
+    "C:\\Users\\chris\\.nuget\\packages\\system.numerics.vectors\\4.4.0\\system.numerics.vectors.4.4.0.nupkg.sha512",
+    "C:\\Users\\chris\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],
   "logs": []
 }

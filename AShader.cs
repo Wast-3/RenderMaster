@@ -45,6 +45,13 @@ namespace RenderMaster
             }
         }
 
+        public void SetSampler2D(string name, int textureUnit)
+        {
+            int location = GL.GetUniformLocation(programID, name);
+            GL.Uniform1(location, textureUnit);
+        }
+
+
     }
 
 

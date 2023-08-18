@@ -30,22 +30,6 @@ H:\Google Drive Sync\dev\Development\RenderMaster\obj\Debug\net7.0\refint\Render
 H:\Google Drive Sync\dev\Development\RenderMaster\obj\Debug\net7.0\RenderMaster.pdb
 H:\Google Drive Sync\dev\Development\RenderMaster\obj\Debug\net7.0\RenderMaster.genruntimeconfig.cache
 H:\Google Drive Sync\dev\Development\RenderMaster\obj\Debug\net7.0\ref\RenderMaster.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\CppSharp.Runtime.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\DearImGui.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\DearImGui.OpenTK.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\PInvoke.Kernel32.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\PInvoke.User32.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\PInvoke.Windows.Core.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\PInvoke.Windows.ShellScalingApi.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\System.Drawing.Common.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\Validation.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\imgui.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\imgui.pdb
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\imgui.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\imgui.pdb
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
-H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.exe
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.deps.json
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.runtimeconfig.json
@@ -94,3 +78,9 @@ C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\refint\RenderMaster.dll
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\RenderMaster.pdb
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\RenderMaster.genruntimeconfig.cache
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\ref\RenderMaster.dll
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\ImGui.NET.dll
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\linux-x64\native\libcimgui.so
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\osx\native\libcimgui.dylib
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-arm64\native\cimgui.dll
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\cimgui.dll
+H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\cimgui.dll
