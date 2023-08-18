@@ -24,11 +24,14 @@ namespace RenderMaster
                         mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
             */
             mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
+
+            openGLState = new OpenGLStateStack();
             
         }
 
         Scene mainScene;
         UI userInterface;
+        OpenGLStateStack openGLState;
 
         static void Main(string[] args)
         {
@@ -39,9 +42,12 @@ namespace RenderMaster
         protected override void OnLoad()
         {
             base.OnLoad();
-            OpenGLState.ReadState();
-            userInterface = new UI();
+
             mainScene.RenderSceneSetup();
+            openGLState.PushState();
+
+            userInterface = new UI();
+            openGLState.PopState();
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
@@ -49,12 +55,16 @@ namespace RenderMaster
             //Reset user interface to initially recorded state:
             //OpenGLState.ResetState();
 
+            openGLState.PushState();
+
             mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
             mainScene.RenderScene(args);
             userInterface.Bind();
             userInterface.Render(args, this.mainScene.camera);
             userInterface.Unbind();
             SwapBuffers();
+
+            openGLState.PopState();
         }
 
         protected override void OnKeyDown(KeyboardKeyEventArgs e)
