@@ -10,6 +10,7 @@ using System.Reflection;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
 using AspectInjector.Broker;
+using System.Diagnostics;
 
 namespace RenderMaster
 {
@@ -139,14 +140,13 @@ namespace RenderMaster
 
             if (ImGui.Begin("Debug Window"))
             {
-                ImGui.Text($"RENDERMASTER");
-                ImGui.Text($"Current FPS: {fpsString}");
-
-                if (ImGui.BeginTabBar("Tabs")) // Create a tab bar
+                if (ImGui.BeginTabBar("Tabs"))
                 {
-                    if (ImGui.BeginTabItem("Function Timings")) // Create a tab for Function Timings
+                    if (ImGui.BeginTabItem("Function Timings"))
                     {
-                        // Additional code to display the timings
+                        ImGui.Text($"RENDERMASTER");
+                        ImGui.Text($"Current FPS: {fpsString}");
+
                         bool isOddRow = false;
 
                         foreach (var entry in TimingAspect.Timings)
@@ -170,10 +170,8 @@ namespace RenderMaster
                                 ImGui.Text($"Average Execution Time (last 100): {averageTiming} ms");
                                 ImGui.Text($"Latest Execution Time: {latestTiming} ms");
 
-                                // Convert the timings to a float array
                                 float[] timingsArray = timingsList.Select(t => (float)t).ToArray();
 
-                                // Plot the timings
                                 if (timingsArray.Length > 0)
                                 {
                                     ImGui.PlotLines("Timings", ref timingsArray[0], timingsArray.Length, 0, null, 0.0f, float.MaxValue, new System.Numerics.Vector2(0, 80));
@@ -189,14 +187,29 @@ namespace RenderMaster
                             isOddRow = !isOddRow;
                         }
 
-                        ImGui.EndTabItem(); // End the tab for Function Timings
+                        ImGui.EndTabItem();
                     }
 
-                    // You can add more tabs here if needed
+                    if (ImGui.BeginTabItem("Memory"))
+                    {
+                        Process currentProcess = Process.GetCurrentProcess();
+                        long totalMemoryUsageKB = currentProcess.WorkingSet64 / 1024;
+                        double totalMemoryUsageGB = totalMemoryUsageKB / 1024.0 / 1024.0;
+                        long privateMemoryUsageKB = currentProcess.PrivateMemorySize64 / 1024;
+                        double privateMemoryUsageGB = privateMemoryUsageKB / 1024.0 / 1024.0;
 
-                    ImGui.EndTabBar(); // End the tab bar
+                        ImGui.Text($"Total Memory Usage: {totalMemoryUsageKB} KB ({totalMemoryUsageGB:0.##} GB)");
+                        ImGui.Text($"Private Memory Usage: {privateMemoryUsageKB} KB ({privateMemoryUsageGB:0.##} GB)");
+
+                        ImGui.EndTabItem();
+                    }
+
+                    ImGui.EndTabBar();
                 }
+
+                ImGui.End();
             }
+
             ImGui.End(); // End Debug Window
 
             ImGui.Render();

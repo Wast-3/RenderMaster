@@ -639,11 +639,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
+      "projectUniqueName": "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj",
       "projectName": "RenderMaster",
-      "projectPath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
+      "projectPath": "C:\\Users\\chris\\dev\\RenderMaster\\RenderMaster.csproj",
       "packagesPath": "C:\\Users\\chris\\.nuget\\packages\\",
-      "outputPath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\obj\\",
+      "outputPath": "C:\\Users\\chris\\dev\\RenderMaster\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\chris\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -706,7 +706,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
       }
     }
   }

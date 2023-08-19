@@ -35,10 +35,6 @@ C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.deps.json
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.runtimeconfig.json
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\RenderMaster.pdb
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\CppSharp.Runtime.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\DearImGui.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\DearImGui.OpenTK.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Audio.OpenAL.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Compute.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Core.dll
@@ -48,25 +44,13 @@ C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Mathematics.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Windowing.Common.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Windowing.Desktop.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\OpenTK.Windowing.GraphicsLibraryFramework.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\PInvoke.Kernel32.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\PInvoke.User32.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\PInvoke.Windows.Core.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\PInvoke.Windows.ShellScalingApi.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\StbImageSharp.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\System.Drawing.Common.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\Validation.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\imgui.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\imgui.pdb
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\imgui.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\imgui.pdb
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\linux-x64\native\libglfw.so.3.3
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\linux-x64\native\wayland\libglfw.so.3.3
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\osx-arm64\native\libglfw.3.dylib
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\osx-x64\native\libglfw.3.dylib
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\glfw3.dll
 C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\glfw3.dll
-C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\RenderMaster.csproj.AssemblyReference.cache
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\RenderMaster.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\chris\dev\RenderMaster\obj\Debug\net7.0\RenderMaster.AssemblyInfoInputs.cache
@@ -85,3 +69,10 @@ H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-
 H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\cimgui.dll
 H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\cimgui.dll
 H:\Google Drive Sync\dev\Development\RenderMaster\bin\Debug\net7.0\AspectInjector.Broker.dll
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\AspectInjector.Broker.dll
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\ImGui.NET.dll
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\linux-x64\native\libcimgui.so
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\osx\native\libcimgui.dylib
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-arm64\native\cimgui.dll
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x64\native\cimgui.dll
+C:\Users\chris\dev\RenderMaster\bin\Debug\net7.0\runtimes\win-x86\native\cimgui.dll
