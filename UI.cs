@@ -249,11 +249,6 @@ namespace RenderMaster
         }
     }
 
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
-    public class MeasureTimeAttribute : Attribute
-    {
-        // This attribute is a marker; it doesn't need to contain any properties or methods
-    }
     
 
 }
