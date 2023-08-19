@@ -23,6 +23,7 @@ namespace RenderMaster
         public Vector3 Scale { get; set; } = new Vector3(1f, 1f, 1f);
         IRenderer renderer;
 
+        [MeasureExecutionTime]
         public void Render(FrameEventArgs args, Camera camera)
         {
             renderer.Render(args, camera);
@@ -62,6 +63,7 @@ namespace RenderMaster
 
         }
 
+        [MeasureExecutionTime]
         public Matrix4 GetModelMatrix()
         {
             Matrix4 model = Matrix4.Identity;

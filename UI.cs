@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
+using AspectInjector.Broker;
 
 namespace RenderMaster
 {
@@ -35,17 +36,10 @@ namespace RenderMaster
         private BasicTexturedShader shader;
         private IntPtr context;
         private int fontTexture;
-        private TimingInterceptor timingInterceptor;
 
-        public UI(TimingInterceptor timingInterceptor)
+        public UI()
         {
-            this.timingInterceptor = timingInterceptor; // Store it as a field
             Setup();
-        }
-
-        public Dictionary<string, double> GetTimings()
-        {
-            return timingInterceptor.Timings; // Return the timings recorded by the interceptor
         }
 
         public void Bind()
@@ -114,7 +108,8 @@ namespace RenderMaster
             }
             return types;
         }
-
+        
+        [MeasureExecutionTime]
         public void Render(FrameEventArgs args, Camera camera)
         {
             ImGui.SetCurrentContext(context);
@@ -149,16 +144,48 @@ namespace RenderMaster
 
                 // Additional code to display the timings
                 // Additional code to display the timings
-                if (ImGui.Begin("Timings"))
-                {
-                    var timings = GetTimings();
-                    if (timings.ContainsKey("Render")) ImGui.Text($"Render Time: {timings["Render"]} ms");
-                    if (timings.ContainsKey("Bind")) ImGui.Text($"Bind Time: {timings["Bind"]} ms");
-                    if (timings.ContainsKey("Unbind")) ImGui.Text($"Unbind Time: {timings["Unbind"]} ms");
-                }
-                ImGui.End(); // End Timings window
-
                 // ... rest of your code ...
+                bool isOddRow = false;
+
+                foreach (var entry in TimingAspect.Timings)
+                {
+                    var timingsList = entry.Value.Values.ToList();
+                    var averageTiming = timingsList.Average();
+                    var latestTiming = timingsList.LastOrDefault();
+
+                    // Apply the alternating background color
+                    if (isOddRow)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetColorU32(ImGuiCol.Separator));
+                    }
+                    else
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetColorU32(ImGuiCol.Border));
+                    }
+
+                    if (ImGui.TreeNode($"Method: {entry.Key}"))
+                    {
+                        ImGui.Text($"Average Execution Time (last 100): {averageTiming} ms");
+                        ImGui.Text($"Latest Execution Time: {latestTiming} ms");
+
+                        // Convert the timings to a float array
+                        float[] timingsArray = timingsList.Select(t => (float)t).ToArray();
+
+                        // Plot the timings
+                        if (timingsArray.Length > 0)
+                        {
+                            ImGui.PlotLines("Timings", ref timingsArray[0], timingsArray.Length, 0, null, 0.0f, float.MaxValue, new System.Numerics.Vector2(0, 80));
+                        }
+
+                        ImGui.TreePop();
+                    }
+
+                    // Revert to the previous style
+                    ImGui.PopStyleColor();
+
+                    // Alternate the row
+                    isOddRow = !isOddRow;
+                }
             }
             ImGui.End(); // End Debug Window
 

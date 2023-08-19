@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "7BSYZlJuO9vszZH5Vg6Sl0A59fZVSv3ZTjwWrpAIQdhdEGKPKykzS4OKWWKSGfYl36xdDYVU2Efh+vsZQtBmXg==",
+  "dgSpecHash": "UTsYd9YDE2oFp1fsMT5+8EKfCvqWsMUOggU5Zmfe1uKTRdN2sEa37ijlBOS9WSB7Wb1BiWhdtlh+1dPg5NgO7g==",
   "success": true,
   "projectFilePath": "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\RenderMaster.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\chris\\.nuget\\packages\\castle.core\\5.1.1\\castle.core.5.1.1.nupkg.sha512",
+    "C:\\Users\\chris\\.nuget\\packages\\aspectinjector\\2.8.2\\aspectinjector.2.8.2.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\imgui.net\\1.89.7.1\\imgui.net.1.89.7.1.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk\\4.8.0\\opentk.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\opentk.audio.openal\\4.8.0\\opentk.audio.openal.4.8.0.nupkg.sha512",
@@ -19,7 +19,6 @@
     "C:\\Users\\chris\\.nuget\\packages\\opentk.windowing.graphicslibraryframework\\4.8.0\\opentk.windowing.graphicslibraryframework.4.8.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\stbimagesharp\\2.27.13\\stbimagesharp.2.27.13.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\system.buffers\\4.4.0\\system.buffers.4.4.0.nupkg.sha512",
-    "C:\\Users\\chris\\.nuget\\packages\\system.diagnostics.eventlog\\6.0.0\\system.diagnostics.eventlog.6.0.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\system.numerics.vectors\\4.4.0\\system.numerics.vectors.4.4.0.nupkg.sha512",
     "C:\\Users\\chris\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\5.0.0\\system.runtime.compilerservices.unsafe.5.0.0.nupkg.sha512"
   ],

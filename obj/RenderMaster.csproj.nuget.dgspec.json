@@ -40,9 +40,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
-            "Castle.Core": {
+            "AspectInjector": {
+              "suppressParent": "None",
               "target": "Package",
-              "version": "[5.1.1, )"
+              "version": "[2.8.2, )"
             },
             "ImGui.NET": {
               "target": "Package",

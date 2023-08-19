@@ -20,6 +20,7 @@ namespace RenderMaster
 
         }
 
+        [MeasureExecutionTime]
         public void Render(FrameEventArgs e, Camera camera)
         {
             // Bind necessary components

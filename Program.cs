@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Castle.DynamicProxy;
 
 namespace RenderMaster
 {
@@ -46,11 +45,7 @@ namespace RenderMaster
 
             mainScene.RenderSceneSetup();
             openGLState.PushState();
-            
-            var generator = new ProxyGenerator();
-            var timingInterceptor = new TimingInterceptor();
-            userInterface = generator.CreateInterfaceProxyWithTarget<IUserInterface>(new UI(timingInterceptor), timingInterceptor);
-
+            userInterface = new UI();
             openGLState.PopState();
         }
 

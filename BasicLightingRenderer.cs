@@ -21,6 +21,7 @@ namespace RenderMaster
             this.vertexConfiguration = model.vertexConfiguration;
         }
 
+        [MeasureExecutionTime]
         public void Render(FrameEventArgs e, Camera camera)
         {
             shader.Bind();

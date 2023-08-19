@@ -12,4 +12,7 @@
   <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <SourceRoot Include="C:\Users\chris\.nuget\packages\" />
   </ItemGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgAspectInjector Condition=" '$(PkgAspectInjector)' == '' ">C:\Users\chris\.nuget\packages\aspectinjector\2.8.2</PkgAspectInjector>
+  </PropertyGroup>
 </Project>
