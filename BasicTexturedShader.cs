@@ -6,6 +6,7 @@ namespace RenderMaster
 {
     public class BasicTexturedShader : AShader
     { 
+        //holy fuck my tooth (jaw?) hurts SO BAD
         // The constructor that was already in your code
         public BasicTexturedShader(string vertexPath, string fragmentPath)
         {
