@@ -1,15 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace RenderMaster.Engine
+﻿namespace RenderMaster.Engine
 {
+    public enum LogLevel
+    {
+        Info,
+        Warning,
+        Error,
+        Debug
+    }
+
+
     public static class Logger
     {
         // Declare the field as static
         public static List<ILogger> Loggers { get; } = new List<ILogger>();
+
+        static Logger() // Static constructor
+        {
+            // Add default loggers here
+            Loggers.Add(new ConsoleLogger());
+            Loggers.Add(new EngineDirFileLogger());
+        }
 
         public static void AddLogger(ILogger logger)
         {
@@ -17,8 +27,11 @@ namespace RenderMaster.Engine
         }
 
         // You might also want methods to perform logging, initializing, and shutting down the loggers.
-        public static void Log(string message)
+        public static void Log(string message, LogLevel level)
         {
+            //Format the message using our prefix (timestamp) (thread) (log level)
+            message = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] [{System.Threading.Thread.CurrentThread.ManagedThreadId}] [{level.ToString().ToUpper()}]: {message}";
+
             foreach (var logger in Loggers)
                 logger.Log(message);
         }
@@ -68,7 +81,7 @@ namespace RenderMaster.Engine
 
         StreamWriter sw;
 
-        EngineDirFileLogger()
+        public EngineDirFileLogger()
         {
             //Should not need to be done, but we'll do anyways:
             if (!Directory.Exists(logDirectory))
@@ -81,7 +94,7 @@ namespace RenderMaster.Engine
 
             //Create file. If file already exists, append to it
             sw = File.AppendText(Path.Combine(logDirectory, logFileName));
-            
+
             sw.WriteLine("RenderMaster Engine Log File");
             sw.WriteLine("Opened:  " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
             sw.WriteLine("begin logs:\n\n\n");
@@ -94,7 +107,7 @@ namespace RenderMaster.Engine
 
         public void Initialize()
         {
-            
+
         }
 
         public void Shutdown()

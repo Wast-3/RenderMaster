@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using RenderMaster.Engine;
 
 namespace RenderMaster
 {
@@ -42,6 +43,8 @@ namespace RenderMaster
         protected override void OnLoad()
         {
             base.OnLoad();
+
+            Logger.Log("RENDERMASTER START: ", LogLevel.Info);
 
             mainScene.RenderSceneSetup();
             openGLState.PushState();
