@@ -10,7 +10,6 @@ namespace RenderMaster
         public BasicTexturedShader(string vertexPath, string fragmentPath)
         {
             Load(vertexPath, fragmentPath);
-            // Assuming you might want to do something with the texture in the future
         }
 
         public override void Load(string vertexPath, string fragmentPath)
@@ -71,5 +70,6 @@ namespace RenderMaster
             // Unbind the program by setting the active program to 0
             GL.UseProgram(0);
         }
+
     }
 }
