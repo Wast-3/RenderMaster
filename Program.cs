@@ -47,6 +47,7 @@ namespace RenderMaster
             Logger.Log("RENDERMASTER START: ", LogLevel.Info);
 
             mainScene.RenderSceneSetup();
+            mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
             openGLState.PushState();
             userInterface = new UI();
             openGLState.PopState();
@@ -54,12 +55,9 @@ namespace RenderMaster
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            //Reset user interface to initially recorded state:
-            //OpenGLState.ResetState();
-
             openGLState.PushState();
 
-            mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
+            
             mainScene.RenderScene(args);
             userInterface.Bind();
             userInterface.Render(args, this.mainScene.camera);
