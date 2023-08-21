@@ -47,12 +47,17 @@ namespace RenderMaster
             shader.SetUniformMatrix4("model", modelMatrix);
             shader.SetUniformMatrix4("view", camera.View);
             shader.SetUniformMatrix4("projection", camera.Projection);
-            shader.SetUniformVec3("lightColor", lightColor);
-            shader.SetUniformVec3("lightPos", new Vector3(0, 1, 0));
-            shader.SetUniformVec3("objectColor", objectColor);
             shader.SetUniformVec3("viewPos", viewPos);
 
-            
+            shader.SetUniformVec3("material.ambient", new Vector3(1.0f, 0.5f, 0.31f));
+            shader.SetUniformVec3("material.diffuse", new Vector3(1.0f, 0.5f, 0.31f));
+            shader.SetUniformVec3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
+            shader.SetUniformFloat("material.shininess", 32.0f);
+
+            shader.SetUniformVec3("light.position", new Vector3(1.0f));
+            shader.SetUniformVec3("light.ambient", new Vector3(0.2f, 0.2f, 0.2f));
+            shader.SetUniformVec3("light.diffuse", new Vector3(0.5f, 0.5f, 0.5f));
+            shader.SetUniformVec3("light.specular", new Vector3(1.0f, 1.0f, 1.0f));
 
             GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 9); // Divided by 8, assuming 3 for position, 3 for color, 2 for texture coordinates
 
