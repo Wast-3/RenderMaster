@@ -36,12 +36,21 @@ namespace RenderMaster
                 (float)Math.Sin(timeSoFar * 0.6)
             );
 
+            Vector3 objectColor = new Vector3(
+                (float)Math.Sin(timeSoFar * 0.2),
+                (float)Math.Sin(timeSoFar * 0.5),
+                (float)Math.Sin(timeSoFar * 0.7)
+            );
+
+            var viewPos = camera.Position;
+
             shader.SetUniformMatrix4("model", modelMatrix);
             shader.SetUniformMatrix4("view", camera.View);
             shader.SetUniformMatrix4("projection", camera.Projection);
-            shader.SetUniformVec3("lightColor", new Vector3(1,1,1));
+            shader.SetUniformVec3("lightColor", lightColor);
             shader.SetUniformVec3("lightPos", new Vector3(0, 1, 0));
-            shader.SetUniformVec3("objectColor", lightColor);
+            shader.SetUniformVec3("objectColor", objectColor);
+            shader.SetUniformVec3("viewPos", viewPos);
 
             
 

@@ -16,6 +16,6 @@ void main()
 {
     gl_Position = projection * view * model * vec4(aPosition, 1.0); // Transform the position into clip space
     VertexColor = aColor; // Pass the vertex color to the fragment shader
-    Normal = aNormal;
+    Normal = mat3(transpose(inverse(model))) * aNormal; // Transform the normal's orientation into view space by multiplying the normal by the inverse transpose of the model matrix
     FragPos = vec3(model * vec4(aPosition, 1.0));
 }
