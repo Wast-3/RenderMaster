@@ -28,7 +28,7 @@ namespace RenderMaster
         {
             renderer.Render(args, camera);
         }
-
+         
         public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath)
         {
             //This should be a color based vert layout
@@ -36,7 +36,7 @@ namespace RenderMaster
             this.modelPath = modelPath;
             this.verts = loadVerticesTextureFromPath(modelPath, vertType);
             //not implemented yet, but we'll have a vertex color configuration here
-            this.vertexConfiguration = new VertColorNormalConfiguration(this.verts);
+            this.vertexConfiguration = new VertColorNormalUVConfiguration(this.verts);
             this.modelShaderType = modelShaderType;
             this.renderer = new BasicLightingRenderer(
                 this,
@@ -44,24 +44,24 @@ namespace RenderMaster
                 );
         }
 
-        public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, string imagePath)
-        {
-            this.vertType = vertType;
-            this.modelPath = modelPath;
-            this.imagePath = imagePath;
-            this.verts = loadVerticesTextureFromPath(modelPath, vertType);
-            this.vertexConfiguration = new VertColorTextureConfiguration(this.verts);
+        //public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, string imagePath)
+        //{
+        //    this.vertType = vertType;
+        //    this.modelPath = modelPath;
+        //    this.imagePath = imagePath;
+        //    this.verts = loadVerticesTextureFromPath(modelPath, vertType);
+        //    this.vertexConfiguration = new VertColorNormalUVConfiguration(this.verts);
 
-            if (modelShaderType == ModelShaderType.BasicTextured)
-            {
-                this.renderer = new BasicTexturedModelRenderer(
-                    this,
-                    new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.vert"), Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.frag")),
-                    new BasicImageTexture(imagePath)
-                );
-            }
+        //    if (modelShaderType == ModelShaderType.BasicTextured)
+        //    {
+        //        this.renderer = new BasicTexturedModelRenderer(
+        //            this,
+        //            new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.vert"), Path.Combine(EngineConfig.ShaderDirectory, "texturedmodel.frag")),
+        //            new BasicImageTexture(imagePath)
+        //        );
+        //    }
 
-        }
+        //}
 
         [MeasureExecutionTime]
         public Matrix4 GetModelMatrix()

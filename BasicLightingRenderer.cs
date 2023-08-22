@@ -49,8 +49,15 @@ namespace RenderMaster
             shader.SetUniformMatrix4("projection", camera.Projection);
             shader.SetUniformVec3("viewPos", viewPos);
 
-            shader.SetUniformVec3("material.ambient", new Vector3(1.0f, 0.5f, 0.31f));
-            shader.SetUniformVec3("material.diffuse", new Vector3(1.0f, 0.5f, 0.31f));
+            //generate a new texture unit for the diffuse map:
+            var diffuseMapUnit = TextureUnit.Texture0;
+            var diffuseMapTexture = new BasicImageTexture(Path.Combine(EngineConfig.TextureDirectory, "wall.jpg"), diffuseMapUnit);
+            var diffuseMapTextureId = diffuseMapTexture.TextureId;
+
+            diffuseMapTexture.Bind();
+            //Setup sampler2D for material 
+            shader.SetSampler2D("material.diffuse", diffuseMapTextureId);
+            
             shader.SetUniformVec3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
             shader.SetUniformFloat("material.shininess", 32.0f);
 
@@ -59,13 +66,11 @@ namespace RenderMaster
             shader.SetUniformVec3("light.diffuse", new Vector3(0.5f, 0.5f, 0.5f));
             shader.SetUniformVec3("light.specular", new Vector3(1.0f, 1.0f, 1.0f));
 
-            GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 9); // Divided by 8, assuming 3 for position, 3 for color, 2 for texture coordinates
+            GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 11); // Divided by 8, assuming 3 for position, 3 for color, 2 for texture coordinates
 
             // Unbind everything
             vertexConfiguration.Unbind();
             shader.Unbind();
         }
-
-
     }
 }
