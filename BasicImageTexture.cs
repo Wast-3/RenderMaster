@@ -11,8 +11,7 @@ namespace RenderMaster
         // Constructor now takes a texture unit as a parameter
         public BasicImageTexture(string path, TextureUnit unit) : base(path)
         {
-            
-            
+
             textureUnit = unit; // Assign texture unit
 
             //Immedeatly activate the texture unit, so that the state set here is recorded on the OpenGL side through this state tracking tool.
