@@ -56,8 +56,6 @@ namespace RenderMaster
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             openGLState.PushState();
-
-            
             mainScene.RenderScene(args);
             userInterface.Bind();
             userInterface.Render(args, this.mainScene.camera);

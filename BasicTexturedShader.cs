@@ -6,6 +6,7 @@ namespace RenderMaster
 {
     public class BasicTexturedShader : AShader
     { 
+        //holy fuck my tooth (jaw?) hurts SO BAD
         // The constructor that was already in your code
         public BasicTexturedShader(string vertexPath, string fragmentPath)
         {
@@ -30,12 +31,16 @@ namespace RenderMaster
             // Check for compilation errors
             GL.GetShader(vertexShader, ShaderParameter.CompileStatus, out int isVertexCompiled);
             GL.GetShader(fragmentShader, ShaderParameter.CompileStatus, out int isFragmentCompiled);
-            if (isVertexCompiled == 0 || isFragmentCompiled == 0)
+            if (isVertexCompiled == 0)
             {
-                // Error handling if shaders did not compile
                 GL.GetShaderInfoLog(vertexShader, out string vertexInfo);
+                throw new Exception($"Vertex Shader Error: {vertexInfo}");
+            }
+
+            if (isFragmentCompiled == 0)
+            {
                 GL.GetShaderInfoLog(fragmentShader, out string fragmentInfo);
-                throw new Exception($"Vertex Shader Error: {vertexInfo}\nFragment Shader Error: {fragmentInfo}");
+                throw new Exception($"Fragment Shader Error: {fragmentInfo}");
             }
 
             // Link the shaders into a program

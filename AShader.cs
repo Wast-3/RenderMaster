@@ -44,6 +44,22 @@ namespace RenderMaster
                 Console.WriteLine($"Warning: Uniform '{name}' not found in shader.");
             }
         }
+        
+        public void SetUniformFloat(string name, float value)
+        {
+            // First, get the location of the uniform variable within the shader
+            int location = GL.GetUniformLocation(programID, name);
+
+            // Check if the uniform was found
+            if (location != -1)
+            {
+                GL.Uniform1(location, value);
+            }
+            else
+            {
+                Console.WriteLine($"Warning: Uniform '{name}' not found in shader.");
+            }
+        }
 
         public void SetSampler2D(string name, int textureUnit)
         {
