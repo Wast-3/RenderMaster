@@ -26,14 +26,19 @@ uniform Material material;
 
 void main()
 {
+    // Texture color combined with vertex color
+    // vec3 texColor = vec3(texture(material.diffuse, TexCoord)) * VertexColor;
+    vec3 texColor = VertexColor;
+
+
     // AMBIENT LIGHTING
-    vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoord)); // Product of the light's ambient color and the texture's color at the fragment's texture coordinates
+    vec3 ambient = light.ambient * texColor;
 
     // DIFFUSE LIGHTING
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoord));
+    vec3 diffuse = light.diffuse * diff * texColor;
 
     // SPECULAR LIGHTING
     vec3 viewDir = normalize(viewPos - FragPos);
@@ -42,6 +47,6 @@ void main()
     vec3 specular = light.specular * (material.specular * spec);
 
     // FINAL COLOR COMPUTATION
-    vec3 result = (ambient + diffuse + specular); // Sum of the ambient, diffuse, and specular components
-    FragColor = vec4(result, 1.0); // Final color with alpha set to 1.0
+    vec3 result = ambient + diffuse + specular;
+    FragColor = vec4(result, 1.0);
 }
