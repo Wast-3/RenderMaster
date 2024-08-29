@@ -17,7 +17,7 @@ namespace RenderMaster
     {
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
         {
-            this.mainScene = new Scene("main testing scene");
+            this.mainScene = new Scene("main testing scene", width, height);
 /*            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
@@ -47,7 +47,7 @@ namespace RenderMaster
             Logger.Log("RENDERMASTER START: ", LogLevel.Info);
 
             mainScene.RenderSceneSetup();
-            mainScene.sceneModels[0].Position = new Vector3(-2, 0, 0);
+            mainScene.sceneModels[0].Position = new Vector3(0, 0, 0);
             openGLState.PushState();
             userInterface = new UI();
             openGLState.PopState();
@@ -131,64 +131,5 @@ namespace RenderMaster
             // Set the OpenGL viewport to cover the entire framebuffer
             GL.Viewport(0, 0, framebufferWidth, framebufferHeight);
         }
-    }
-
-    public class Scene
-    {
-        string name;
-
-        public List<Model> sceneModels;
-
-        public Camera camera;
-
-        //The scene class is responsible for holding the models that are going to be rendered and their respective data
-        public Scene(string name)
-        {
-            this.name = name;
-            this.sceneModels = new List<Model>();
-            this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 2560.0f/1440.0f, 1, 1, 100000000);
-
-        }
-
-        public void AddModel(Model model)
-        {
-            sceneModels.Add(model);
-        }
-
-        public void RemoveModel(Model model)
-        {
-            sceneModels.Remove(model);
-        }
-
-        public void RenderScene(FrameEventArgs args)
-        {
-            GL.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            foreach (Model model in sceneModels)
-            {
-                model.Render(args, camera);
-                
-            }
-        }
-
-        public void RenderSceneSetup()
-        {
-            GL.Enable(EnableCap.DepthTest);
-        }
-
-    }
-
-    public enum VertType
-    {
-        VertColor,
-        VertColorTexture,
-        VertColorNormal
-    }
-
-    public enum ModelShaderType
-    {
-        BasicTextured,
-        BasicVertColor,
-        VertColorNormal
     }
 }

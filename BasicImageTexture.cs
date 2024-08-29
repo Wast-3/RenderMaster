@@ -6,7 +6,7 @@ namespace RenderMaster
     public class BasicImageTexture : ATexture
     {
         public int TextureId { get; private set; }
-        private readonly TextureUnit textureUnit; // Field to store the texture unit for this texture
+        public TextureUnit textureUnit; // Field to store the texture unit for this texture
 
         // Constructor now takes a texture unit as a parameter
         public BasicImageTexture(string path, TextureUnit unit) : base(path)

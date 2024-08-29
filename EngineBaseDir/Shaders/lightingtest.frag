@@ -27,8 +27,9 @@ uniform Material material;
 void main()
 {
     // Texture color combined with vertex color
-    // vec3 texColor = vec3(texture(material.diffuse, TexCoord)) * VertexColor;
-    vec3 texColor = VertexColor;
+    vec3 texColor = vec3(texture(material.diffuse, TexCoord)) * VertexColor;
+	//vec3 texColor = vec3(texture(material.diffuse, TexCoord));
+    //vec3 texColor = VertexColor;
 
 
     // AMBIENT LIGHTING
@@ -49,4 +50,5 @@ void main()
     // FINAL COLOR COMPUTATION
     vec3 result = ambient + diffuse + specular;
     FragColor = vec4(result, 1.0);
+	//FragColor = vec4(texColor, 1.0);
 }

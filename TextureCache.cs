@@ -26,13 +26,17 @@ namespace RenderMaster
             }
         }
 
+        //Current texture unit (counts up for each new texture added to the cache)
+        private int currentTextureUnit = 0;
+
         // Method to get or load a texture
-        public BasicImageTexture GetTexture(string path, TextureUnit unit)
+        public BasicImageTexture GetTexture(string path)
         {
             if (!textureCache.ContainsKey(path))
             {
                 // Texture not in cache, load it
-                var texture = new BasicImageTexture(path, unit);
+                var textureUnit = TextureUnit.Texture0 + currentTextureUnit;
+                var texture = new BasicImageTexture(path, textureUnit);
                 textureCache[path] = texture;
                 return texture;
             }
