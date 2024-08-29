@@ -40,15 +40,15 @@ namespace RenderMaster
 
             // Calculate dynamic light color based on time
             Vector3 lightColor = new Vector3(
-                (float)Math.Sin(timeSoFar * 1.12),
-                (float)Math.Sin(timeSoFar * 1.3),
-                (float)Math.Sin(timeSoFar * 1.6)
+                (float)Math.Sin(timeSoFar * 10.12),
+                (float)Math.Sin(timeSoFar * 5.3),
+                (float)Math.Sin(timeSoFar * 3.6)
             );
 
             // Calculate dynamic object color based on time
             Vector3 objectColor = new Vector3(
-                (float)Math.Sin(timeSoFar * 1.2),
-                (float)Math.Sin(timeSoFar * 1.5),
+                (float)Math.Sin(timeSoFar * 3.2) * (float)Math.Tan(timeSoFar),
+                (float)Math.Sin(timeSoFar * 2.5),
                 (float)Math.Sin(timeSoFar * 1.7)
             );
 
@@ -57,10 +57,12 @@ namespace RenderMaster
 
             // Spin the camera around the model by updating it's position over time
             camera.Position = new Vector3(
-                (float)Math.Sin(timeSoFar * 3.5) * 5,
-                0,
-                (float)Math.Cos(timeSoFar * 3.5) * 5
+                (float)Math.Sin(timeSoFar * 5.5) * 3 * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar * 7) * 2 + (float)Math.Sin(timeSoFar * 100) * 2,
+                (float)Math.Sin(timeSoFar * 5.5) * 3 * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar) * 2 * (float)Math.Tan(timeSoFar * 3),
+                (float)Math.Cos(timeSoFar * 5.5) * 3 * (float)Math.Cos(timeSoFar) * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar) * 3
             );
+
+            model.Scale = new Vector3(2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2));
 
             camera.UpdateViewMatrix();  // Update the camera's view matrix
 
@@ -76,8 +78,13 @@ namespace RenderMaster
             var texturePath = Path.Combine(EngineConfig.TextureDirectory, "squash.jpg");
             var diffuseMapTexture = TextureCache.Instance.GetTexture(texturePath);
 
+            var specularTexturePath = Path.Combine(EngineConfig.TextureDirectory, "squashspecular.jpg");
+            var specularMapTexture = TextureCache.Instance.GetTexture(specularTexturePath);
+
+            specularMapTexture.Bind();
             diffuseMapTexture.Bind();  // Bind the texture to a texture unit
             shader.SetSampler2D("material.diffuse", diffuseMapTexture.textureUnit);  // Set the diffuse texture sampler in the shader
+            shader.SetSampler2D("material.specular", specularMapTexture.textureUnit);  // Set the specular texture sampler in the shader
 
             // Set additional material properties in the shader
             shader.SetUniformVec3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));  // Specular color

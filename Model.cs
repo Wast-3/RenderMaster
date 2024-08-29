@@ -48,7 +48,7 @@ namespace RenderMaster
             // The shader paths are hard-coded for now, pointing to a vertex and fragment shader.
             this.renderer = new BasicLightingRenderer(
                 this,
-                new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "lightingtest.vert"), Path.Combine(EngineConfig.ShaderDirectory, "lightingtest.frag"))
+                new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.vert"), Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.frag"))
                 );
         }
 
