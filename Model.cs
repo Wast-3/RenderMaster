@@ -82,13 +82,20 @@ namespace RenderMaster
             using (var stream = File.OpenRead(path))
             using (var reader = new StreamReader(stream))
             {
+                //get number of total lines in the file in order to create a progress percentage
+                int totalLines = File.ReadLines(path).Count();
+                int currentLine = 0;
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
+                    currentLine++;
                     string[] parts = line.Split(' ');
-
-                    Console.WriteLine("Parsing... Counted " + parts.Length + "vert parts");
-
+                    //Only log every 5th line to save on CPU
+                    if (currentLine % 5 == 0)
+                    {
+                        Console.WriteLine("Parsing... Counted " + parts.Length + "vert parts");
+                        Console.WriteLine("Current line: " + currentLine + " out of " + totalLines + "\n");
+                    }
                     for (int i = 0; i < parts.Length; i++)
                     {
                         vertices.Add(float.Parse(parts[i]));
