@@ -13,8 +13,10 @@ namespace RenderMaster
         VertType vertType;  // Specifies the type of vertex data (e.g., colored, textured, with normals)
         ModelShaderType modelShaderType;  // Specifies the type of shader to be used for rendering the model
         public VertexConfiguration vertexConfiguration;  // Configuration for how vertex data is structured
-        string modelPath;  // Path to the file containing model vertex data
+        public string modelPath;  // Path to the file containing model vertex data
         string? imagePath;  // Path to the texture image file (if any)
+
+        public Material material;
         
         public float[] verts;  // Array of vertex data loaded from the model file
         public Vector3 Position { get; set; }  // Position of the model in the 3D space
@@ -32,11 +34,12 @@ namespace RenderMaster
 
         // Constructor for the Model class.
         // Initializes the model with vertex type, shader type, and the path to the model data file.
-        public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath)
+        public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, Material material)
         {
             this.vertType = vertType;  // Store the vertex type (e.g., VertColor, VertColorNormal)
             this.modelPath = modelPath;  // Store the path to the model file
             this.verts = loadVerticesFromPath(modelPath);  // Load vertex data from the model file
+            this.material = material;
 
             // Initialize the vertex configuration based on the vertex type.
             // For now, it seems to default to a color normal UV configuration, which may involve color, normal, and texture data.
@@ -88,9 +91,9 @@ namespace RenderMaster
                     // Log progress every 5th line to reduce CPU load from excessive logging
                     if (currentLine % 5 == 0)
                     {
-                        Console.WriteLine("Parsing... Counted " + parts.Length + " vert parts");
+/*                        Console.WriteLine("Parsing... Counted " + parts.Length + " vert parts");
                         Console.WriteLine("Current line: " + currentLine + " out of " + totalLines + "\n");
-                    }
+*/                    }
 
                     // Parse each part into a float and add it to the vertices list
                     for (int i = 0; i < parts.Length; i++)

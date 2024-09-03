@@ -24,7 +24,23 @@ namespace RenderMaster
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
             mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
 */
-            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
+            Material tableMaterial = new Material(
+                TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg")),
+                TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"))
+            );
+
+            Material lampMaterial = new Material(
+                TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.jpg")),
+                TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp_specular.jpg"))
+            );
+
+            //mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
+            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), tableMaterial));
+
+            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.verttxt"), lampMaterial));
+
+            // Move the lamp up a bit:
+            mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0);
 
             openGLState = new OpenGLStateStack();
             

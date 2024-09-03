@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace RenderMaster
 {
-    internal class Material
+    public class Material
     {
-        private BasicImageTexture Diffuse;
-        private BasicImageTexture Specular;
+        public BasicImageTexture Diffuse;
+        public BasicImageTexture Specular;
         
         public Material(BasicImageTexture diffuse, BasicImageTexture specular) {
             this.Diffuse = diffuse;
@@ -20,6 +20,13 @@ namespace RenderMaster
         {
             Diffuse.Bind();
             Specular.Bind();
+            return true;
+        }
+
+        public bool UnbindAllTextures()
+        {
+            Diffuse.Unbind();
+            Specular.Unbind();
             return true;
         }
     }

@@ -18,6 +18,7 @@
   <ItemGroup>
     <Folder Include="Assets\Models\TexturedCylinder\" />
     <Folder Include="Blender\" />
+    <Folder Include="EngineBaseDir\Models\TableAndLamp\" />
     <Folder Include="Shaders\" />
   </ItemGroup>
 

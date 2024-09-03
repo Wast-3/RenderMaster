@@ -1,5 +1,6 @@
 ﻿using OpenTK.Mathematics;  // Provides mathematical types like Vector3 and Matrix4, essential for 3D transformations
 using OpenTK.Graphics.OpenGL4;  // Provides OpenGL 4.0+ bindings for graphics programming
+using RenderMaster.Engine;
 
 namespace RenderMaster
 {
@@ -83,11 +84,15 @@ namespace RenderMaster
         // This is used to bind a texture unit to a sampler2D uniform in the shader program.
         public void SetSampler2D(string name, TextureUnit textureUnit)
         {
+            Logger.Log("Setting texture unit to " + textureUnit, LogLevel.Debug);
+            // Get the integer offset for the texture unit:
+            int textureUnitOffset = (int)textureUnit - (int)TextureUnit.Texture0;
+
             // Get the location of the sampler uniform in the shader program
             int location = GL.GetUniformLocation(programID, name);
 
             // Set the sampler to use the specified texture unit
-            GL.Uniform1(location, 0);
+            GL.Uniform1(location, textureUnitOffset);
         }
     }
 }
