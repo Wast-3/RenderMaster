@@ -56,13 +56,13 @@ namespace RenderMaster
             var viewPos = camera.Position;
 
             // Spin the camera around the model by updating it's position over time
-            camera.Position = new Vector3(
+            /*camera.Position = new Vector3(
                 (float)Math.Sin(timeSoFar * 5.5) * 3 * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar * 7) * 2 + (float)Math.Sin(timeSoFar * 100) * 2,
                 (float)Math.Sin(timeSoFar * 5.5) * 3 * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar) * 2 * (float)Math.Tan(timeSoFar * 3),
                 (float)Math.Cos(timeSoFar * 5.5) * 3 * (float)Math.Cos(timeSoFar) * (float)Math.Tan(timeSoFar) * (float)Math.Cos(timeSoFar) * 3
-            );
+            );*/
 
-            model.Scale = new Vector3(2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2));
+            /*model.Scale = new Vector3(2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2), 2f * (float)Math.Sin(timeSoFar * 2));*/
 
             camera.UpdateViewMatrix();  // Update the camera's view matrix
 
@@ -75,10 +75,10 @@ namespace RenderMaster
             shader.SetUniformVec3("viewPos", viewPos);
 
             // Load and bind the diffuse texture using a texture cache for efficiency
-            var texturePath = Path.Combine(EngineConfig.TextureDirectory, "squash.jpg");
+            var texturePath = Path.Combine(EngineConfig.TextureDirectory, "uv_check2.png");
             var diffuseMapTexture = TextureCache.Instance.GetTexture(texturePath);
 
-            var specularTexturePath = Path.Combine(EngineConfig.TextureDirectory, "squashspecular.jpg");
+            var specularTexturePath = Path.Combine(EngineConfig.TextureDirectory, "uv_check2.png");
             var specularMapTexture = TextureCache.Instance.GetTexture(specularTexturePath);
 
             specularMapTexture.Bind();
@@ -91,14 +91,40 @@ namespace RenderMaster
             shader.SetUniformFloat("material.shininess", 32.0f);  // Shininess factor for specular reflection
 
             // Set light properties in the shader
-            shader.SetUniformVec3("light.position", new Vector3(10.0f, 10.0f, 0.0f));  // Light position
+            shader.SetUniformVec3("light.direction", new Vector3(0.1f, -1.0f, 0.0f));  // Light position
             shader.SetUniformVec3("light.ambient", objectColor);  // Ambient light color
             shader.SetUniformVec3("light.diffuse", lightColor);  // Diffuse light color
             shader.SetUniformVec3("light.specular", new Vector3(1.0f, 1.0f, 1.0f));  // Specular light color
 
-            // Render the model using the current shader, vertex configuration, and textures
-            // Assuming each vertex has 11 components (position, color, normal, UV), the number of vertices is determined by dividing the length of the vertex array by 11
-            GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 11);
+            // Create random positions for multiple models
+            List<Vector3> randomPositions = new List<Vector3>();
+
+            // Loop and add random positions that don't change over time
+            for (int i = 0; i < 20; i++)
+            {
+                randomPositions.Add(new Vector3(
+                    (float)(Math.Sin(i * 10.0) * 5.0),
+                    (float)(Math.Cos(i * 10.0) * 5.0),
+                    (float)(Math.Sin(i * 10.0) * 5.0)
+                ));
+            }
+
+            //Loop through, rendering the 10 models in our randomPositions list
+            for (int i = 0; i < 20; i++)
+            {
+                // Set the model's position to the random position
+                model.Position = randomPositions[i];
+
+                // calculate the new model matrix
+                modelMatrix = model.GetModelMatrix();
+
+
+                // Set the model, view, and projection matrices in the shader
+                shader.SetUniformMatrix4("model", modelMatrix);
+
+                // Draw the model using the shader
+                GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 11);
+            }
 
             // Unbind the resources after rendering to avoid affecting subsequent rendering operations
             vertexConfiguration.Unbind();  // Unbind the vertex configuration (VAO/VBO)

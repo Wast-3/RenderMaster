@@ -36,7 +36,7 @@ namespace RenderMaster
         {
             this.vertType = vertType;  // Store the vertex type (e.g., VertColor, VertColorNormal)
             this.modelPath = modelPath;  // Store the path to the model file
-            this.verts = loadVerticesTextureFromPath(modelPath);  // Load vertex data from the model file
+            this.verts = loadVerticesFromPath(modelPath);  // Load vertex data from the model file
 
             // Initialize the vertex configuration based on the vertex type.
             // For now, it seems to default to a color normal UV configuration, which may involve color, normal, and texture data.
@@ -68,7 +68,7 @@ namespace RenderMaster
 
         // Private method to load vertex data from a model file.
         // The file is expected to contain vertices formatted in a specific way, which is parsed into a float array.
-        private float[] loadVerticesTextureFromPath(string path)
+        private float[] loadVerticesFromPath(string path)
         {
             List<float> vertices = new List<float>();  // Initialize a list to hold the vertex data
 
