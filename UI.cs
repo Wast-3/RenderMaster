@@ -21,7 +21,7 @@ namespace RenderMaster
 
         //Gets called a single time when the UI is first created
         public void Setup();
-        
+
         //This gets called when the UI needs to set up its state before a render. Probably called every frame
         public void Bind();
 
@@ -33,8 +33,8 @@ namespace RenderMaster
 
     public class UI : IUserInterface
     {
-        private ImGuiBufferConfig bufferConfig;
-        private BasicTexturedShader shader;
+        private ImGuiBufferConfig bufferConfig = null!;
+        private BasicTexturedShader shader = null!;
         private IntPtr context;
         private int fontTexture;
 
@@ -55,7 +55,6 @@ namespace RenderMaster
             GL.Disable(EnableCap.CullFace);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.ScissorTest);
-
         }
 
         public void Resize(ResizeEventArgs e)
@@ -109,7 +108,7 @@ namespace RenderMaster
             }
             return types;
         }
-        
+
         [MeasureExecutionTime]
         public void Render(FrameEventArgs args, Camera camera)
         {
@@ -137,6 +136,7 @@ namespace RenderMaster
                 ImGui.Text(fpsString);
                 ImGui.PopStyleColor(); // Revert to previous color
             }
+            ImGui.End(); // End FPS Counter
 
             if (ImGui.Begin("Debug Window"))
             {
@@ -210,12 +210,10 @@ namespace RenderMaster
                 ImGui.End();
             }
 
-            ImGui.End(); // End Debug Window
-
             ImGui.Render();
             var drawData = ImGui.GetDrawData();
-            
-            
+
+
             Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
                 0.0f,
                 io.DisplaySize.X,
@@ -225,10 +223,8 @@ namespace RenderMaster
                 1.0f);
             shader.SetUniformMatrix4("projection_matrix", mvp);
             shader.SetSampler2D("in_fontTexture", 0);
-            
+
             drawData.ScaleClipRects(io.DisplayFramebufferScale);
-
-
 
             // Render command lists
             if (drawData.Valid == false)
@@ -237,7 +233,8 @@ namespace RenderMaster
             }
             for (int n = 0; n < drawData.CmdListsCount; n++)
             {
-                ImDrawListPtr cmd_list = drawData.CmdListsRange[n];
+                // ### THIS IS THE FIX ###
+                ImDrawListPtr cmd_list = drawData.CmdLists[n];
 
                 GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
 
@@ -270,8 +267,6 @@ namespace RenderMaster
                     }
                 }
             }
-            
-
         }
 
         public void Setup()
@@ -295,11 +290,6 @@ namespace RenderMaster
         {
             bufferConfig.Unbind();
             shader.Unbind();
-            
         }
     }
-
-    
-
 }
-
