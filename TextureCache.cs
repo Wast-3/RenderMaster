@@ -11,10 +11,10 @@ namespace RenderMaster
         private static TextureCache instance;
         private Dictionary<string, BasicImageTexture> textureCache = new Dictionary<string, BasicImageTexture>();
 
-        // Private constructor for singleton
+
         private TextureCache() { }
 
-        // Public accessor for the singleton instance
+
         public static TextureCache Instance
         {
             get
@@ -27,10 +27,10 @@ namespace RenderMaster
             }
         }
 
-        //Current texture unit (counts up for each new texture added to the cache)
+
         private int currentTextureUnit = 0;
 
-        // Convert Integers to texture units, we have to do this explicitly since the value doesn't seem to enjoy the addition operator
+
         public TextureUnit GetTextureUnitForInt(int i)
         {
             switch (i)
@@ -104,34 +104,34 @@ namespace RenderMaster
             }
         }
 
-        // Method to get or load a texture
+
         public BasicImageTexture GetTexture(string path)
         {
             Logger.Log("Cache hit: request for texture path: " + path, LogLevel.Debug);
             if (!textureCache.ContainsKey(path))
             {
-                // Texture not in cache, load it
+
                 Logger.Log("Texture not in cache, loading new texture", LogLevel.Debug);
                 var textureUnit = GetTextureUnitForInt(currentTextureUnit);
                 var texture = new BasicImageTexture(path, textureUnit);
                 textureCache[path] = texture;
                 Logger.Log("Used texture unit: " + textureUnit + " In int: " + currentTextureUnit, LogLevel.Debug);
                 this.currentTextureUnit += 1;
-                
+
                 return texture;
-                
+
             }
 
             Logger.Log("Found texture in cache, returning cached texture", LogLevel.Info);
             return textureCache[path];
         }
 
-        // Optional: Clearing the cache (e.g., on scene unload or application exit)
+
         public void ClearCache()
         {
             foreach (var texture in textureCache.Values)
             {
-                GL.DeleteTexture(texture.TextureId);  // Ensure OpenGL resources are also freed
+                GL.DeleteTexture(texture.TextureId);
             }
             textureCache.Clear();
         }

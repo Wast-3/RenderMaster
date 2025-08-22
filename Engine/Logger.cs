@@ -11,12 +11,12 @@
 
     public static class Logger
     {
-        // Declare the field as static
+
         public static List<ILogger> Loggers { get; } = new List<ILogger>();
 
-        static Logger() // Static constructor
+        static Logger()
         {
-            // Add default loggers here
+
             Loggers.Add(new ConsoleLogger());
             Loggers.Add(new EngineDirFileLogger());
         }
@@ -26,10 +26,10 @@
             Loggers.Add(logger);
         }
 
-        // You might also want methods to perform logging, initializing, and shutting down the loggers.
+
         public static void Log(string message, LogLevel level)
         {
-            //Format the message using our prefix (timestamp) (thread) (log level)
+
             message = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] [{System.Threading.Thread.CurrentThread.ManagedThreadId}] [{level.ToString().ToUpper()}]: {message}";
 
             foreach (var logger in Loggers)
@@ -52,26 +52,26 @@
     public interface ILogger
     {
         void Log(string message);
-        void Initialize(); // Corrected spelling
+        void Initialize();
         void Shutdown();
     }
 
     public class ConsoleLogger : ILogger
     {
-        // Implementation of ILogger methods
+
         public void Log(string message)
         {
             Console.WriteLine(message);
         }
 
-        public void Initialize() // Corrected the method name
+        public void Initialize()
         {
-            // Empty implementation, does nothing
+
         }
 
         public void Shutdown()
         {
-            // Empty implementation, does nothing
+
         }
     }
 
@@ -83,16 +83,16 @@
 
         public EngineDirFileLogger()
         {
-            //Should not need to be done, but we'll do anyways:
+
             if (!Directory.Exists(logDirectory))
             {
                 Directory.CreateDirectory(logDirectory);
             }
 
-            //Create a log file based off of today's date: year-month-day as this is the superior log filename format (sortable)
+
             string logFileName = DateTime.Now.ToString("yyyy-MM-dd") + ".rendermaster.log";
 
-            //Create file. If file already exists, append to it
+
             sw = File.AppendText(Path.Combine(logDirectory, logFileName));
 
             sw.WriteLine("RenderMaster Engine Log File");

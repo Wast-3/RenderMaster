@@ -13,7 +13,7 @@ namespace RenderMaster
     {
         public string MethodName { get; set; }
         public double ExecutionTime { get; set; }
-        public double Timestamp { get; set; } // The timestamp of this execution
+        public double Timestamp { get; set; }
     }
     [Aspect(Scope.Global)]
     public class TimingAspect
