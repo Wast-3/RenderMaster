@@ -1,30 +1,22 @@
-# Build and debug artifacts
 bin/
 obj/
 
-# Visual Studio user-specific files
 *.user
 *.suo
 *.userprefs
 
-# Visual Studio database file
 *.sdf
 
-# ReSharper files
 _ReSharper*/
 
-# NuGet artifacts
 packages/
 
-# Microsoft Azure Build Output
 csx/
 
-# Windows Store app package directories and files
 AppPackages/
 BundleArtifacts/
 Package.StoreAssociation.xml
 
-# Misc
 *.log
 *.bak
 *.cache
@@ -32,5 +24,3 @@ Package.StoreAssociation.xml
 *.vs
 Thumbs.db
 
-# Project-specific settings (if any)
-# ...

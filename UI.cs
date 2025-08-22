@@ -16,16 +16,16 @@ namespace RenderMaster
 {
     public interface IUserInterface
     {
-        //Does the actual drawing
+
         public void Render(FrameEventArgs args, Camera camera);
 
-        //Gets called a single time when the UI is first created
+
         public void Setup();
 
-        //This gets called when the UI needs to set up its state before a render. Probably called every frame
+
         public void Bind();
 
-        //This gets called when the UI needs to clean up its state after a render. Probably called every frame
+
         public void Unbind();
 
         public void Resize(ResizeEventArgs e);
@@ -90,7 +90,7 @@ namespace RenderMaster
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 
-            // Restore state
+
             GL.BindTexture(TextureTarget.Texture2D, prevTexture2D);
             GL.ActiveTexture((TextureUnit)prevActiveTexture);
 
@@ -117,26 +117,26 @@ namespace RenderMaster
             ImGui.NewFrame();
             ImGui.ShowDemoWindow();
 
-            // Calculate frame rate (you might want to do this outside the Render method, updating once per frame)
-            double frameRate = 1.0 / args.Time; // Assuming args.Time is the time taken for the frame in seconds
 
-            // Create FPS string
-            string fpsString = frameRate.ToString("F2"); // "F2" formats the number with two decimal places
+            double frameRate = 1.0 / args.Time;
 
-            // Position the text in the top right corner
+
+            string fpsString = frameRate.ToString("F2");
+
+
             ImGui.SetNextWindowPos(new System.Numerics.Vector2(io.DisplaySize.X - 100, 0));
             ImGui.SetNextWindowSize(new System.Numerics.Vector2(100, 20));
 
-            // Set window flags to make it borderless, non-movable, etc.
+
             ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground;
             if (ImGui.Begin("FPS Counter", windowFlags))
             {
-                // Set text color (optional)
-                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f)); // White color
+
+                ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                 ImGui.Text(fpsString);
-                ImGui.PopStyleColor(); // Revert to previous color
+                ImGui.PopStyleColor();
             }
-            ImGui.End(); // End FPS Counter
+            ImGui.End();
 
             if (ImGui.Begin("Debug Window"))
             {
@@ -155,7 +155,7 @@ namespace RenderMaster
                             var averageTiming = timingsList.Average();
                             var latestTiming = timingsList.LastOrDefault();
 
-                            // Apply the alternating background color
+
                             if (isOddRow)
                             {
                                 ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetColorU32(ImGuiCol.Separator));
@@ -180,10 +180,10 @@ namespace RenderMaster
                                 ImGui.TreePop();
                             }
 
-                            // Revert to the previous style
+
                             ImGui.PopStyleColor();
 
-                            // Alternate the row
+
                             isOddRow = !isOddRow;
                         }
 
@@ -226,14 +226,14 @@ namespace RenderMaster
 
             drawData.ScaleClipRects(io.DisplayFramebufferScale);
 
-            // Render command lists
+
             if (drawData.Valid == false)
             {
                 return;
             }
             for (int n = 0; n < drawData.CmdListsCount; n++)
             {
-                // ### THIS IS THE FIX ###
+
                 ImDrawListPtr cmd_list = drawData.CmdLists[n];
 
                 GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
@@ -252,9 +252,9 @@ namespace RenderMaster
                         GL.ActiveTexture(TextureUnit.Texture0);
                         GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
 
-                        // We do _windowHeight - (int)clip.W instead of (int)clip.Y because gl has flipped Y when it comes to these coordinates
+
                         var clip = pcmd.ClipRect;
-                        //GL.Scissor((int)clip.X, (int)io.DisplaySize.Y - (int)clip.W, (int)(clip.Z - clip.X), (int)(clip.W - clip.Y));
+
 
                         if ((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0)
                         {
@@ -282,7 +282,7 @@ namespace RenderMaster
             io.Fonts.Flags = ImFontAtlasFlags.None;
             io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
 
-            //Set style?
+
             ImGui.StyleColorsDark();
         }
 

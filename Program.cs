@@ -12,27 +12,28 @@ namespace RenderMaster
 {
     public class Game : GameWindow
     {
-        // Notice the "= null!;" to resolve the CS8618 warning.
-        // This tells the compiler that we know 'userInterface' will be initialized in OnLoad() before it's ever used.
-        IUserInterface userInterface = null!;
+
+
+        IUserInterface userInterface = null!; // initialized in OnLoad
 
         Scene mainScene;
         OpenGLStateStack openGLState;
 
         public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
         {
-            // Fixed CS0618: 'Size' is obsolete, use 'ClientSize' instead.
+
             ClientSize = (width, height),
             Title = title
         })
         {
             this.mainScene = new Scene("main testing scene", width, height);
+
             /* mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
-            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png")));
-            */
+               mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
+               mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
+               mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
+               mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png"))); */
+
             Material tableMaterial = new Material(
                 TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg")),
                 TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"))
@@ -43,13 +44,13 @@ namespace RenderMaster
                 TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp_specular.jpg"))
             );
 
-            //mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "LightingTest\\testiso.verttxt")));
-            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), tableMaterial));
+            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
+                Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), tableMaterial)); // table
 
-            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal, Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.verttxt"), lampMaterial));
+            mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
+                Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.verttxt"), lampMaterial)); // lamp
 
-            // Move the lamp up a bit:
-            mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0);
+            mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0); // move lamp up
 
             openGLState = new OpenGLStateStack();
         }
@@ -94,16 +95,16 @@ namespace RenderMaster
             ImGuiKey key = MapOpenTKKeyToImGuiKey(e.Key);
             io.AddKeyEvent(key, true);
 
-            // Modifier keys are also handled via AddKeyEvent
+
             io.AddKeyEvent(ImGuiKey.ModCtrl, e.Control);
             io.AddKeyEvent(ImGuiKey.ModShift, e.Shift);
             io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
 
-            // Fixed CS1061: Check for the Super key using the Modifiers flag.
+
             io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
 
-            // You can still pass characters for text input
-            if (e.Key >= Keys.D0 && e.Key <= Keys.Z) // A simplified check
+
+            if (e.Key >= Keys.D0 && e.Key <= Keys.Z)
             {
                 io.AddInputCharacter((uint)e.Key);
             }
@@ -116,19 +117,19 @@ namespace RenderMaster
             ImGuiKey key = MapOpenTKKeyToImGuiKey(e.Key);
             io.AddKeyEvent(key, false);
 
-            // Update modifier state on key up as well
+
             io.AddKeyEvent(ImGuiKey.ModCtrl, e.Control);
             io.AddKeyEvent(ImGuiKey.ModShift, e.Shift);
             io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
 
-            // Fixed CS1061: Check for the Super key using the Modifiers flag.
+
             io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
         }
 
         protected override void OnMouseMove(MouseMoveEventArgs e)
         {
             var io = ImGui.GetIO();
-            float scaleFactor = io.DisplayFramebufferScale.Y; // Or Y if you need to scale by the Y axis
+            float scaleFactor = io.DisplayFramebufferScale.Y;
 
             io.MousePos = new System.Numerics.Vector2(MouseState.X * scaleFactor, MouseState.Y * scaleFactor);
         }
@@ -160,24 +161,24 @@ namespace RenderMaster
         {
             base.OnResize(e);
 
-            // Resize user interface if applicable
+
             userInterface?.Resize(e);
 
-            // Update ImGui display size
+
             var io = ImGui.GetIO();
             io.DisplaySize = new System.Numerics.Vector2(e.Width, e.Height);
 
-            // If you have a high-DPI setting, you may need to calculate the framebuffer size accordingly
+
             var framebufferWidth = (int)(e.Width * io.DisplayFramebufferScale.X);
             var framebufferHeight = (int)(e.Height * io.DisplayFramebufferScale.Y);
 
-            // Set the OpenGL viewport to cover the entire framebuffer
+
             GL.Viewport(0, 0, framebufferWidth, framebufferHeight);
         }
 
         private ImGuiKey MapOpenTKKeyToImGuiKey(Keys key)
         {
-            // This function can be extended to map more keys
+
             return key switch
             {
                 Keys.Tab => ImGuiKey.Tab,

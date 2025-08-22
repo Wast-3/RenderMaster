@@ -31,7 +31,7 @@
             Directories.Add(LoggingDirectory);
             Directories.Add(FontDirectory);
 
-            // Create all directories if they don't already exist:
+
 
             foreach (string dir in Directories)
             {
