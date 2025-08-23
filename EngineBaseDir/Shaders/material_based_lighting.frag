@@ -16,11 +16,12 @@ struct Light {
 };
 uniform Light light;
 
-struct Material { 
+struct Material {
     sampler2D diffuse;  // Diffuse texture map
-    sampler2D specular;      // Specular reflection color
+    sampler2D specular;      // Specular reflection map
     float shininess;    // Shininess factor for specular reflection
-}; 
+    vec3 specularTint;  // Specular color tint
+};
 
 uniform Material material;
 
@@ -43,7 +44,7 @@ void main()
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoord));
+    vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoord)) * material.specularTint;
 
     // FINAL COLOR COMPUTATION
     vec3 result = ambient + diffuse + specular;

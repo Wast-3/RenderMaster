@@ -74,7 +74,7 @@ namespace RenderMaster
             Logger.Log("Current Model: " + model.modelPath, LogLevel.Info);
 
 
-            shader.SetUniformVec3("material.specular", new Vector3(0.5f, 0.5f, 0.5f));
+            shader.SetUniformVec3("material.specularTint", new Vector3(0.5f, 0.5f, 0.5f));
             shader.SetUniformFloat("material.shininess", 32.0f);
 
 
