@@ -1,9 +1,8 @@
-﻿namespace RenderMaster
+﻿namespace RenderMaster;
+
+public enum ModelShaderType
 {
-    public enum ModelShaderType
-    {
-        BasicTextured,
-        BasicVertColor,
-        VertColorNormal
-    }
+    BasicTextured,
+    BasicVertColor,
+    VertColorNormal
 }

@@ -1,9 +1,8 @@
-﻿namespace RenderMaster
+﻿namespace RenderMaster;
+
+public enum VertType
 {
-    public enum VertType
-    {
-        VertColor,
-        VertColorTexture,
-        VertColorNormal
-    }
+    VertColor,
+    VertColorTexture,
+    VertColorNormal
 }
