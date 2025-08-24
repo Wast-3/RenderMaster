@@ -2,6 +2,8 @@
 using OpenTK.Graphics.OpenGL;
 
 
+namespace RenderMaster;
+
 // captures a snapshot of key OpenGL state for restoration
 public class OpenGLStateSnapshot
 {
@@ -93,23 +95,24 @@ public void Restore()
 // stack-based manager for OpenGL states
 public class OpenGLStateStack
 {
-private Stack<OpenGLStateSnapshot> stateStack = new Stack<OpenGLStateSnapshot>(); // saved states
+    private Stack<OpenGLStateSnapshot> stateStack = new Stack<OpenGLStateSnapshot>(); // saved states
 
 
 
 
-public void PushState()
-{
-    stateStack.Push(new OpenGLStateSnapshot());
-}
+    public void PushState()
+    {
+        stateStack.Push(new OpenGLStateSnapshot());
+    }
 
 
 
 
-public void PopState()
-{
-    if (stateStack.Count == 0) throw new InvalidOperationException("No state to pop!");
+    public void PopState()
+    {
+        if (stateStack.Count == 0) throw new InvalidOperationException("No state to pop!");
 
 
-    stateStack.Pop().Restore();
+        stateStack.Pop().Restore();
+    }
 }
