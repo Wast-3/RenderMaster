@@ -6,11 +6,11 @@ namespace RenderMaster;
 
 
 
-public class Camera
+public class Camera(Vector3 position, Vector3 lookingAt, float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
 
-    public Vector3 Position { get; set; }
-    public Vector3 LookingAt { get; set; }
+    public Vector3 Position { get; set; } = position;
+    public Vector3 LookingAt { get; set; } = lookingAt;
     public Matrix4 View { get; set; }
     public Matrix4 Projection { get; set; }
 
@@ -19,12 +19,8 @@ public class Camera
 
 
 
-    public Camera(Vector3 position, Vector3 lookingAt, float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
+    public Camera
     {
-        Position = position;
-        LookingAt = lookingAt;
-
-
         UpdateViewMatrix();
 
 

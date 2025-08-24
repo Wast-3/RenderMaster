@@ -4,21 +4,12 @@ using OpenTK.Windowing.Common;
 
 namespace RenderMaster;
 
-public class BasicTexturedModelRenderer : IRenderer
+public class BasicTexturedModelRenderer(Model model, BasicTexturedShader shader, BasicImageTexture texture) : IRenderer
 {
-    private Model model;
-    private BasicTexturedShader shader;
-    private BasicImageTexture texture;
-    private VertexConfiguration vertexConfiguration;
-
-    public BasicTexturedModelRenderer(Model model, BasicTexturedShader shader, BasicImageTexture texture)
-    {
-        this.model = model;
-        this.shader = shader;
-        this.texture = texture;
-        this.vertexConfiguration = model.vertexConfiguration;
-
-    }
+    private Model model = model;
+    private BasicTexturedShader shader = shader;
+    private BasicImageTexture texture = texture;
+    private VertexConfiguration vertexConfiguration = model.vertexConfiguration;
 
     [MeasureExecutionTime]
     public void Render(FrameEventArgs e, Camera camera)

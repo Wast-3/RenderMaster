@@ -8,15 +8,15 @@ namespace RenderMaster;
 
 
 
-public class Model : IModel // represents a renderable 3D model
+public class Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, Material material) : IModel // represents a renderable 3D model
 {
-    VertType vertType;
-    ModelShaderType modelShaderType;
+    VertType vertType = vertType;
+    ModelShaderType modelShaderType = modelShaderType;
     public VertexConfiguration vertexConfiguration;
-    public string modelPath;
+    public string modelPath = modelPath;
     string? imagePath;
 
-    public Material material;
+    public Material material = material;
 
     public float[] verts;
     public Vector3 Position { get; set; }
@@ -34,22 +34,11 @@ public class Model : IModel // represents a renderable 3D model
 
 
 
-    public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, Material material)
+    public Model
     {
-        this.vertType = vertType;
-        this.modelPath = modelPath;
-        this.verts = loadVerticesFromPath(modelPath);
-        this.material = material;
-
-
-
-        this.vertexConfiguration = new VertColorNormalUVConfiguration(this.verts);
-
-        this.modelShaderType = modelShaderType;
-
-
-
-        this.renderer = new BasicLightingRenderer(
+        verts = loadVerticesFromPath(modelPath);
+        vertexConfiguration = new VertColorNormalUVConfiguration(verts);
+        renderer = new BasicLightingRenderer(
             this,
             new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.vert"), Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.frag"))
             );

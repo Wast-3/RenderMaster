@@ -49,18 +49,12 @@ public class MeasureExecutionTimeAttribute : Attribute
 {
 }
 
-public class CircularBuffer<T>
+public class CircularBuffer<T>(int size)
 {
-    private readonly int _size;
-    private readonly T[] _values;
+    private readonly int _size = size;
+    private readonly T[] _values = new T[size];
     private int _start;
     private int _count;
-
-    public CircularBuffer(int size)
-    {
-        _size = size;
-        _values = new T[size];
-    }
 
     public void Add(T value)
     {

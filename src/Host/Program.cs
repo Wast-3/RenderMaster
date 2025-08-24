@@ -10,7 +10,7 @@ using RenderMaster.Engine;
 
 namespace RenderMaster;
 
-public class Game : GameWindow
+public class Game(int width, int height, string title) : GameWindow(GameWindowSettings.Default, new NativeWindowSettings() { ClientSize = (width, height), Title = title })
 {
 
 
@@ -22,12 +22,7 @@ public class Game : GameWindow
     const double FixedUpdateRate = 1.0 / 60.0;
     double updateAccumulator = 0.0;
 
-    public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
-    {
-
-        ClientSize = (width, height),
-        Title = title
-    })
+    public Game
     {
         this.mainScene = new Scene("main testing scene", width, height);
 

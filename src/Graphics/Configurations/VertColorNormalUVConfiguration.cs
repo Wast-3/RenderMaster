@@ -4,11 +4,10 @@ namespace RenderMaster;
 
 
 
-public class VertColorNormalUVConfiguration : VertexConfiguration
+public class VertColorNormalUVConfiguration(float[] vertices) : VertexConfiguration(vertices)
 {
 
 
-    public VertColorNormalUVConfiguration(float[] vertices) : base(vertices) { }
 
 
 

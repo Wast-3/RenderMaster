@@ -6,29 +6,20 @@ namespace RenderMaster;
 
 
 
-public class Scene
+public class Scene(string name, int width, int height)
 {
 
-    string name;
+    string name = name;
 
 
-    public List<Model> sceneModels;
+    public List<Model> sceneModels = new();
 
 
-    public Camera camera;
-
-
-
-
-    public Scene(string name, int width, int height)
-    {
-        this.name = name;
-        this.sceneModels = new List<Model>();
+    public Camera camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 0.8f,(float)width / (float)height, 1, 100000000);
 
 
 
-        this.camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0), 0.8f,(float)width / (float)height, 1, 100000000);
-    }
+
 
 
 

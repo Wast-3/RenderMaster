@@ -2,9 +2,8 @@
 
 namespace RenderMaster;
 
-public class VertColorTextureConfiguration : VertexConfiguration
+public class VertColorTextureConfiguration(float[] vertices) : VertexConfiguration(vertices)
 {
-    public VertColorTextureConfiguration(float[] vertices) : base(vertices) { }
 
     protected override void SetupAttributes()
     {

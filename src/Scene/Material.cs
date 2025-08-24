@@ -6,15 +6,10 @@ using System.Threading.Tasks;
 
 namespace RenderMaster;
 
-public class Material
+public class Material(BasicImageTexture diffuse, BasicImageTexture specular)
 {
-    public BasicImageTexture Diffuse;
-    public BasicImageTexture Specular;
-
-    public Material(BasicImageTexture diffuse, BasicImageTexture specular) {
-        this.Diffuse = diffuse;
-        this.Specular = specular;
-    }
+    public BasicImageTexture Diffuse = diffuse;
+    public BasicImageTexture Specular = specular;
 
     public bool BindAllTextures()
     {

@@ -9,21 +9,12 @@ namespace RenderMaster;
 
 
 
-public class BasicLightingRenderer : IRenderer
+public class BasicLightingRenderer(Model model, BasicTexturedShader shader) : IRenderer
 {
-    private Model model;
-    private BasicTexturedShader shader;
-    private VertexConfiguration vertexConfiguration;
+    private Model model = model;
+    private BasicTexturedShader shader = shader;
+    private VertexConfiguration vertexConfiguration = model.vertexConfiguration;
     private double timeSoFar;
-
-
-
-    public BasicLightingRenderer(Model model, BasicTexturedShader shader)
-    {
-        this.model = model;
-        this.shader = shader;
-        this.vertexConfiguration = model.vertexConfiguration;
-    }
 
 
 

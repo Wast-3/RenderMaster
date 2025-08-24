@@ -4,9 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace RenderMaster;
 
-public class ImGuiBufferConfig : VertexConfiguration
+public class ImGuiBufferConfig() : VertexConfiguration
 {
-    public ImGuiBufferConfig() : base() { }
 
     protected override void SetupAttributes()
     {

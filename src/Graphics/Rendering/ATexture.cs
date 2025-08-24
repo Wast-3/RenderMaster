@@ -8,13 +8,9 @@ using StbImageSharp;
 namespace RenderMaster;
 
 
-public abstract class ATexture
+public abstract class ATexture(string path)
 {
-    public ImageResult textureImage;
-    public ATexture(string path)
-    {
-        this.textureImage = loadImageFromPath(path);
-    }
+    public ImageResult textureImage = loadImageFromPath(path);
 
     public abstract void Bind();
 

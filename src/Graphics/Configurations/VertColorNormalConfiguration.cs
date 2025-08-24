@@ -2,9 +2,8 @@
 
 namespace RenderMaster;
 
-public class VertColorNormalConfiguration : VertexConfiguration
+public class VertColorNormalConfiguration(float[] vertices) : VertexConfiguration(vertices)
 {
-    public VertColorNormalConfiguration(float[] vertices) : base(vertices) { }
 
     protected override void SetupAttributes()
     {

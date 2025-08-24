@@ -6,11 +6,11 @@ namespace RenderMaster;
 
 
 
-public class BasicTexturedShader : AShader
+public class BasicTexturedShader(string vertexPath, string fragmentPath) : AShader
 {
 
 
-    public BasicTexturedShader(string vertexPath, string fragmentPath)
+    public BasicTexturedShader
     {
         Load(vertexPath, fragmentPath);
     }

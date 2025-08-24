@@ -75,13 +75,13 @@ public class ConsoleLogger : ILogger
     }
 }
 
-public class EngineDirFileLogger : ILogger
+public class EngineDirFileLogger() : ILogger
 {
     string logDirectory = EngineConfig.LoggingDirectory;
 
     StreamWriter sw;
 
-    public EngineDirFileLogger()
+    public EngineDirFileLogger
     {
 
         if (!Directory.Exists(logDirectory))

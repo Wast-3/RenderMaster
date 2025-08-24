@@ -4,19 +4,15 @@ using RenderMaster.Engine;
 
 namespace RenderMaster;
 
-public class BasicImageTexture : ATexture
+public class BasicImageTexture(string path, TextureUnit unit) : ATexture(path)
 {
     public int TextureId { get; private set; }
-    public TextureUnit textureUnit;
-    public String texturePath = "";
+    public TextureUnit textureUnit = unit;
+    public String texturePath = path;
 
 
-    public BasicImageTexture(string path, TextureUnit unit) : base(path)
+    public BasicImageTexture
     {
-        this.texturePath = path;
-        this.textureUnit = unit;
-
-
         GL.ActiveTexture(textureUnit);
 
 
