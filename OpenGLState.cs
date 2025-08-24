@@ -1,6 +1,7 @@
-﻿using System.Drawing;
+using System.Drawing;
 using OpenTK.Graphics.OpenGL;
 
+namespace RenderMaster;
 
 // captures a snapshot of key OpenGL state for restoration
 public class OpenGLStateSnapshot
