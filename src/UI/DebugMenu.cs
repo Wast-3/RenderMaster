@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using ImGuiNET;
+using SharpGLTF.Schema2;
 
 namespace RenderMaster;
 
@@ -9,7 +12,8 @@ public class DebugMenu : IUIElement
     public string FpsString { get; set; } = string.Empty;
 
     // list of loaded glTFs are stored in this list
-    private List<unsureWhichTypeIsBest> gltfs;
+    private readonly List<(string path, ModelRoot model)> gltfs = new();
+    private string gltfPath = string.Empty;
 
     public void AfterBegin()
     {
@@ -78,13 +82,43 @@ public class DebugMenu : IUIElement
             {
                 ImGui.Text("Test glTF loading");
 
-                // Some kind of path to a glTF file
-                // a load button
+                ImGui.InputText("Path", ref gltfPath, 260);
+                ImGui.SameLine();
+                if (ImGui.Button("Load") && File.Exists(gltfPath))
+                {
+                    try
+                    {
+                        var model = ModelRoot.Load(gltfPath);
+                        gltfs.Add((gltfPath, model));
+                    }
+                    catch (Exception ex)
+                    {
+                        ImGui.TextColored(new System.Numerics.Vector4(1, 0, 0, 1), $"Failed: {ex.Message}");
+                    }
+                }
 
-                // here, we'd loop over all the loaded gltfs, and for each, display basic information. 
-                // For now, just show a simple model / scene overview with scene count, node/mesh/material counts. 
+                for (int i = 0; i < gltfs.Count; i++)
+                {
+                    var (path, model) = gltfs[i];
+                    if (ImGui.TreeNode($"{System.IO.Path.GetFileName(path)}##{i}"))
+                    {
+                        ImGui.Text($"Scenes: {model.LogicalScenes.Count()}");
+                        ImGui.Text($"Nodes: {model.LogicalNodes.Count()}");
+                        ImGui.Text($"Meshes: {model.LogicalMeshes.Count()}");
+                        ImGui.Text($"Materials: {model.LogicalMaterials.Count()}");
 
-                // include a button to free each gltf in the list from memory
+                        if (ImGui.Button($"Free##{i}"))
+                        {
+                            gltfs.RemoveAt(i);
+                            i--;
+                            ImGui.TreePop();
+                            continue;
+                        }
+
+                        ImGui.TreePop();
+                    }
+                }
+
                 ImGui.EndTabItem();
             }
 
