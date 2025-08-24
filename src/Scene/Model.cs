@@ -38,7 +38,17 @@ public class Model : IModel // represents a renderable 3D model
     {
         this.vertType = vertType;
         this.modelPath = modelPath;
-        this.verts = new LegacyModelLoader().loadModel(modelPath);
+        IModelLoader loader;
+        string ext = Path.GetExtension(modelPath).ToLowerInvariant();
+        if (ext == ".gltf" || ext == ".glb" || ext == ".obj")
+        {
+            loader = new GltfModelLoader();
+        }
+        else
+        {
+            loader = new LegacyModelLoader();
+        }
+        this.verts = loader.loadModel(modelPath);
         this.material = material;
 
 
