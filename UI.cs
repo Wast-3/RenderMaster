@@ -47,7 +47,6 @@ namespace RenderMaster
         {
             bufferConfig.Bind();
             shader.Bind();
-            RecreateFontDeviceTexture();
             GL.Enable(EnableCap.Blend);
             GL.Enable(EnableCap.ScissorTest);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -73,6 +72,11 @@ namespace RenderMaster
             int prevActiveTexture = GL.GetInteger(GetPName.ActiveTexture);
             GL.ActiveTexture(TextureUnit.Texture0);
             int prevTexture2D = GL.GetInteger(GetPName.TextureBinding2D);
+
+            if (fontTexture != 0)
+            {
+                GL.DeleteTexture(fontTexture);
+            }
 
             fontTexture = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, fontTexture);
@@ -284,6 +288,7 @@ namespace RenderMaster
 
 
             ImGui.StyleColorsDark();
+            RecreateFontDeviceTexture();
         }
 
         public void Unbind()
