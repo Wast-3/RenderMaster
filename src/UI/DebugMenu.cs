@@ -8,6 +8,9 @@ public class DebugMenu : IUIElement
 {
     public string FpsString { get; set; } = string.Empty;
 
+    // list of loaded glTFs are stored in this list
+    private List<unsureWhichTypeIsBest> gltfs;
+
     public void AfterBegin()
     {
         if (ImGui.BeginTabBar("Tabs"))
@@ -68,6 +71,20 @@ public class DebugMenu : IUIElement
                 ImGui.Text($"Total Memory Usage: {totalMemoryUsageKB} KB ({totalMemoryUsageGB:0.##} GB)");
                 ImGui.Text($"Private Memory Usage: {privateMemoryUsageKB} KB ({privateMemoryUsageGB:0.##} GB)");
 
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem("glTF loadDebugger"))
+            {
+                ImGui.Text("Test glTF loading");
+
+                // Some kind of path to a glTF file
+                // a load button
+
+                // here, we'd loop over all the loaded gltfs, and for each, display basic information. 
+                // For now, just show a simple model / scene overview with scene count, node/mesh/material counts. 
+
+                // include a button to free each gltf in the list from memory
                 ImGui.EndTabItem();
             }
 

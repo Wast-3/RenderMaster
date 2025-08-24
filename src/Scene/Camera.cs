@@ -14,10 +14,7 @@ public class Camera
     public Matrix4 View { get; set; }
     public Matrix4 Projection { get; set; }
 
-
     Vector3 Up = new Vector3(0f, 1f, 0f);
-
-
 
     public Camera(Vector3 position, Vector3 lookingAt, float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
     {
