@@ -3,14 +3,12 @@ using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using ImGuiNET;
 using System.Runtime.CompilerServices;
 using AspectInjector.Broker;
-using System.Diagnostics;
 
 namespace RenderMaster;
 
@@ -35,6 +33,7 @@ public class UI : IUserInterface
     private IntPtr context;
     private int fontTexture;
     private ImDrawDataPtr drawData;
+    private DebugMenu debugMenu = new DebugMenu();
 
     public UI()
     {
@@ -136,72 +135,10 @@ public class UI : IUserInterface
 
         if (ImGui.Begin("Debug Window"))
         {
-            if (ImGui.BeginTabBar("Tabs"))
-            {
-                if (ImGui.BeginTabItem("Function Timings"))
-                {
-                    ImGui.Text($"RENDERMASTER");
-                    ImGui.Text($"Current FPS: {fpsString}");
-
-                    bool isOddRow = false;
-
-                    foreach (var entry in TimingAspect.Timings)
-                    {
-                        var timingsList = entry.Value.Values.ToList();
-                        var averageTiming = timingsList.Average();
-                        var latestTiming = timingsList.LastOrDefault();
-
-                        if (isOddRow)
-                        {
-                            ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetColorU32(ImGuiCol.Separator));
-                        }
-                        else
-                        {
-                            ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetColorU32(ImGuiCol.Border));
-                        }
-
-                        if (ImGui.TreeNode($"Method: {entry.Key}"))
-                        {
-                            ImGui.Text($"Average Execution Time (last 100): {averageTiming} ms");
-                            ImGui.Text($"Latest Execution Time: {latestTiming} ms");
-
-                            float[] timingsArray = timingsList.Select(t => (float)t).ToArray();
-
-                            if (timingsArray.Length > 0)
-                            {
-                                ImGui.PlotLines("Timings", ref timingsArray[0], timingsArray.Length, 0, null, 0.0f, float.MaxValue, new System.Numerics.Vector2(0, 80));
-                            }
-
-                            ImGui.TreePop();
-                        }
-
-                        ImGui.PopStyleColor();
-
-                        isOddRow = !isOddRow;
-                    }
-
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem("Memory"))
-                {
-                    Process currentProcess = Process.GetCurrentProcess();
-                    long totalMemoryUsageKB = currentProcess.WorkingSet64 / 1024;
-                    double totalMemoryUsageGB = totalMemoryUsageKB / 1024.0 / 1024.0;
-                    long privateMemoryUsageKB = currentProcess.PrivateMemorySize64 / 1024;
-                    double privateMemoryUsageGB = privateMemoryUsageKB / 1024.0 / 1024.0;
-
-                    ImGui.Text($"Total Memory Usage: {totalMemoryUsageKB} KB ({totalMemoryUsageGB:0.##} GB)");
-                    ImGui.Text($"Private Memory Usage: {privateMemoryUsageKB} KB ({privateMemoryUsageGB:0.##} GB)");
-
-                    ImGui.EndTabItem();
-                }
-
-                ImGui.EndTabBar();
-            }
-
-            ImGui.End();
+            debugMenu.FpsString = fpsString;
+            debugMenu.AfterBegin();
         }
+        ImGui.End();
 
         ImGui.Render();
         drawData = ImGui.GetDrawData();
