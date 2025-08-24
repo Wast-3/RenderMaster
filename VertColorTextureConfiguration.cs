@@ -1,24 +1,23 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-namespace RenderMaster
+namespace RenderMaster;
+
+public class VertColorTextureConfiguration : VertexConfiguration
 {
-    public class VertColorTextureConfiguration : VertexConfiguration
+    public VertColorTextureConfiguration(float[] vertices) : base(vertices) { }
+
+    protected override void SetupAttributes()
     {
-        public VertColorTextureConfiguration(float[] vertices) : base(vertices) { }
 
-        protected override void SetupAttributes()
-        {
-
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
 
 
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
+        GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 3 * sizeof(float));
+        GL.EnableVertexAttribArray(1);
 
 
-            GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
-            GL.EnableVertexAttribArray(2);
-        }
+        GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
+        GL.EnableVertexAttribArray(2);
     }
 }

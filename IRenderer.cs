@@ -1,10 +1,9 @@
 ﻿using OpenTK.Windowing.Common;
 
-namespace RenderMaster
-{
+namespace RenderMaster;
 
-    public interface IRenderer
-    {
-        public void Render(FrameEventArgs e, Camera camera);
-    }
+
+public interface IRenderer
+{
+    public void Render(FrameEventArgs e, Camera camera);
 }
