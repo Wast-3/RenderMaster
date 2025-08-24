@@ -38,7 +38,7 @@ public class Model : IModel // represents a renderable 3D model
     {
         this.vertType = vertType;
         this.modelPath = modelPath;
-        this.verts = loadVerticesFromPath(modelPath);
+        this.verts = new LegacyModelLoader().loadModel(modelPath);
         this.material = material;
 
 
@@ -70,39 +70,6 @@ public class Model : IModel // represents a renderable 3D model
     }
 
 
-
-    private float[] loadVerticesFromPath(string path) // read whitespace-separated floats
-    {
-        List<float> vertices = new List<float>();
-
-
-        using (var stream = File.OpenRead(path))
-        using (var reader = new StreamReader(stream))
-        {
-
-            int totalLines = File.ReadLines(path).Count();
-            int currentLine = 0;
-            string line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                currentLine++;
-                string[] parts = line.Split(' ');
-
-
-                if (currentLine % 5 == 0)
-                {
-                }
-
-
-                for (int i = 0; i < parts.Length; i++)
-                {
-                    vertices.Add(float.Parse(parts[i]));
-                }
-            }
-        }
-
-        return vertices.ToArray();
-    }
 }
 
 
