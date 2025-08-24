@@ -46,6 +46,13 @@ public class Scene
 
 
 
+    public void Update(double deltaTime)
+    {
+        // Placeholder for simulation updates
+    }
+
+
+
 
     public void RenderScene(FrameEventArgs args)
     {

@@ -16,18 +16,15 @@ namespace RenderMaster;
 
 public interface IUserInterface
 {
+    public void Update(FrameEventArgs args, Camera camera);
 
-    public void Render(FrameEventArgs args, Camera camera);
-
+    public void Render();
 
     public void Setup();
 
-
     public void Bind();
 
-
     public void Unbind();
-
     public void Resize(ResizeEventArgs e);
 }
 
@@ -37,6 +34,7 @@ public class UI : IUserInterface
     private BasicTexturedShader shader = null!;
     private IntPtr context;
     private int fontTexture;
+    private ImDrawDataPtr drawData;
 
     public UI()
     {
@@ -114,28 +112,22 @@ public class UI : IUserInterface
     }
 
     [MeasureExecutionTime]
-    public void Render(FrameEventArgs args, Camera camera)
+    public void Update(FrameEventArgs args, Camera camera)
     {
         ImGui.SetCurrentContext(context);
         ImGuiIOPtr io = ImGui.GetIO();
         ImGui.NewFrame();
         ImGui.ShowDemoWindow();
 
-
         double frameRate = 1.0 / args.Time;
-
-
         string fpsString = frameRate.ToString("F2");
-
 
         ImGui.SetNextWindowPos(new System.Numerics.Vector2(io.DisplaySize.X - 100, 0));
         ImGui.SetNextWindowSize(new System.Numerics.Vector2(100, 20));
 
-
         ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground;
         if (ImGui.Begin("FPS Counter", windowFlags))
         {
-
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f));
             ImGui.Text(fpsString);
             ImGui.PopStyleColor();
@@ -158,7 +150,6 @@ public class UI : IUserInterface
                         var timingsList = entry.Value.Values.ToList();
                         var averageTiming = timingsList.Average();
                         var latestTiming = timingsList.LastOrDefault();
-
 
                         if (isOddRow)
                         {
@@ -184,9 +175,7 @@ public class UI : IUserInterface
                             ImGui.TreePop();
                         }
 
-
                         ImGui.PopStyleColor();
-
 
                         isOddRow = !isOddRow;
                     }
@@ -215,8 +204,13 @@ public class UI : IUserInterface
         }
 
         ImGui.Render();
-        var drawData = ImGui.GetDrawData();
+        drawData = ImGui.GetDrawData();
+    }
 
+    public void Render()
+    {
+        ImGui.SetCurrentContext(context);
+        ImGuiIOPtr io = ImGui.GetIO();
 
         Matrix4 mvp = Matrix4.CreateOrthographicOffCenter(
             0.0f,
@@ -230,14 +224,12 @@ public class UI : IUserInterface
 
         drawData.ScaleClipRects(io.DisplayFramebufferScale);
 
-
         if (drawData.Valid == false)
         {
             return;
         }
         for (int n = 0; n < drawData.CmdListsCount; n++)
         {
-
             ImDrawListPtr cmd_list = drawData.CmdLists[n];
 
             GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, cmd_list.VtxBuffer.Size * Unsafe.SizeOf<ImDrawVert>(), cmd_list.VtxBuffer.Data);
@@ -256,9 +248,7 @@ public class UI : IUserInterface
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
 
-
                     var clip = pcmd.ClipRect;
-
 
                     if ((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0)
                     {

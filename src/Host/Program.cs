@@ -19,6 +19,9 @@ public class Game : GameWindow
     Scene mainScene;
     OpenGLStateStack openGLState;
 
+    const double FixedUpdateRate = 1.0 / 60.0;
+    double updateAccumulator = 0.0;
+
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
 
@@ -75,12 +78,27 @@ public class Game : GameWindow
         openGLState.PopState();
     }
 
+    protected override void OnUpdateFrame(FrameEventArgs args)
+    {
+        base.OnUpdateFrame(args);
+
+        updateAccumulator += args.Time;
+
+        while (updateAccumulator >= FixedUpdateRate)
+        {
+            mainScene.Update(FixedUpdateRate);
+            updateAccumulator -= FixedUpdateRate;
+        }
+
+        userInterface.Update(args, this.mainScene.camera);
+    }
+
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         openGLState.PushState();
         mainScene.RenderScene(args);
         userInterface.Bind();
-        userInterface.Render(args, this.mainScene.camera);
+        userInterface.Render();
         userInterface.Unbind();
         SwapBuffers();
 
