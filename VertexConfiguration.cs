@@ -70,12 +70,11 @@ namespace RenderMaster
 
         public void Bind()
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
+            GL.BindVertexArray(VAO);
             if (indexBuffer != -1)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer);
             }
-            GL.BindVertexArray(VAO);
         }
 
 
