@@ -107,7 +107,8 @@ public class GltfSceneRenderer
     private static Material BuildMaterial(SharpGLTF.Schema2.Material? gltfMaterial, string baseDirectory)
     {
         var channel = gltfMaterial?.FindChannel("BaseColor");
-        var texPath = channel?.Texture?.PrimaryImage?.Uri;
+        // SharpGLTF images expose the original file path through Content.SourcePath
+        var texPath = channel?.Texture?.PrimaryImage?.Content.SourcePath;
         BasicImageTexture diffuseTexture;
 
         if (!string.IsNullOrEmpty(texPath))
