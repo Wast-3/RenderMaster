@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using ImGuiNET;
 using SharpGLTF.Schema2;
 
@@ -11,8 +12,8 @@ public class DebugMenu : IUIElement
 {
     public string FpsString { get; set; } = string.Empty;
 
-    // list of loaded glTFs are stored in this list
-    private readonly List<(string path, ModelRoot model)> gltfList = new();
+    // list of loaded glTFs are stored in this list along with their JSON text
+    private readonly List<(string path, ModelRoot model, string json)> gltfList = new();
     // list of all glTF files discovered on startup
     private readonly List<string> foundGltfs = new();
     private string gltfPath = string.Empty;
@@ -124,13 +125,23 @@ public class DebugMenu : IUIElement
 
                 for (int i = 0; i < gltfList.Count; i++)
                 {
-                    var (path, model) = gltfList[i];
+                    var (path, model, json) = gltfList[i];
                     if (ImGui.TreeNode($"{System.IO.Path.GetFileName(path)}##{i}"))
                     {
                         ImGui.Text($"Scenes: {model.LogicalScenes.Count()}");
                         ImGui.Text($"Nodes: {model.LogicalNodes.Count()}");
                         ImGui.Text($"Meshes: {model.LogicalMeshes.Count()}");
                         ImGui.Text($"Materials: {model.LogicalMaterials.Count()}");
+
+                        if (ImGui.TreeNode($"JSON##json{i}"))
+                        {
+                            ImGui.BeginChild($"jsonChild{i}", new System.Numerics.Vector2(0, 200), ImGuiChildFlags.ResizeY, ImGuiWindowFlags.HorizontalScrollbar);
+                            ImGui.PushTextWrapPos();
+                            ImGui.TextUnformatted(json);
+                            ImGui.PopTextWrapPos();
+                            ImGui.EndChild();
+                            ImGui.TreePop();
+                        }
 
                         if (ImGui.Button($"Free##{i}"))
                         {
@@ -175,7 +186,8 @@ public class DebugMenu : IUIElement
         try
         {
             var model = ModelRoot.Load(path);
-            gltfList.Add((path, model));
+            var json = ExtractGltfJson(path);
+            gltfList.Add((path, model, json));
             gltfLoadMessage =
                 $"Loaded {Path.GetFileName(path)} (Scenes: {model.LogicalScenes.Count()}, Nodes: {model.LogicalNodes.Count()}, Meshes: {model.LogicalMeshes.Count()}, Materials: {model.LogicalMaterials.Count()})";
             gltfLoadMessageColor = new System.Numerics.Vector4(0, 1, 0, 1);
@@ -185,5 +197,21 @@ public class DebugMenu : IUIElement
             gltfLoadMessage = $"Failed: {ex.Message}";
             gltfLoadMessageColor = new System.Numerics.Vector4(1, 0, 0, 1);
         }
+    }
+
+    private static string ExtractGltfJson(string path)
+    {
+        if (path.EndsWith(".glb", StringComparison.OrdinalIgnoreCase))
+        {
+            using var fs = File.OpenRead(path);
+            using var br = new BinaryReader(fs);
+            fs.Position = 12; // skip header
+            var chunkLength = br.ReadInt32();
+            var chunkType = br.ReadUInt32(); // JSON chunk
+            var jsonBytes = br.ReadBytes(chunkLength);
+            return Encoding.UTF8.GetString(jsonBytes);
+        }
+
+        return File.ReadAllText(path);
     }
 }
