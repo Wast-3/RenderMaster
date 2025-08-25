@@ -37,9 +37,11 @@ public class GltfSceneRenderer
         {
             if (node.Mesh == null) continue;
 
-            var translation = node.Translation;
-            var rotation = node.Rotation;
-            var scale = node.Scale;
+            // SharpGLTF nodes expose transformation through matrices. Decompose the
+            // world matrix so we can extract translation, rotation and scale values
+            // for use with our engine's model representation.
+            var world = node.WorldMatrix;
+            Matrix4x4.Decompose(world, out var scale, out var rotation, out var translation);
 
             foreach (var prim in node.Mesh.Primitives)
             {
@@ -49,9 +51,9 @@ public class GltfSceneRenderer
                 // create model and override the vertex data with the primitive specific vertices
                 var model = new Model(VertType.VertColorNormal, ModelShaderType.BasicTextured, assetPath, material)
                 {
-                    Position = translation ?? Vector3.Zero,
-                    Rotation = rotation.HasValue ? QuaternionToEuler(rotation.Value) : Vector3.Zero,
-                    Scale = scale ?? Vector3.One,
+                    Position = translation,
+                    Rotation = QuaternionToEuler(rotation),
+                    Scale = scale,
                     verts = verts,
                     vertexConfiguration = new VertColorNormalUVConfiguration(verts)
                 };
