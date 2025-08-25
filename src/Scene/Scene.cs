@@ -54,6 +54,11 @@ public class Scene
 
     public void LoadSceneFromGltf(string assetPath)
     {
-        // Placeholder for loading GLTF scene
+        var loader = new GltfSceneRenderer();
+        loader.Load(assetPath);
+        foreach (var model in loader.Models)
+        {
+            AddModel(model);
+        }
     }
 }
