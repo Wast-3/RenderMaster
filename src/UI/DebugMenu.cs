@@ -104,10 +104,26 @@ public class DebugMenu : IUIElement
                     for (int i = 0; i < foundGltfs.Count; i++)
                     {
                         var path = foundGltfs[i];
-                        if (ImGui.TreeNode($"{Path.GetFileName(path)}##found{i}"))
+                        bool openFound = ImGui.TreeNode($"{Path.GetFileName(path)}##found{i}");
+                        ImGui.SameLine();
+                        if (ImGui.SmallButton($"Copy Name##foundName{i}"))
+                        {
+                            ImGui.SetClipboardText(Path.GetFileName(path));
+                        }
+                        if (openFound)
                         {
                             ImGui.Text($"Filename: {Path.GetFileName(path)}");
+                            ImGui.SameLine();
+                            if (ImGui.SmallButton($"Copy##foundNameInner{i}"))
+                            {
+                                ImGui.SetClipboardText(Path.GetFileName(path));
+                            }
                             ImGui.Text($"Full path: {path}");
+                            ImGui.SameLine();
+                            if (ImGui.SmallButton($"Copy##foundPath{i}"))
+                            {
+                                ImGui.SetClipboardText(path);
+                            }
                             if (ImGui.Button($"Load##foundBtn{i}"))
                             {
                                 LoadGltf(path);
@@ -126,14 +142,39 @@ public class DebugMenu : IUIElement
                 for (int i = 0; i < gltfList.Count; i++)
                 {
                     var (path, model, json) = gltfList[i];
-                    if (ImGui.TreeNode($"{System.IO.Path.GetFileName(path)}##{i}"))
+                    bool open = ImGui.TreeNode($"{System.IO.Path.GetFileName(path)}##{i}");
+                    ImGui.SameLine();
+                    if (ImGui.SmallButton($"Copy##loadedName{i}"))
                     {
+                        ImGui.SetClipboardText(Path.GetFileName(path));
+                    }
+                    if (open)
+                    {
+                        ImGui.Text($"Model name: {Path.GetFileName(path)}");
+                        ImGui.SameLine();
+                        if (ImGui.SmallButton($"Copy##modelName{i}"))
+                        {
+                            ImGui.SetClipboardText(Path.GetFileName(path));
+                        }
+                        ImGui.Text($"Full path: {path}");
+                        ImGui.SameLine();
+                        if (ImGui.SmallButton($"Copy##loadedPath{i}"))
+                        {
+                            ImGui.SetClipboardText(path);
+                        }
+
                         ImGui.Text($"Scenes: {model.LogicalScenes.Count()}");
                         ImGui.Text($"Nodes: {model.LogicalNodes.Count()}");
                         ImGui.Text($"Meshes: {model.LogicalMeshes.Count()}");
                         ImGui.Text($"Materials: {model.LogicalMaterials.Count()}");
 
-                        if (ImGui.TreeNode($"JSON##json{i}"))
+                        bool jsonOpen = ImGui.TreeNode($"JSON##json{i}");
+                        ImGui.SameLine();
+                        if (ImGui.SmallButton($"Copy##jsonCopy{i}"))
+                        {
+                            ImGui.SetClipboardText(json);
+                        }
+                        if (jsonOpen)
                         {
                             ImGui.BeginChild($"jsonChild{i}", new System.Numerics.Vector2(0, 200), ImGuiChildFlags.ResizeY, ImGuiWindowFlags.HorizontalScrollbar);
                             ImGui.PushTextWrapPos();
