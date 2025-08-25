@@ -15,6 +15,7 @@ public class Model : IModel // represents a renderable 3D model
     public VertexConfiguration vertexConfiguration;
     public string modelPath;
     string? imagePath;
+    public string? modelName;
 
     public Material material;
 

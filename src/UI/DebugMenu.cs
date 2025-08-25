@@ -15,7 +15,7 @@ public class DebugMenu : IUIElement
     // list of loaded glTFs are stored in this list along with their JSON text
     private readonly List<(string path, ModelRoot model, string json)> gltfList = new();
     // list of all glTF files discovered on startup
-    private readonly List<string> foundGltfs = new();
+    private readonly List<string> foundGltfPaths = new();
     private string gltfPath = string.Empty;
     private string gltfLoadMessage = string.Empty;
     private System.Numerics.Vector4 gltfLoadMessageColor = new(1, 1, 1, 1);
@@ -101,9 +101,9 @@ public class DebugMenu : IUIElement
 
                 if (ImGui.TreeNode("Discovered glTFs"))
                 {
-                    for (int i = 0; i < foundGltfs.Count; i++)
+                    for (int i = 0; i < foundGltfPaths.Count; i++)
                     {
-                        var path = foundGltfs[i];
+                        var path = foundGltfPaths[i];
                         bool openFound = ImGui.TreeNode($"{Path.GetFileName(path)}##found{i}");
                         ImGui.SameLine();
                         if (ImGui.SmallButton($"Copy Name##foundName{i}"))
@@ -184,6 +184,89 @@ public class DebugMenu : IUIElement
                             ImGui.TreePop();
                         }
 
+                        bool nodeGraphOpen = ImGui.TreeNode($"Node Graph##nodeGraph{i}");
+
+                        if (nodeGraphOpen)
+                        {
+                            //assume we only have one scene for now
+                            var scene = model.LogicalScenes.FirstOrDefault();
+                            if (scene != null) 
+                            {
+                                ImGui.Text($"Scene: {scene.Name}");
+                                ImGui.SameLine();
+                                if (ImGui.SmallButton($"Copy##sceneName{i}"))
+                                {
+                                    ImGui.SetClipboardText(scene.Name);
+                                }
+                                foreach (var node in scene.VisualChildren)
+                                {
+                                    ImGui.Text($"Node: {node.Name}");
+                                    ImGui.SameLine();
+                                    if (ImGui.SmallButton($"Copy##nodeName{i}_{node.Name}"))
+                                    {
+                                        ImGui.SetClipboardText(node.Name);
+                                    }
+                                }  
+                            } 
+
+                            ImGui.Separator();
+
+                            var textures = model.LogicalTextures;
+                            if (textures.Any())
+                            {
+                                ImGui.Text($"Textures: {textures.Count()}");
+                                foreach (var texture in textures)
+                                {
+                                    ImGui.Text($"Texture: {texture.Name}");
+                                    ImGui.SameLine();
+                                    if (ImGui.SmallButton($"Copy##textureName{i}_{texture.Name}"))
+                                    {
+                                        ImGui.SetClipboardText(texture.Name);
+                                    }
+                                }
+                            }
+
+                            ImGui.Separator();
+
+                            var materials = model.LogicalMaterials;
+
+                            if (materials.Any()) {
+                                ImGui.Text($"Materials: {materials.Count()}");
+                                foreach (var material in materials)
+                                {
+                                    ImGui.Text($"Material: {material.Name}");
+                                    ImGui.SameLine();
+                                    if (ImGui.SmallButton($"Copy##materialName{i}_{material.Name}"))
+                                    {
+                                        ImGui.SetClipboardText(material.Name);
+                                    }
+                                    ImGui.Text($"Base Color: {material.FindChannel("BaseColor")?.Color}");
+                                }
+                            }
+
+                            var buffers = model.LogicalBuffers;
+                            if (buffers.Any()) {
+                                ImGui.Separator();
+                                ImGui.Text($"Buffers: {buffers.Count()}");
+                                foreach (var buffer in buffers)
+                                {
+                                    ImGui.Text($"Buffer: {buffer.Name}");
+                                    ImGui.SameLine();
+                                    if (ImGui.SmallButton($"Copy##bufferName{i}_{buffer.Name}"))
+                                    {
+                                        ImGui.SetClipboardText(buffer.Name);
+                                    }
+                                    ImGui.Text($"Size: {buffer.Content.Length} bytes");
+                                }
+                            }
+
+                            ImGui.TreePop();
+                        }
+
+                        ImGui.Separator();
+
+                        
+
                         if (ImGui.Button($"Free##{i}"))
                         {
                             gltfList.RemoveAt(i);
@@ -218,7 +301,7 @@ public class DebugMenu : IUIElement
 
         foreach (var file in files)
         {
-            foundGltfs.Add(file);
+            foundGltfPaths.Add(file);
         }
     }
 
