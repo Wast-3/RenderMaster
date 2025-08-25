@@ -154,13 +154,19 @@ public class DebugMenu : IUIElement
     private void findGltfs()
     {
         var modelDir = EngineConfig.ModelDirectory;
-        if (Directory.Exists(modelDir))
+        if (!Directory.Exists(modelDir))
         {
-            var files = Directory.EnumerateFiles(modelDir, "*.gltf", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                foundGltfs.Add(file);
-            }
+            return;
+        }
+
+        var files = Directory
+            .EnumerateFiles(modelDir, "*", SearchOption.AllDirectories)
+            .Where(f => f.EndsWith(".gltf", StringComparison.OrdinalIgnoreCase) ||
+                        f.EndsWith(".glb", StringComparison.OrdinalIgnoreCase));
+
+        foreach (var file in files)
+        {
+            foundGltfs.Add(file);
         }
     }
 
