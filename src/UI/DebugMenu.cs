@@ -12,10 +12,17 @@ public class DebugMenu : IUIElement
     public string FpsString { get; set; } = string.Empty;
 
     // list of loaded glTFs are stored in this list
-    private readonly List<(string path, ModelRoot model)> gltfs = new();
+    private readonly List<(string path, ModelRoot model)> gltfList = new();
+    // list of all glTF files discovered on startup
+    private readonly List<string> foundGltfs = new();
     private string gltfPath = string.Empty;
     private string gltfLoadMessage = string.Empty;
     private System.Numerics.Vector4 gltfLoadMessageColor = new(1, 1, 1, 1);
+
+    public DebugMenu()
+    {
+        findGltfs();
+    }
 
     public void AfterBegin()
     {
@@ -88,20 +95,26 @@ public class DebugMenu : IUIElement
                 ImGui.SameLine();
                 if (ImGui.Button("Load") && File.Exists(gltfPath))
                 {
-                    try
-                    {
-                        var model = ModelRoot.Load(gltfPath);
-                        gltfs.Add((gltfPath, model));
+                    LoadGltf(gltfPath);
+                }
 
-                        gltfLoadMessage =
-                            $"Loaded {Path.GetFileName(gltfPath)} (Scenes: {model.LogicalScenes.Count()}, Nodes: {model.LogicalNodes.Count()}, Meshes: {model.LogicalMeshes.Count()}, Materials: {model.LogicalMaterials.Count()})";
-                        gltfLoadMessageColor = new System.Numerics.Vector4(0, 1, 0, 1);
-                    }
-                    catch (Exception ex)
+                if (ImGui.TreeNode("Discovered glTFs"))
+                {
+                    for (int i = 0; i < foundGltfs.Count; i++)
                     {
-                        gltfLoadMessage = $"Failed: {ex.Message}";
-                        gltfLoadMessageColor = new System.Numerics.Vector4(1, 0, 0, 1);
+                        var path = foundGltfs[i];
+                        if (ImGui.TreeNode($"{Path.GetFileName(path)}##found{i}"))
+                        {
+                            ImGui.Text($"Filename: {Path.GetFileName(path)}");
+                            ImGui.Text($"Full path: {path}");
+                            if (ImGui.Button($"Load##foundBtn{i}"))
+                            {
+                                LoadGltf(path);
+                            }
+                            ImGui.TreePop();
+                        }
                     }
+                    ImGui.TreePop();
                 }
 
                 if (!string.IsNullOrEmpty(gltfLoadMessage))
@@ -109,9 +122,9 @@ public class DebugMenu : IUIElement
                     ImGui.TextColored(gltfLoadMessageColor, gltfLoadMessage);
                 }
 
-                for (int i = 0; i < gltfs.Count; i++)
+                for (int i = 0; i < gltfList.Count; i++)
                 {
-                    var (path, model) = gltfs[i];
+                    var (path, model) = gltfList[i];
                     if (ImGui.TreeNode($"{System.IO.Path.GetFileName(path)}##{i}"))
                     {
                         ImGui.Text($"Scenes: {model.LogicalScenes.Count()}");
@@ -121,7 +134,7 @@ public class DebugMenu : IUIElement
 
                         if (ImGui.Button($"Free##{i}"))
                         {
-                            gltfs.RemoveAt(i);
+                            gltfList.RemoveAt(i);
                             i--;
                             ImGui.TreePop();
                             continue;
@@ -135,6 +148,36 @@ public class DebugMenu : IUIElement
             }
 
             ImGui.EndTabBar();
+        }
+    }
+
+    private void findGltfs()
+    {
+        var modelDir = EngineConfig.ModelDirectory;
+        if (Directory.Exists(modelDir))
+        {
+            var files = Directory.EnumerateFiles(modelDir, "*.gltf", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                foundGltfs.Add(file);
+            }
+        }
+    }
+
+    private void LoadGltf(string path)
+    {
+        try
+        {
+            var model = ModelRoot.Load(path);
+            gltfList.Add((path, model));
+            gltfLoadMessage =
+                $"Loaded {Path.GetFileName(path)} (Scenes: {model.LogicalScenes.Count()}, Nodes: {model.LogicalNodes.Count()}, Meshes: {model.LogicalMeshes.Count()}, Materials: {model.LogicalMaterials.Count()})";
+            gltfLoadMessageColor = new System.Numerics.Vector4(0, 1, 0, 1);
+        }
+        catch (Exception ex)
+        {
+            gltfLoadMessage = $"Failed: {ex.Message}";
+            gltfLoadMessageColor = new System.Numerics.Vector4(1, 0, 0, 1);
         }
     }
 }
