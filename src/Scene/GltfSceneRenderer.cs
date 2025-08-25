@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using SharpGLTF.Schema2;
+using OpenTKVector3 = OpenTK.Mathematics.Vector3;
 
 namespace RenderMaster;
 
@@ -51,9 +52,9 @@ public class GltfSceneRenderer
                 // create model and override the vertex data with the primitive specific vertices
                 var model = new Model(VertType.VertColorNormal, ModelShaderType.BasicTextured, assetPath, material)
                 {
-                    Position = translation,
-                    Rotation = QuaternionToEuler(rotation),
-                    Scale = scale,
+                    Position = ToOpenTK(translation),
+                    Rotation = ToOpenTK(QuaternionToEuler(rotation)),
+                    Scale = ToOpenTK(scale),
                     verts = verts,
                     vertexConfiguration = new VertColorNormalUVConfiguration(verts)
                 };
@@ -123,6 +124,11 @@ public class GltfSceneRenderer
         // Use the same texture for specular if none is provided
         var specularTexture = diffuseTexture;
         return new Material(diffuseTexture, specularTexture);
+    }
+
+    private static OpenTKVector3 ToOpenTK(Vector3 v)
+    {
+        return new OpenTKVector3(v.X, v.Y, v.Z);
     }
 
     private static Vector3 QuaternionToEuler(Quaternion q)
