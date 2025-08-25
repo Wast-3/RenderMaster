@@ -212,6 +212,9 @@ public class UI : IUserInterface
         io.BackendFlags |= ImGuiBackendFlags.RendererHasVtxOffset;
         io.Fonts.Flags = ImFontAtlasFlags.None;
         io.ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+        // Slow down key repeat to make text input less aggressive
+        io.KeyRepeatDelay = 0.4f;
+        io.KeyRepeatRate = 0.1f;
 
 
         ImGui.StyleColorsDark();

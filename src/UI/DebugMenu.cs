@@ -14,6 +14,8 @@ public class DebugMenu : IUIElement
     // list of loaded glTFs are stored in this list
     private readonly List<(string path, ModelRoot model)> gltfs = new();
     private string gltfPath = string.Empty;
+    private string gltfLoadMessage = string.Empty;
+    private System.Numerics.Vector4 gltfLoadMessageColor = new(1, 1, 1, 1);
 
     public void AfterBegin()
     {
@@ -90,11 +92,21 @@ public class DebugMenu : IUIElement
                     {
                         var model = ModelRoot.Load(gltfPath);
                         gltfs.Add((gltfPath, model));
+
+                        gltfLoadMessage =
+                            $"Loaded {Path.GetFileName(gltfPath)} (Scenes: {model.LogicalScenes.Count()}, Nodes: {model.LogicalNodes.Count()}, Meshes: {model.LogicalMeshes.Count()}, Materials: {model.LogicalMaterials.Count()})";
+                        gltfLoadMessageColor = new System.Numerics.Vector4(0, 1, 0, 1);
                     }
                     catch (Exception ex)
                     {
-                        ImGui.TextColored(new System.Numerics.Vector4(1, 0, 0, 1), $"Failed: {ex.Message}");
+                        gltfLoadMessage = $"Failed: {ex.Message}";
+                        gltfLoadMessageColor = new System.Numerics.Vector4(1, 0, 0, 1);
                     }
+                }
+
+                if (!string.IsNullOrEmpty(gltfLoadMessage))
+                {
+                    ImGui.TextColored(gltfLoadMessageColor, gltfLoadMessage);
                 }
 
                 for (int i = 0; i < gltfs.Count; i++)
