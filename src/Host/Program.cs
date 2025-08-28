@@ -7,6 +7,8 @@ using System;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using RenderMaster.Engine;
+using RenderMaster.src.Graphics.Physics;
+using BepuPhysics;
 
 namespace RenderMaster;
 
@@ -21,6 +23,9 @@ public class Game : GameWindow
 
     const double FixedUpdateRate = 1.0 / 60.0;
     double updateAccumulator = 0.0;
+
+    PhysicsEngine physicsEngine = new PhysicsEngine();
+    List<PhysicsBinding> physicsBindings = new List<PhysicsBinding>();
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -55,6 +60,39 @@ public class Game : GameWindow
 
         mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0); // move lamp up
 
+        //generate a grid of physics cubes
+        int gridSize = 5;
+        float spacing = 2.0f;
+
+        physicsEngine.Setup();
+
+        for (int i = 0; i < gridSize; i++)
+        {
+            for (int j = 0; j < gridSize; j++)
+            {
+                Material cubeMaterial = new Material(
+                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")),
+                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png"))
+                );
+                Model cube = new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
+                    Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), cubeMaterial, physicsPreset: 1);
+                cube.Position = new Vector3(
+                    (i - gridSize / 2) * spacing,
+                    5.0f + (j * spacing),
+                    0
+                );
+                
+                var reference = physicsEngine.simulation.Shapes.Add(new BepuPhysics.Collidables.Box(1, 1, 1));
+
+                var bodyDescription = BodyDescription.CreateDynamic(new BepuPhysics.RigidPose(new System.Numerics.Vector3(cube.Position.X, cube.Position.Y, cube.Position.Z)), new BepuPhysics.BodyInertia { InverseMass = 1f }, reference, 0.01f);
+                var bodyHandle = physicsEngine.simulation.Bodies.Add(bodyDescription);
+
+                mainScene.AddModel(cube);
+
+                physicsBindings.Add(new PhysicsBinding(bodyHandle, cube));
+            }
+        }
+
         openGLState = new OpenGLStateStack();
     }
 
@@ -72,7 +110,6 @@ public class Game : GameWindow
         Logger.Log("RENDERMASTER START: ", LogLevel.Info);
 
         mainScene.RenderSceneSetup();
-        mainScene.sceneModels[0].Position = new Vector3(0, 0, 0);
         openGLState.PushState();
         userInterface = new UI();
         openGLState.PopState();
@@ -81,6 +118,9 @@ public class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+
+        physicsEngine.simulation.Timestep((float)FixedUpdateRate);
+        physicsEngine.syncModelsToPhysics(physicsBindings);
 
         updateAccumulator += args.Time;
 

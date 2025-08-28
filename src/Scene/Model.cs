@@ -2,6 +2,7 @@
 using OpenTK.Mathematics;
 using static System.Formats.Asn1.AsnWriter;
 using OpenTK.Windowing.Common;
+using BepuPhysics;
 
 namespace RenderMaster;
 
@@ -24,17 +25,13 @@ public class Model : IModel // represents a renderable 3D model
     public Vector3 Scale { get; set; } = new Vector3(1f, 1f, 1f);
     IRenderer renderer;
 
-
-
     [MeasureExecutionTime]
     public void Render(FrameEventArgs args, Camera camera)
     {
         renderer.Render(args, camera); // delegate rendering to configured renderer
     }
 
-
-
-    public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, Material material)
+    public Model(VertType vertType, ModelShaderType modelShaderType, string modelPath, Material material, int? physicsPreset = null)
     {
         this.vertType = vertType;
         this.modelPath = modelPath;
