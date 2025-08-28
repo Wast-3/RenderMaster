@@ -15,7 +15,6 @@ public class Model : IModel // represents a renderable 3D model
     public VertexConfiguration vertexConfiguration;
     public string modelPath;
     string? imagePath;
-    public string? modelName;
 
     public Material material;
 
@@ -52,21 +51,15 @@ public class Model : IModel // represents a renderable 3D model
         this.verts = loader.loadModel(modelPath);
         this.material = material;
 
-
-
         this.vertexConfiguration = new VertColorNormalUVConfiguration(this.verts);
 
         this.modelShaderType = modelShaderType;
-
-
 
         this.renderer = new BasicLightingRenderer(
             this,
             new BasicTexturedShader(Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.vert"), Path.Combine(EngineConfig.ShaderDirectory, "material_based_lighting.frag"))
             );
     }
-
-
 
     [MeasureExecutionTime]
     public Matrix4 GetModelMatrix()
@@ -82,7 +75,6 @@ public class Model : IModel // represents a renderable 3D model
 
 
 }
-
 
 public interface IModel
 {
