@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using OpenTK.Graphics.OpenGL4;
-using RenderMaster.Engine;
 
 namespace RenderMaster;
 
@@ -40,10 +39,6 @@ public class TextureCache
         if (availableUnits.Count > 0)
         {
             texture.BoundUnit = availableUnits.Pop();
-        }
-        else
-        {
-            Logger.Log("No available texture units", LogLevel.Error);
         }
     }
 

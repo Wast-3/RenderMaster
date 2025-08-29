@@ -1,6 +1,5 @@
 using System;
 using OpenTK.Graphics.OpenGL4;
-using RenderMaster.Engine;
 
 namespace RenderMaster;
 
@@ -37,7 +36,6 @@ public class BasicImageTexture : ATexture, IDisposable
 
         if (BoundUnit.HasValue)
         {
-            Logger.Log("Binding texture " + TextureId + " to texture unit " + BoundUnit + " Texture path: " + TexturePath, LogLevel.Debug);
             GL.BindTextureUnit(BoundUnit.Value, TextureId);
         }
     }
@@ -46,7 +44,6 @@ public class BasicImageTexture : ATexture, IDisposable
     {
         if (BoundUnit.HasValue)
         {
-            Logger.Log("Unbinding texture " + TextureId + " from texture unit " + BoundUnit + " Texture path: " + TexturePath, LogLevel.Debug);
             GL.BindTextureUnit(BoundUnit.Value, 0);
             TextureCache.Instance.ReleaseUnit(this);
         }
