@@ -46,53 +46,47 @@ public class Camera
 
 
 
-    public void ProcessKeyEvents(KeyboardKeyEventArgs e)
+    public void ProcessKeyboard(KeyboardState input, float deltaTime)
     {
-        float moveSpeed = 0.2f;
+        float moveSpeed = 5f * deltaTime;
 
-
-        if (e.Shift)
+        if (input.IsKeyDown(Keys.LeftShift) || input.IsKeyDown(Keys.RightShift))
         {
             moveSpeed *= 5.0f;
         }
 
-
         Vector3 forward = LookingAt - Position;
-
 
         if (forward.Length > 0)
         {
             forward = Vector3.Normalize(forward);
 
-
             Vector3 right = Vector3.Normalize(Vector3.Cross(forward, Up));
 
-
-            if (e.Key == Keys.W)
+            if (input.IsKeyDown(Keys.W))
             {
                 Position += moveSpeed * forward;
             }
-            if (e.Key == Keys.S)
+            if (input.IsKeyDown(Keys.S))
             {
                 Position -= moveSpeed * forward;
             }
-            if (e.Key == Keys.A)
+            if (input.IsKeyDown(Keys.A))
             {
                 Position -= moveSpeed * right;
             }
-            if (e.Key == Keys.D)
+            if (input.IsKeyDown(Keys.D))
             {
                 Position += moveSpeed * right;
             }
-            if (e.Key == Keys.Space)
+            if (input.IsKeyDown(Keys.Space))
             {
                 Position += moveSpeed * Up;
             }
-            if (e.Key == Keys.LeftControl || e.Key == Keys.RightControl)
+            if (input.IsKeyDown(Keys.LeftControl) || input.IsKeyDown(Keys.RightControl))
             {
                 Position -= moveSpeed * Up;
             }
-
 
             UpdateViewMatrix();
         }
