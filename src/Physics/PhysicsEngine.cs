@@ -58,17 +58,18 @@ namespace RenderMaster.src.Physics
             foreach (var binding in bindings)
             {
                 var bodyhandle = simulation.Bodies.GetBodyReference(binding.bodyHandle);
-                //sync model position/rotation to physics body. keep in mind bepuphysics uses a right-handed coordinate system with Y up, while opentk uses a right-handed coordinate system with Z up.
+                // Sync model transforms to physics bodies. Both BepuPhysics and OpenTK use a right-handed coordinate system with Y up.
                 binding.model.Position = new OpenTK.Mathematics.Vector3(bodyhandle.Pose.Position.X, bodyhandle.Pose.Position.Y, bodyhandle.Pose.Position.Z);
 
                 var q = bodyhandle.Pose.Orientation;
-                binding.model.Rotation = ToEulerXYZ((OpenTK.Mathematics.Quaternion)q);
+                var otkQuat = new OpenTK.Mathematics.Quaternion(q.X, q.Y, q.Z, q.W);
+                binding.model.Rotation = ToEulerXYZ(otkQuat);
             }
         }
 
         static OpenTK.Mathematics.Vector3 ToEulerXYZ(OpenTK.Mathematics.Quaternion q)
         {
-            // standard quaternion->euler (XYZ) conversion
+            // Standard quaternion->euler (XYZ) conversion returning (roll, pitch, yaw)
             float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
             float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
             float roll = MathF.Atan2(sinr_cosp, cosr_cosp);
@@ -80,7 +81,7 @@ namespace RenderMaster.src.Physics
             float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
             float yaw = MathF.Atan2(siny_cosp, cosy_cosp);
 
-            return new OpenTK.Mathematics.Vector3(roll, yaw, pitch);
+            return new OpenTK.Mathematics.Vector3(roll, pitch, yaw);
         }
 
 
