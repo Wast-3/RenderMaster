@@ -85,9 +85,15 @@ public class Game : GameWindow
                     0 + randomFloat
                 );
                 
-                var reference = physicsEngine.simulation.Shapes.Add(new BepuPhysics.Collidables.Sphere(2));
+                var shape = new BepuPhysics.Collidables.Sphere(2);
+                var inertia = shape.ComputeInertia(1f);
+                var reference = physicsEngine.simulation.Shapes.Add(shape);
 
-                var bodyDescription = BodyDescription.CreateDynamic(new BepuPhysics.RigidPose(new System.Numerics.Vector3(cube.Position.X, cube.Position.Y, cube.Position.Z)), new BepuPhysics.BodyInertia { InverseMass = 1f }, reference, 0.01f);
+                var bodyDescription = BodyDescription.CreateDynamic(
+                    new BepuPhysics.RigidPose(new System.Numerics.Vector3(cube.Position.X, cube.Position.Y, cube.Position.Z)),
+                    inertia,
+                    reference,
+                    0.01f);
                 var bodyHandle = physicsEngine.simulation.Bodies.Add(bodyDescription);
 
                 mainScene.AddModel(cube);
