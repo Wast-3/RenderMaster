@@ -61,7 +61,7 @@ public class Game : GameWindow
         mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0); // move lamp up
 
         //generate a grid of physics cubes
-        int gridSize = 5;
+        int gridSize = 10;
         float spacing = 2.0f;
 
         physicsEngine.Setup();
@@ -75,14 +75,17 @@ public class Game : GameWindow
                     TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png"))
                 );
                 Model cube = new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
-                    Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), cubeMaterial, physicsPreset: 1);
+                    Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), cubeMaterial, physicsPreset: 1);
+
+                var randomFloat = new Random().Next(0, 100) / 100.0f;
+
                 cube.Position = new Vector3(
-                    (i - gridSize / 2) * spacing,
+                    (i - gridSize / 2) * spacing + randomFloat,
                     5.0f + (j * spacing),
-                    0
+                    0 + randomFloat
                 );
                 
-                var reference = physicsEngine.simulation.Shapes.Add(new BepuPhysics.Collidables.Box(1, 1, 1));
+                var reference = physicsEngine.simulation.Shapes.Add(new BepuPhysics.Collidables.Sphere(2));
 
                 var bodyDescription = BodyDescription.CreateDynamic(new BepuPhysics.RigidPose(new System.Numerics.Vector3(cube.Position.X, cube.Position.Y, cube.Position.Z)), new BepuPhysics.BodyInertia { InverseMass = 1f }, reference, 0.01f);
                 var bodyHandle = physicsEngine.simulation.Bodies.Add(bodyDescription);
@@ -119,7 +122,6 @@ public class Game : GameWindow
     {
         base.OnUpdateFrame(args);
 
-        physicsEngine.simulation.Timestep((float)FixedUpdateRate);
         physicsEngine.syncModelsToPhysics(physicsBindings);
 
         updateAccumulator += args.Time;
@@ -127,6 +129,7 @@ public class Game : GameWindow
         while (updateAccumulator >= FixedUpdateRate)
         {
             mainScene.Update(FixedUpdateRate);
+            physicsEngine.simulation.Timestep((float)FixedUpdateRate);
             updateAccumulator -= FixedUpdateRate;
         }
 

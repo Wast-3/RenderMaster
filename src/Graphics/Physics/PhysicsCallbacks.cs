@@ -32,7 +32,7 @@ namespace RenderMaster.src.Graphics.Physics
                 where TManifold : unmanaged, IContactManifold<TManifold>
             {
                 pairMaterial = new PairMaterialProperties(
-                    frictionCoefficient: 0.8f,
+                    frictionCoefficient: 0.01f,
                     maximumRecoveryVelocity: 2f,
                     springSettings: new SpringSettings(30f, 1f)); // (stiffness, damping)
                 return true; // create a constraint for this manifold
