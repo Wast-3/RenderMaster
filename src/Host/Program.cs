@@ -38,8 +38,8 @@ public class Game : GameWindow
         
         this.mainScene = new Scene("main testing scene", width, height);
 
-        BasicImageTexture diffuse = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg"));
-        BasicImageTexture specular = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"));
+        BasicImageTexture diffuse = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg"), TextureUnit.Texture0);
+        BasicImageTexture specular = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"), TextureUnit.Texture1);
 
         var tableMaterial = new Material(diffuse, specular);
 

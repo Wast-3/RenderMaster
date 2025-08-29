@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 using RenderMaster.Engine;
 
 namespace RenderMaster;
@@ -8,48 +7,45 @@ public class BasicImageTexture : ATexture
 {
     public int TextureId { get; private set; }
     public TextureUnit textureUnit;
-    public String texturePath = "";
+    public string texturePath = "";
 
-
-    public BasicImageTexture(string path) : base(path)
+    public BasicImageTexture(string path, TextureUnit unit = TextureUnit.Texture0) : base(path)
     {
-        GL.GenTextures(1, out int id);
-        this.texturePath = path;
+        texturePath = path;
+        textureUnit = unit;
 
-        //I don't understand. Is it not the case that, here, I would "activate my texture object", which i could then bind to a texture unit? Or is my understanding of texture units wrong?
-        GL.ActiveTexture(id);
+        // Create texture object without binding (Direct State Access)
+        GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
 
-        GL.BindTexture(TextureTarget.Texture2D, id);
+        // Set parameters directly on the texture object
+        GL.TextureParameter(id, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+        GL.TextureParameter(id, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+        GL.TextureParameter(id, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+        GL.TextureParameter(id, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
+        // Allocate immutable storage and upload the image data
+        GL.TextureStorage2D(id, 1, SizedInternalFormat.Rgba8, textureImage.Width, textureImage.Height);
+        GL.TextureSubImage2D(id, 0, 0, 0, textureImage.Width, textureImage.Height,
+            PixelFormat.Rgba, PixelType.UnsignedByte, textureImage.Data);
 
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, textureImage.Width, textureImage.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, textureImage.Data);
-
-        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-        GL.BindTexture(TextureTarget.Texture2D, 0);
+        // Generate mipmaps for the texture
+        GL.GenerateTextureMipmap(id);
 
         TextureId = id;
     }
 
     public override void Bind()
     {
-        Logger.Log("Binding texture " + TextureId + " to texture unit " + textureUnit + " Texture path: " + texturePath, LogLevel.Debug);
-        GL.ActiveTexture(textureUnit);
-        GL.BindTexture(TextureTarget.Texture2D, TextureId);
-        //At time of binding, fetch an available texture unit from the texture unit cache
-
+        Logger.Log($"Binding texture {TextureId} to texture unit {textureUnit} Texture path: {texturePath}", LogLevel.Debug);
+        int unit = (int)textureUnit - (int)TextureUnit.Texture0;
+        GL.BindTextureUnit(unit, TextureId);
     }
-
 
     public override void Unbind()
     {
-        Logger.Log("Unbinding texture " + TextureId + " from texture unit " + textureUnit + " Texture path: " + texturePath, LogLevel.Debug);
-        GL.BindTexture(TextureTarget.Texture2D, 0);
+        Logger.Log($"Unbinding texture {TextureId} from texture unit {textureUnit} Texture path: {texturePath}", LogLevel.Debug);
+        int unit = (int)textureUnit - (int)TextureUnit.Texture0;
+        GL.BindTextureUnit(unit, 0);
     }
 }
+
