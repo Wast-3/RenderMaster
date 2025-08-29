@@ -107,22 +107,18 @@ public class TextureCache
 
     public BasicImageTexture GetTexture(string path)
     {
-        Logger.Log("Cache hit: request for texture path: " + path, LogLevel.Debug);
         if (!textureCache.ContainsKey(path))
         {
 
-            Logger.Log("Texture not in cache, loading new texture", LogLevel.Debug);
             var textureUnit = GetTextureUnitForInt(currentTextureUnit);
             var texture = new BasicImageTexture(path, textureUnit);
             textureCache[path] = texture;
-            Logger.Log("Used texture unit: " + textureUnit + " In int: " + currentTextureUnit, LogLevel.Debug);
             this.currentTextureUnit += 1;
 
             return texture;
 
         }
 
-        Logger.Log("Found texture in cache, returning cached texture", LogLevel.Info);
         return textureCache[path];
     }
 
