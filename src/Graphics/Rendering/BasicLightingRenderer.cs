@@ -33,9 +33,7 @@ public class BasicLightingRenderer : IRenderer
         shader.Bind();
         vertexConfiguration.Bind();
 
-
         Matrix4 modelMatrix = model.GetModelMatrix();
-
 
         timeSoFar += e.Time;
 
@@ -43,13 +41,7 @@ public class BasicLightingRenderer : IRenderer
             0.3f, 0.3f, 0.3f
         );
 
-
         var viewPos = camera.Position;
-
-
-
-
-
 
         camera.UpdateViewMatrix();
 
@@ -69,11 +61,6 @@ public class BasicLightingRenderer : IRenderer
         shader.SetSampler2D("material.diffuse", diffuseMapTexture.textureUnit);
         shader.SetSampler2D("material.specular", specularMapTexture.textureUnit);
 
-
-        Logger.Log("Inside Renderer: Current texture unit: " + diffuseMapTexture.textureUnit + " Current Model: " + model.modelPath, LogLevel.Info);
-        Logger.Log("Current Model: " + model.modelPath, LogLevel.Info);
-
-
         shader.SetUniformVec3("material.specularTint", new Vector3(0.5f, 0.5f, 0.5f));
         shader.SetUniformFloat("material.shininess", 32.0f);
 
@@ -83,11 +70,11 @@ public class BasicLightingRenderer : IRenderer
         shader.SetUniformVec3("light.diffuse", lightColor);
         shader.SetUniformVec3("light.specular", new Vector3(1.0f, 1.0f, 1.0f));
 
-
         GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 11);
-
 
         vertexConfiguration.Unbind();
         shader.Unbind();
+
+        model.material.UnbindAllTextures();
     }
 }

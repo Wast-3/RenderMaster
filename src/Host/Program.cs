@@ -16,7 +16,7 @@ public class Game : GameWindow
 {
 
 
-    IUserInterface userInterface = null!; // initialized in OnLoad
+    IUserInterface userInterface = null!;
 
     Scene mainScene;
     OpenGLStateStack openGLState;
@@ -34,75 +34,21 @@ public class Game : GameWindow
         Title = title
     })
     {
+        openGLState = new OpenGLStateStack();
+        
         this.mainScene = new Scene("main testing scene", width, height);
 
-        /* mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
-           mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
-           mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\monkey.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "MonkeyTime\\Cum.png")));
-           mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\house.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "HouseThing\\House.png")));
-           mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png"))); */
+        BasicImageTexture diffuse = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg"));
+        BasicImageTexture specular = new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"));
 
-        Material tableMaterial = new Material(
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg")),
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"))
-        );
-
-        Material lampMaterial = new Material(
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.jpg")),
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp_specular.jpg"))
-        );
+        var tableMaterial = new Material(diffuse, specular);
 
         mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
             Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), tableMaterial)); // table
 
-        mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
-            Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.verttxt"), lampMaterial)); // lamp
-
-        mainScene.sceneModels[1].Position = new Vector3(0, 1.5f, 0); // move lamp up
-
-        //generate a grid of physics cubes
-        int gridSize = 10;
-        float spacing = 2.0f;
+        mainScene.sceneModels[0].Position = new Vector3(0, 1.5f, 0); // move table up
 
         physicsEngine.Setup();
-
-        for (int i = 0; i < gridSize; i++)
-        {
-            for (int j = 0; j < gridSize; j++)
-            {
-                Material cubeMaterial = new Material(
-                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")),
-                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png"))
-                );
-                Model cube = new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
-                    Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), cubeMaterial, physicsPreset: 1);
-
-                var randomFloat = new Random().Next(0, 100) / 100.0f;
-
-                cube.Position = new Vector3(
-                    (i - gridSize / 2) * spacing + randomFloat,
-                    5.0f + (j * spacing),
-                    0 + randomFloat
-                );
-                
-                var shape = new BepuPhysics.Collidables.Sphere(2);
-                var inertia = shape.ComputeInertia(1f);
-                var reference = physicsEngine.simulation.Shapes.Add(shape);
-
-                var bodyDescription = BodyDescription.CreateDynamic(
-                    new BepuPhysics.RigidPose(new System.Numerics.Vector3(cube.Position.X, cube.Position.Y, cube.Position.Z)),
-                    inertia,
-                    reference,
-                    0.01f);
-                var bodyHandle = physicsEngine.simulation.Bodies.Add(bodyDescription);
-
-                mainScene.AddModel(cube);
-
-                physicsBindings.Add(new PhysicsBinding(bodyHandle, cube));
-            }
-        }
-
-        openGLState = new OpenGLStateStack();
     }
 
 
