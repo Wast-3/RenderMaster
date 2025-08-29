@@ -139,6 +139,8 @@ public class Game : GameWindow
 
         physicsEngine.syncModelsToPhysics(physicsBindings);
 
+        mainScene.camera.ProcessKeyboard(KeyboardState, (float)args.Time);
+
         userInterface.Update(args, this.mainScene.camera);
     }
 
@@ -156,7 +158,6 @@ public class Game : GameWindow
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)
     {
-        mainScene.camera.ProcessKeyEvents(e);
         var io = ImGui.GetIO();
 
         ImGuiKey key = ImGuiKeyMapper.MapOpenTKKeyToImGuiKey(e.Key);
@@ -169,12 +170,6 @@ public class Game : GameWindow
 
 
         io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
-
-
-        if (e.Key >= Keys.D0 && e.Key <= Keys.Z)
-        {
-            io.AddInputCharacter((uint)e.Key);
-        }
     }
 
     protected override void OnKeyUp(KeyboardKeyEventArgs e)
@@ -191,6 +186,12 @@ public class Game : GameWindow
 
 
         io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
+    }
+
+    protected override void OnTextInput(TextInputEventArgs e)
+    {
+        var io = ImGui.GetIO();
+        io.AddInputCharacter(e.Unicode);
     }
 
     protected override void OnMouseMove(MouseMoveEventArgs e)
