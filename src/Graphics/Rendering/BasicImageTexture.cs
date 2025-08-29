@@ -1,59 +1,61 @@
-﻿using OpenTK.Graphics.OpenGL4;
-using OpenTK.Mathematics;
+using System;
+using OpenTK.Graphics.OpenGL4;
 using RenderMaster.Engine;
 
 namespace RenderMaster;
 
-public class BasicImageTexture : ATexture
+public class BasicImageTexture : ATexture, IDisposable
 {
     public int TextureId { get; private set; }
-    public TextureUnit textureUnit;
-    public String texturePath = "";
+    public int? BoundUnit { get; internal set; }
+    public string TexturePath { get; private set; } = string.Empty;
 
-
-    public BasicImageTexture(string path, TextureUnit unit) : base(path)
+    public BasicImageTexture(string path) : base(path)
     {
-        this.texturePath = path;
-        this.textureUnit = unit;
+        TexturePath = path;
 
-
-        GL.ActiveTexture(textureUnit);
-
-
-        GL.GenTextures(1, out int id);
-        GL.BindTexture(TextureTarget.Texture2D, id);
-
-
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, textureImage.Width, textureImage.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, textureImage.Data);
-
-
-        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-
-        GL.BindTexture(TextureTarget.Texture2D, 0);
-
-
+        GL.CreateTextures(TextureTarget.Texture2D, 1, out int id);
         TextureId = id;
-    }
 
+        GL.TextureParameter(TextureId, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+        GL.TextureParameter(TextureId, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+        GL.TextureParameter(TextureId, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+        GL.TextureParameter(TextureId, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+        GL.TextureStorage2D(TextureId, 1, SizedInternalFormat.Rgba8, textureImage.Width, textureImage.Height);
+        GL.TextureSubImage2D(TextureId, 0, 0, 0, textureImage.Width, textureImage.Height, PixelFormat.Rgba, PixelType.UnsignedByte, textureImage.Data);
+
+        GL.GenerateTextureMipmap(TextureId);
+    }
 
     public override void Bind()
     {
-        Logger.Log("Binding texture " + TextureId + " to texture unit " + textureUnit + " Texture path: " + texturePath, LogLevel.Debug);
-        GL.ActiveTexture(textureUnit);
-        GL.BindTexture(TextureTarget.Texture2D, TextureId);
-    }
+        if (!BoundUnit.HasValue)
+        {
+            TextureCache.Instance.AcquireUnit(this);
+        }
 
+        if (BoundUnit.HasValue)
+        {
+            Logger.Log("Binding texture " + TextureId + " to texture unit " + BoundUnit + " Texture path: " + TexturePath, LogLevel.Debug);
+            GL.BindTextureUnit(BoundUnit.Value, TextureId);
+        }
+    }
 
     public override void Unbind()
     {
-        Logger.Log("Unbinding texture " + TextureId + " from texture unit " + textureUnit + " Texture path: " + texturePath, LogLevel.Debug);
-        GL.BindTexture(TextureTarget.Texture2D, 0);
+        if (BoundUnit.HasValue)
+        {
+            Logger.Log("Unbinding texture " + TextureId + " from texture unit " + BoundUnit + " Texture path: " + TexturePath, LogLevel.Debug);
+            GL.BindTextureUnit(BoundUnit.Value, 0);
+            TextureCache.Instance.ReleaseUnit(this);
+        }
+    }
+
+    public void Dispose()
+    {
+        Unbind();
+        GL.DeleteTexture(TextureId);
     }
 }
+
