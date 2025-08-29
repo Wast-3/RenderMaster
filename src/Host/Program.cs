@@ -7,7 +7,7 @@ using System;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using RenderMaster.Engine;
-using RenderMaster.src.Graphics.Physics;
+using RenderMaster.src.Physics;
 using BepuPhysics;
 
 namespace RenderMaster;
@@ -122,8 +122,6 @@ public class Game : GameWindow
     {
         base.OnUpdateFrame(args);
 
-        physicsEngine.syncModelsToPhysics(physicsBindings);
-
         updateAccumulator += args.Time;
 
         while (updateAccumulator >= FixedUpdateRate)
@@ -132,6 +130,8 @@ public class Game : GameWindow
             physicsEngine.simulation.Timestep((float)FixedUpdateRate);
             updateAccumulator -= FixedUpdateRate;
         }
+
+        physicsEngine.syncModelsToPhysics(physicsBindings);
 
         userInterface.Update(args, this.mainScene.camera);
     }

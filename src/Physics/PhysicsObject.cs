@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RenderMaster.src.Graphics.Physics
+namespace RenderMaster.src.Physics
 {
     class PhysicsObject
     {

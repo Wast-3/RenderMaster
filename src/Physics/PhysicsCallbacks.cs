@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using BepuUtilities;
 using System.Numerics;
 
-namespace RenderMaster.src.Graphics.Physics
+namespace RenderMaster.src.Physics
 {
     class PhysicsCallbacks
     {
