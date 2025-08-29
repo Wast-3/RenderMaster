@@ -21,6 +21,6 @@ Package.StoreAssociation.xml
 *.bak
 *.cache
 *.swp
-*.vs
+.vs/
 Thumbs.db
 

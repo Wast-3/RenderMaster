@@ -12,11 +12,11 @@ using BepuPhysics;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Collidables;
 using BepuPhysics.Constraints;
-using static RenderMaster.src.Graphics.Physics.PhysicsCallbacks;
+using static RenderMaster.src.Physics.PhysicsCallbacks;
 using OpenTK.Windowing.Common;
 
 
-namespace RenderMaster.src.Graphics.Physics
+namespace RenderMaster.src.Physics
 {
 
     class PhysicsBinding

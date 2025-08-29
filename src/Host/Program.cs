@@ -7,7 +7,7 @@ using System;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using RenderMaster.Engine;
-using RenderMaster.src.Graphics.Physics;
+using RenderMaster.src.Physics;
 using BepuPhysics;
 
 namespace RenderMaster;
