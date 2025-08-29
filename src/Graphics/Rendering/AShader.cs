@@ -1,6 +1,5 @@
 ﻿using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using RenderMaster.Engine;
 
 namespace RenderMaster;
 
@@ -32,13 +31,7 @@ public abstract class AShader
 
         if (location != -1)
         {
-
             GL.UniformMatrix4(location, false, ref value);
-        }
-        else
-        {
-
-            Console.WriteLine($"Warning: Uniform '{name}' not found in shader.");
         }
     }
 
@@ -54,11 +47,6 @@ public abstract class AShader
         {
             GL.Uniform3(location, ref value);
         }
-        else
-        {
-
-            Console.WriteLine($"Warning: Uniform '{name}' not found in shader.");
-        }
     }
 
 
@@ -73,19 +61,12 @@ public abstract class AShader
         {
             GL.Uniform1(location, value);
         }
-        else
-        {
-
-            Console.WriteLine($"Warning: Uniform '{name}' not found in shader.");
-        }
     }
 
 
 
     public void SetSampler2D(string name, TextureUnit textureUnit)
     {
-        Logger.Log("Setting texture unit to " + textureUnit, LogLevel.Debug);
-
         int textureUnitOffset = (int)textureUnit - (int)TextureUnit.Texture0;
 
 

@@ -3,7 +3,6 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using ImGuiNET;
 using System.IO;
-using RenderMaster.Engine;
 
 namespace RenderMaster;
 
@@ -74,8 +73,6 @@ public class BasicLightingRenderer : IRenderer
         shader.SetSampler2D("material.specular", specularUnit);
 
 
-        Logger.Log("Inside Renderer: Current texture unit: " + diffuseMapTexture.BoundUnit + " Current Model: " + model.modelPath, LogLevel.Info);
-        Logger.Log("Current Model: " + model.modelPath, LogLevel.Info);
 
 
         shader.SetUniformVec3("material.specularTint", new Vector3(0.5f, 0.5f, 0.5f));
