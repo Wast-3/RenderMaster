@@ -96,8 +96,7 @@ public class Input
     private void ToggleMouseGrab()
     {
         MouseGrabbed = !MouseGrabbed;
-        window.CursorGrabbed = MouseGrabbed;
-        window.CursorVisible = !MouseGrabbed;
+        window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
     }
 }
 
