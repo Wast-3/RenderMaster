@@ -191,7 +191,7 @@ public class Game : GameWindow
     protected override void OnTextInput(TextInputEventArgs e)
     {
         var io = ImGui.GetIO();
-        io.AddInputCharacter(e.Unicode);
+        io.AddInputCharacter((uint)e.Unicode);
     }
 
     protected override void OnMouseMove(MouseMoveEventArgs e)
