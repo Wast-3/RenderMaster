@@ -197,9 +197,10 @@ public class Game : GameWindow
     protected override void OnMouseMove(MouseMoveEventArgs e)
     {
         var io = ImGui.GetIO();
-        float scaleFactor = io.DisplayFramebufferScale.Y;
+        float scaleFactorY = io.DisplayFramebufferScale.Y;
+        float scaleFactorX = io.DisplayFramebufferScale.X;
 
-        io.MousePos = new System.Numerics.Vector2(MouseState.X * scaleFactor, MouseState.Y * scaleFactor);
+        io.MousePos = new System.Numerics.Vector2(MouseState.X * scaleFactorX, MouseState.Y * scaleFactorY);
     }
 
     protected override void OnMouseDown(MouseButtonEventArgs e)
