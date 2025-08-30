@@ -14,7 +14,7 @@ namespace RenderMaster;
 
 public interface IUserInterface
 {
-    public void Update(FrameEventArgs args, Camera camera);
+    public void Update(FrameEventArgs args, Camera camera, bool mouseGrabbed);
 
     public void Render();
 
@@ -111,7 +111,7 @@ public class UI : IUserInterface
     }
 
     [MeasureExecutionTime]
-    public void Update(FrameEventArgs args, Camera camera)
+    public void Update(FrameEventArgs args, Camera camera, bool mouseGrabbed)
     {
         ImGui.SetCurrentContext(context);
         ImGuiIOPtr io = ImGui.GetIO();
@@ -121,10 +121,10 @@ public class UI : IUserInterface
         double frameRate = 1.0 / args.Time;
         string fpsString = frameRate.ToString("F2");
 
+        ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground;
+
         ImGui.SetNextWindowPos(new System.Numerics.Vector2(io.DisplaySize.X - 100, 0));
         ImGui.SetNextWindowSize(new System.Numerics.Vector2(100, 20));
-
-        ImGuiWindowFlags windowFlags = ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoBackground;
         if (ImGui.Begin("FPS Counter", windowFlags))
         {
             ImGui.PushStyleColor(ImGuiCol.Text, new System.Numerics.Vector4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -132,6 +132,17 @@ public class UI : IUserInterface
             ImGui.PopStyleColor();
         }
         ImGui.End();
+
+        if (mouseGrabbed)
+        {
+            ImGui.SetNextWindowPos(new System.Numerics.Vector2(io.DisplaySize.X - 150, 20));
+            ImGui.SetNextWindowSize(new System.Numerics.Vector2(150, 20));
+            if (ImGui.Begin("MouseGrabState", windowFlags))
+            {
+                ImGui.Text("(mouseGrabbed)");
+            }
+            ImGui.End();
+        }
 
         if (ImGui.Begin("Debug Window"))
         {

@@ -26,6 +26,7 @@ public class Game : GameWindow
 
     PhysicsEngine physicsEngine = new PhysicsEngine();
     List<PhysicsBinding> physicsBindings = new List<PhysicsBinding>();
+    Input input;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -35,6 +36,7 @@ public class Game : GameWindow
     })
     {
         this.mainScene = new Scene("main testing scene", width, height);
+        input = new Input(this, mainScene.camera);
 
         /* mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "UVTest\\cyl.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")));
            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\cylinder.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "TexturedCylinder\\uv_check2.png")));
@@ -139,9 +141,9 @@ public class Game : GameWindow
 
         physicsEngine.syncModelsToPhysics(physicsBindings);
 
-        mainScene.camera.ProcessKeyboard(KeyboardState, (float)args.Time);
+        input.Update(args);
 
-        userInterface.Update(args, this.mainScene.camera);
+        userInterface.Update(args, this.mainScene.camera, input.MouseGrabbed);
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -158,67 +160,37 @@ public class Game : GameWindow
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)
     {
-        var io = ImGui.GetIO();
-
-        ImGuiKey key = ImGuiKeyMapper.MapOpenTKKeyToImGuiKey(e.Key);
-        io.AddKeyEvent(key, true);
-
-
-        io.AddKeyEvent(ImGuiKey.ModCtrl, e.Control);
-        io.AddKeyEvent(ImGuiKey.ModShift, e.Shift);
-        io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
-
-
-        io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
+        input.OnKeyDown(e);
     }
 
     protected override void OnKeyUp(KeyboardKeyEventArgs e)
     {
-        var io = ImGui.GetIO();
-
-        ImGuiKey key = ImGuiKeyMapper.MapOpenTKKeyToImGuiKey(e.Key);
-        io.AddKeyEvent(key, false);
-
-
-        io.AddKeyEvent(ImGuiKey.ModCtrl, e.Control);
-        io.AddKeyEvent(ImGuiKey.ModShift, e.Shift);
-        io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
-
-
-        io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
+        input.OnKeyUp(e);
     }
 
     protected override void OnTextInput(TextInputEventArgs e)
     {
-        var io = ImGui.GetIO();
-        io.AddInputCharacter((uint)e.Unicode);
+        input.OnTextInput(e);
     }
 
     protected override void OnMouseMove(MouseMoveEventArgs e)
     {
-        var io = ImGui.GetIO();
-        float scaleFactorY = io.DisplayFramebufferScale.Y;
-        float scaleFactorX = io.DisplayFramebufferScale.X;
-
-        io.MousePos = new System.Numerics.Vector2(MouseState.X * scaleFactorX, MouseState.Y * scaleFactorY);
+        input.OnMouseMove(e);
     }
 
     protected override void OnMouseDown(MouseButtonEventArgs e)
     {
-        var io = ImGui.GetIO();
-        io.AddMouseButtonEvent((int)e.Button, true);
+        input.OnMouseDown(e);
     }
 
     protected override void OnMouseUp(MouseButtonEventArgs e)
     {
-        var io = ImGui.GetIO();
-        io.AddMouseButtonEvent((int)e.Button, false);
+        input.OnMouseUp(e);
     }
 
     protected override void OnMouseWheel(MouseWheelEventArgs e)
     {
-        var io = ImGui.GetIO();
-        io.AddMouseWheelEvent(e.OffsetX, e.OffsetY);
+        input.OnMouseWheel(e);
     }
 
     protected override void OnUnload()
