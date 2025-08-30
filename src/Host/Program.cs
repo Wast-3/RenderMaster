@@ -205,16 +205,15 @@ public class Game : GameWindow
 
         userInterface?.Resize(e);
 
-
         var io = ImGui.GetIO();
         io.DisplaySize = new System.Numerics.Vector2(e.Width, e.Height);
 
-
-        var framebufferWidth = (int)(e.Width * io.DisplayFramebufferScale.X);
-        var framebufferHeight = (int)(e.Height * io.DisplayFramebufferScale.Y);
-
-
-        GL.Viewport(0, 0, framebufferWidth, framebufferHeight);
+        unsafe
+        {
+            GLFW.GetFramebufferSize(WindowPtr, out int fbWidth, out int fbHeight);
+            io.DisplayFramebufferScale = new System.Numerics.Vector2((float)fbWidth / e.Width, (float)fbHeight / e.Height);
+            GL.Viewport(0, 0, fbWidth, fbHeight);
+        }
     }
 
 }

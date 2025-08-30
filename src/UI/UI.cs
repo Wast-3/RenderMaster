@@ -50,7 +50,6 @@ public class UI : IUserInterface
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         GL.Disable(EnableCap.CullFace);
         GL.Disable(EnableCap.DepthTest);
-        GL.Disable(EnableCap.ScissorTest);
     }
 
     public void Resize(ResizeEventArgs e)
@@ -197,6 +196,11 @@ public class UI : IUserInterface
                     GL.BindTexture(TextureTarget.Texture2D, (int)pcmd.TextureId);
 
                     var clip = pcmd.ClipRect;
+                    GL.Scissor(
+                        (int)clip.X,
+                        (int)(io.DisplaySize.Y - clip.W),
+                        (int)(clip.Z - clip.X),
+                        (int)(clip.W - clip.Y));
 
                     if ((io.BackendFlags & ImGuiBackendFlags.RendererHasVtxOffset) != 0)
                     {

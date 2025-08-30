@@ -10,8 +10,10 @@ public class OpenGLStateSnapshot
 
 public bool DepthTestEnabled { get; private set; }
 public bool CullFaceEnabled { get; private set; }
+public bool ScissorTestEnabled { get; private set; }
 public PolygonMode PolygonMode { get; private set; }
 public Rectangle Viewport { get; private set; }
+public Rectangle ScissorBox { get; private set; }
 public DepthFunction DepthFunc { get; private set; }
 public BlendingFactorSrc BlendSrc { get; private set; }
 public BlendingFactorDest BlendDest { get; private set; }
@@ -27,6 +29,8 @@ public OpenGLStateSnapshot()
 
     CullFaceEnabled = GL.IsEnabled(EnableCap.CullFace);
 
+    ScissorTestEnabled = GL.IsEnabled(EnableCap.ScissorTest);
+
 
     GL.GetInteger(GetPName.PolygonMode, out int polygonMode);
     PolygonMode = (PolygonMode)polygonMode;
@@ -35,6 +39,10 @@ public OpenGLStateSnapshot()
     int[] viewport = new int[4];
     GL.GetInteger(GetPName.Viewport, viewport);
     Viewport = new Rectangle(viewport[0], viewport[1], viewport[2], viewport[3]);
+
+    int[] scissorBox = new int[4];
+    GL.GetInteger(GetPName.ScissorBox, scissorBox);
+    ScissorBox = new Rectangle(scissorBox[0], scissorBox[1], scissorBox[2], scissorBox[3]);
 
 
     GL.GetInteger(GetPName.DepthFunc, out int depthFunc);
@@ -71,11 +79,18 @@ public void Restore()
     else
         GL.Disable(EnableCap.CullFace);
 
+    if (ScissorTestEnabled)
+        GL.Enable(EnableCap.ScissorTest);
+    else
+        GL.Disable(EnableCap.ScissorTest);
+
 
     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode);
 
 
     GL.Viewport(Viewport.Left, Viewport.Top, Viewport.Width, Viewport.Height);
+
+    GL.Scissor(ScissorBox.Left, ScissorBox.Top, ScissorBox.Width, ScissorBox.Height);
 
 
     GL.DepthFunc(DepthFunc);
