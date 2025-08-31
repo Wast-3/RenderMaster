@@ -3,6 +3,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using ImGuiNET;
+using System.Numerics;
 
 using RenderMaster.src.NewGraphics.Frame;
 using RenderMaster.src.NewGraphics.Loading;
@@ -100,7 +101,7 @@ public class Game : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         // Build frame constants and render scene
-        static System.Numerics.Matrix4x4 ToNum(OpenTK.Mathematics.Matrix4 m) =>
+        static Matrix4x4 ToNum(OpenTK.Mathematics.Matrix4 m) =>
             new(m.M11, m.M12, m.M13, m.M14,
                 m.M21, m.M22, m.M23, m.M24,
                 m.M31, m.M32, m.M33, m.M34,
@@ -109,19 +110,19 @@ public class Game : GameWindow
         var view = ToNum(camera.View);
         var proj = ToNum(camera.Projection);
 
-        static bool MatrixHasNaN(in System.Numerics.Matrix4x4 m) =>
+        static bool MatrixHasNaN(in Matrix4x4 m) =>
             !(float.IsFinite(m.M11) && float.IsFinite(m.M22) && float.IsFinite(m.M33) && float.IsFinite(m.M44));
 
         if (MatrixHasNaN(view) || MatrixHasNaN(proj))
             RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
         // correct for GLSL column-major consuming VP in the shader
-        var viewProj = System.Numerics.Matrix4x4.Transpose(view * proj);
+        var viewProj = Matrix4x4.Transpose(view * proj);
 
         var frame = new FrameBlock
         {
             ViewProj = viewProj,
-            CameraWS = new System.Numerics.Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z),
+            CameraWS = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z),
             Time = (float)GLFW.GetTime()
         };
 
