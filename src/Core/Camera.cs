@@ -17,6 +17,11 @@ public class Camera
     public float MovementSpeed { get; private set; } = 5f;
     public float MouseSensitivity { get; private set; } = 0.2f;
 
+    public float FieldOfView { get; private set; }
+    public float NearPlane   { get; private set; }
+    public float FarPlane    { get; private set; }
+    public float AspectRatio { get; private set; }
+
     Vector3 front = -Vector3.UnitZ;
     Vector3 up = Vector3.UnitY;
     Vector3 right = Vector3.UnitX;
@@ -39,7 +44,22 @@ public class Camera
 
     public void SetPerspectiveProjection(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
     {
-        Projection = Matrix4.CreatePerspectiveFieldOfView(fieldOfView, aspectRatio, nearPlane, farPlane);
+        FieldOfView = fieldOfView;
+        AspectRatio = aspectRatio;
+        NearPlane   = nearPlane;
+        FarPlane    = farPlane;
+        UpdateProjection();
+    }
+
+    public void UpdateProjection()
+    {
+        Projection = Matrix4.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlane, FarPlane);
+    }
+
+    public void UpdateAspectRatio(float aspectRatio)
+    {
+        AspectRatio = aspectRatio;
+        UpdateProjection();
     }
 
     void UpdateCameraVectors()

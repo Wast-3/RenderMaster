@@ -157,6 +157,7 @@ public class Game : GameWindow
             GLFW.GetFramebufferSize(WindowPtr, out int fbWidth, out int fbHeight);
             io.DisplayFramebufferScale = new System.Numerics.Vector2((float)fbWidth / e.Width, (float)fbHeight / e.Height);
             GL.Viewport(0, 0, fbWidth, fbHeight);
+            camera.UpdateAspectRatio((float)fbWidth / fbHeight);
         }
 
         RenderMaster.Engine.Logger.Log(
