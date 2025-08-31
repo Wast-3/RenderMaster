@@ -25,21 +25,17 @@ public class BasicTexturedModelRenderer : IRenderer
     {
 
         shader.Bind();
-        texture.Bind();
+        texture.BindToUnit(0);
         vertexConfiguration.Bind();
         Matrix4 modelMatrix = model.GetModelMatrix();
         shader.SetUniformMatrix4("model", modelMatrix);
         shader.SetUniformMatrix4("view", camera.View);
         shader.SetUniformMatrix4("projection", camera.Projection);
-
-
-
+        shader.SetSampler2D("ourTexture", TextureUnit.Texture0);
 
         GL.DrawArrays(PrimitiveType.Triangles, 0, model.verts.Length / 8);
 
-
         vertexConfiguration.Unbind();
-        texture.Unbind();
         shader.Unbind();
     }
 }

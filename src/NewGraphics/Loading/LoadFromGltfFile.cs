@@ -75,10 +75,12 @@ namespace RenderMaster.src.NewGraphics.Loading
                 meshMap[mesh] = (meshHandle, prepared.Submeshes.ToArray());
             }
 
-            void ConvertNode(SharpGLTF.Schema2.Node src)
+            void ConvertNode(SharpGLTF.Schema2.Node src, System.Numerics.Matrix4x4 parentWorld)
             {
+                var local = src.LocalMatrix;
+                var world = parentWorld * local;
                 var node = new SceneNode();
-                node.AddComponent(new TransformComponent(src.LocalMatrix));
+                node.AddComponent(new TransformComponent(world));
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
                 {
@@ -97,11 +99,11 @@ namespace RenderMaster.src.NewGraphics.Loading
                 Nodes.AddNode(node);
 
                 foreach (var child in src.VisualChildren)
-                    ConvertNode(child);
+                    ConvertNode(child, world);
             }
 
             foreach (var root in model.LogicalNodes.Where(n => n.VisualParent == null))
-                ConvertNode(root);
+                ConvertNode(root, System.Numerics.Matrix4x4.Identity);
         }
     }
 }

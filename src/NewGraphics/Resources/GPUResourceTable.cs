@@ -99,9 +99,14 @@ namespace RenderMaster.src.NewGraphics.Resources
 
         public TextureHandle CreateTexture(PreparedTexture cpu, SamplerDesc sampler)
         {
+            int levels = 1 + (int)Math.Floor(Math.Log2(Math.Max(cpu.Width, cpu.Height)));
+            var internalFmt = SizedInternalFormat.Srgb8Alpha8;
+
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int tex);
-            GL.TextureStorage2D(tex, 1, SizedInternalFormat.Rgba8, cpu.Width, cpu.Height);
+            GL.TextureStorage2D(tex, levels, internalFmt, cpu.Width, cpu.Height);
             GL.TextureSubImage2D(tex, 0, 0, 0, cpu.Width, cpu.Height, PixelFormat.Rgba, PixelType.UnsignedByte, cpu.Pixels);
+            GL.GenerateTextureMipmap(tex);
+            GL.TextureParameter(tex, TextureParameterName.TextureMaxLevel, levels - 1);
 
             GL.CreateSamplers(1, out int samp);
             GL.SamplerParameter(samp, SamplerParameterName.TextureMinFilter, (int)sampler.MinFilter);

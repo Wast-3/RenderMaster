@@ -11,12 +11,15 @@ public class OpenGLStateSnapshot
 public bool DepthTestEnabled { get; private set; }
 public bool CullFaceEnabled { get; private set; }
 public bool ScissorTestEnabled { get; private set; }
-public PolygonMode PolygonMode { get; private set; }
+public PolygonMode PolygonModeFront { get; private set; }
+public PolygonMode PolygonModeBack { get; private set; }
 public Rectangle Viewport { get; private set; }
 public Rectangle ScissorBox { get; private set; }
 public DepthFunction DepthFunc { get; private set; }
-public BlendingFactorSrc BlendSrc { get; private set; }
-public BlendingFactorDest BlendDest { get; private set; }
+public BlendingFactorSrc BlendSrcRGB { get; private set; }
+public BlendingFactorSrc BlendSrcAlpha { get; private set; }
+public BlendingFactorDest BlendDstRGB { get; private set; }
+public BlendingFactorDest BlendDstAlpha { get; private set; }
 public CullFaceMode CullFaceMode { get; private set; }
 public FrontFaceDirection FrontFace { get; private set; }
 
@@ -32,8 +35,10 @@ public OpenGLStateSnapshot()
     ScissorTestEnabled = GL.IsEnabled(EnableCap.ScissorTest);
 
 
-    GL.GetInteger(GetPName.PolygonMode, out int polygonMode);
-    PolygonMode = (PolygonMode)polygonMode;
+    int[] polygonModes = new int[2];
+    GL.GetInteger(GetPName.PolygonMode, polygonModes);
+    PolygonModeFront = (PolygonMode)polygonModes[0];
+    PolygonModeBack = (PolygonMode)polygonModes[1];
 
 
     int[] viewport = new int[4];
@@ -49,10 +54,14 @@ public OpenGLStateSnapshot()
     DepthFunc = (DepthFunction)depthFunc;
 
 
-    GL.GetInteger(GetPName.BlendSrc, out int blendSrc);
-    BlendSrc = (BlendingFactorSrc)blendSrc;
-    GL.GetInteger(GetPName.BlendDst, out int blendDest);
-    BlendDest = (BlendingFactorDest)blendDest;
+    GL.GetInteger(GetPName.BlendSrcRgb, out int blendSrcRgb);
+    BlendSrcRGB = (BlendingFactorSrc)blendSrcRgb;
+    GL.GetInteger(GetPName.BlendSrcAlpha, out int blendSrcAlpha);
+    BlendSrcAlpha = (BlendingFactorSrc)blendSrcAlpha;
+    GL.GetInteger(GetPName.BlendDstRgb, out int blendDstRgb);
+    BlendDstRGB = (BlendingFactorDest)blendDstRgb;
+    GL.GetInteger(GetPName.BlendDstAlpha, out int blendDstAlpha);
+    BlendDstAlpha = (BlendingFactorDest)blendDstAlpha;
 
 
     GL.GetInteger(GetPName.CullFaceMode, out int cullFaceMode);
@@ -85,7 +94,8 @@ public void Restore()
         GL.Disable(EnableCap.ScissorTest);
 
 
-    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode);
+    GL.PolygonMode(MaterialFace.Front, PolygonModeFront);
+    GL.PolygonMode(MaterialFace.Back, PolygonModeBack);
 
 
     GL.Viewport(Viewport.Left, Viewport.Top, Viewport.Width, Viewport.Height);
@@ -96,7 +106,7 @@ public void Restore()
     GL.DepthFunc(DepthFunc);
 
 
-    GL.BlendFunc((BlendingFactor)BlendSrc, (BlendingFactor)BlendDest);
+    GL.BlendFuncSeparate(BlendSrcRGB, BlendDstRGB, BlendSrcAlpha, BlendDstAlpha);
 
 
     GL.CullFace(CullFaceMode);

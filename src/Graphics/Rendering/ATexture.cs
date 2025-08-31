@@ -16,10 +16,6 @@ public abstract class ATexture
         this.textureImage = loadImageFromPath(path);
     }
 
-    public abstract void Bind();
-
-    public abstract void Unbind();
-
     public ImageResult loadImageFromPath(string path)
     {
         using (var stream = File.OpenRead(path))

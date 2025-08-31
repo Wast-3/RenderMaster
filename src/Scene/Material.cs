@@ -15,18 +15,4 @@ public class Material
         this.Diffuse = diffuse;
         this.Specular = specular;
     }
-
-    public bool BindAllTextures()
-    {
-        Diffuse.Bind();
-        Specular.Bind();
-        return true;
-    }
-
-    public bool UnbindAllTextures()
-    {
-        Diffuse.Unbind();
-        Specular.Unbind();
-        return true;
-    }
 }

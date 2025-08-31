@@ -45,13 +45,13 @@ public class Game : GameWindow
            mainScene.AddModel(new Model(VertType.VertColorTexture, ModelShaderType.BasicTextured, Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.verttxt"), Path.Combine(EngineConfig.ModelDirectory, "GroundTerrain\\mountain.png"))); */
 
         Material tableMaterial = new Material(
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg")),
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"))
+            new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.jpg")),
+            new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table_specular.jpg"))
         );
 
         Material lampMaterial = new Material(
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.jpg")),
-            TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp_specular.jpg"))
+            new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp.jpg")),
+            new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\lamp_specular.jpg"))
         );
 
         mainScene.AddModel(new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
@@ -73,8 +73,8 @@ public class Game : GameWindow
             for (int j = 0; j < gridSize; j++)
             {
                 Material cubeMaterial = new Material(
-                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")),
-                    TextureCache.Instance.GetTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png"))
+                    new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png")),
+                    new BasicImageTexture(Path.Combine(EngineConfig.ModelDirectory, "UVTest\\uv_check2.png"))
                 );
                 Model cube = new Model(VertType.VertColorNormal, ModelShaderType.VertColorNormal,
                     Path.Combine(EngineConfig.ModelDirectory, "TableAndLamp\\table.verttxt"), cubeMaterial, physicsPreset: 1);

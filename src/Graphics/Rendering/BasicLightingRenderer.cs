@@ -64,13 +64,11 @@ public class BasicLightingRenderer : IRenderer
         var diffuseMapTexture = model.material.Diffuse;
         var specularMapTexture = model.material.Specular;
 
-        model.material.BindAllTextures();
+        diffuseMapTexture.BindToUnit(0);
+        specularMapTexture.BindToUnit(1);
 
-        var diffuseUnit = (TextureUnit)((int)TextureUnit.Texture0 + diffuseMapTexture.BoundUnit.GetValueOrDefault());
-        var specularUnit = (TextureUnit)((int)TextureUnit.Texture0 + specularMapTexture.BoundUnit.GetValueOrDefault());
-
-        shader.SetSampler2D("material.diffuse", diffuseUnit);
-        shader.SetSampler2D("material.specular", specularUnit);
+        shader.SetSampler2D("material.diffuse", TextureUnit.Texture0);
+        shader.SetSampler2D("material.specular", TextureUnit.Texture1);
 
 
 
