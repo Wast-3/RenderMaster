@@ -16,7 +16,6 @@ namespace RenderMaster.src.NewGraphics.Loading
     {
         public string filepath { get; init; }
         public CPUResourceTable ResourceTable { get; } = new CPUResourceTable();
-        public LoadedNodes Nodes { get; } = new LoadedNodes();
 
         public void LoadResources(CPUResourceTable table)
         {
@@ -62,41 +61,23 @@ namespace RenderMaster.src.NewGraphics.Loading
                 matMap[mat] = mHandle;
             }
 
-            var meshMap = new Dictionary<SharpGLTF.Schema2.Mesh, (MeshHandle handle, SubmeshSpan[] spans)>();
             foreach (var mesh in model.LogicalMeshes)
             {
                 var prepared = new PreparedMeshBuffer(mesh);
                 var meshHandle = table.AddMeshBuffer(prepared);
-                meshMap[mesh] = (meshHandle, prepared.Submeshes.ToArray());
-            }
 
-            void ConvertNode(SharpGLTF.Schema2.Node src)
-            {
-                var node = new Node();
-                node.AddComponent(new TransformComponent(src.LocalMatrix));
+                var prim = mesh.Primitives.FirstOrDefault();
+                var matHandle = prim != null && prim.Material != null && matMap.TryGetValue(prim.Material, out var mh)
+                    ? mh
+                    : new MaterialHandle(0);
 
-                if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
+                var node = new SceneNode
                 {
-                    var (meshHandle, spans) = meshInfo;
-                    for (int i = 0; i < src.Mesh.Primitives.Count; i++)
-                    {
-                        var prim = src.Mesh.Primitives[i];
-                        var matHandle = prim.Material != null && matMap.TryGetValue(prim.Material, out var mh)
-                            ? mh
-                            : default;
-                        var span = spans[i];
-                        node.AddComponent(new MeshComponent(meshHandle, matHandle, span));
-                    }
-                }
-
-                Nodes.AddNode(node);
-
-                foreach (var child in src.VisualChildren)
-                    ConvertNode(child);
+                    mesh = meshHandle,
+                    material = matHandle
+                };
             }
-
-            foreach (var root in model.LogicalNodes.Where(n => n.VisualParent == null))
-                ConvertNode(root);
         }
     }
 }
+

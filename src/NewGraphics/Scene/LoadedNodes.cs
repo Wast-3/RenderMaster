@@ -4,10 +4,11 @@ namespace RenderMaster.src.NewGraphics.Scene
 {
     class LoadedNodes
     {
-        List<Node> nodes = new List<Node>();
-        public void AddNode(Node node)
+        List<SceneNode> nodes = new List<SceneNode>();
+        public void AddNode(SceneNode node)
         {
             nodes.Add(node);
         }
     }
 }
+
