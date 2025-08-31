@@ -23,4 +23,4 @@ Package.StoreAssociation.xml
 *.swp
 .vs/
 Thumbs.db
-
+*.sln
