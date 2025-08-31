@@ -66,11 +66,21 @@ namespace RenderMaster.src.NewGraphics.Resources
                 $"UploadIncremental: cpu(tex={cpu.Textures.Count}, mesh={cpu.MeshBuffers.Count}, mat={cpu.Materials.Count}) → gpu(tex={uploadedTexCount}, mesh={uploadedMeshCount}, mat={uploadedMatCount})",
                 RenderMaster.Engine.LogLevel.Debug);
 
+            var gpuToCpuMat = new int[uploadedMatCount];
+            Array.Fill(gpuToCpuMat, -1);
+            for (int cpuId = 0; cpuId < uploadedMatCount; cpuId++)
+            {
+                var gpuId = matRemap[cpuId];
+                if (gpuId >= 0 && gpuId < gpuToCpuMat.Length)
+                    gpuToCpuMat[gpuId] = cpuId;
+            }
+
             return new UploadResult
             {
                 CpuToGpu_Tex  = (int[])texRemap.Clone(),
                 CpuToGpu_Mesh = (int[])meshRemap.Clone(),
-                CpuToGpu_Mat  = (int[])matRemap.Clone()
+                CpuToGpu_Mat  = (int[])matRemap.Clone(),
+                GpuToCpu_Mat  = gpuToCpuMat
             };
 
             Handle<GPUResourceTable.TextureGPU> RemapTexture(Handle<PreparedTexture> h) =>
