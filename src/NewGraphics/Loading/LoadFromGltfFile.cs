@@ -39,18 +39,22 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                 material.DoubleSided = mat.DoubleSided;
 
-                var pbr = mat.PbrMetallicRoughness;
-                if (pbr != null)
+                var baseColor = mat.FindChannel("BaseColor");
+                if (baseColor != null)
                 {
-                    material.BaseColorFactor = pbr.BaseColorFactor;
-                    material.MetallicFactor = pbr.MetallicFactor;
-                    material.RoughnessFactor = pbr.RoughnessFactor;
-
-                    var bc = pbr.BaseColorTexture?.Texture;
+                    material.BaseColorFactor = baseColor.Value.Color;
+                    var bc = baseColor.Value.Texture;
                     if (bc != null && texMap.TryGetValue(bc, out var bcHandle))
                         material.Textures["BaseColorTexture"] = bcHandle;
+                }
 
-                    var mr = pbr.MetallicRoughnessTexture?.Texture;
+                var mrChan = mat.FindChannel("MetallicRoughness");
+                if (mrChan != null)
+                {
+                    material.MetallicFactor = mrChan.Value.GetFactor("MetallicFactor");
+                    material.RoughnessFactor = mrChan.Value.GetFactor("RoughnessFactor");
+
+                    var mr = mrChan.Value.Texture;
                     if (mr != null && texMap.TryGetValue(mr, out var mrHandle))
                         material.Textures["MetallicRoughnessTexture"] = mrHandle;
                 }
