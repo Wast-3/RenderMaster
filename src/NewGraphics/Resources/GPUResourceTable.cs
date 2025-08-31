@@ -38,8 +38,8 @@ namespace RenderMaster.src.NewGraphics.Resources
 
         public MeshHandle CreateMesh(PreparedMeshBuffer cpu)
         {
-            int vao = GL.CreateVertexArray();
-            int vbo = GL.CreateBuffer();
+            GL.CreateVertexArrays(1, out int vao);
+            GL.CreateBuffers(1, out int vbo);
             GL.NamedBufferStorage(vbo, cpu.Vertices.Length * sizeof(float), cpu.Vertices, BufferStorageFlags.None);
             GL.VertexArrayVertexBuffer(vao, 0, vbo, IntPtr.Zero, cpu.VertexStrideBytes);
 
@@ -67,7 +67,7 @@ namespace RenderMaster.src.NewGraphics.Resources
             DrawElementsType indexType = DrawElementsType.UnsignedInt;
             if (cpu.IndexElementSize != 0)
             {
-                ebo = GL.CreateBuffer();
+                GL.CreateBuffers(1, out ebo);
                 GL.NamedBufferStorage(ebo, cpu.Indices.Length, cpu.Indices, BufferStorageFlags.None);
                 GL.VertexArrayElementBuffer(vao, ebo);
                 indexType = cpu.IndexElementSize switch
@@ -94,11 +94,11 @@ namespace RenderMaster.src.NewGraphics.Resources
 
         public TextureHandle CreateTexture(PreparedTexture cpu, SamplerDesc sampler)
         {
-            int tex = GL.CreateTexture(TextureTarget.Texture2D);
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out int tex);
             GL.TextureStorage2D(tex, 1, SizedInternalFormat.Rgba8, cpu.Width, cpu.Height);
             GL.TextureSubImage2D(tex, 0, 0, 0, cpu.Width, cpu.Height, PixelFormat.Rgba, PixelType.UnsignedByte, cpu.Pixels);
 
-            int samp = GL.CreateSampler();
+            GL.CreateSamplers(1, out int samp);
             GL.SamplerParameter(samp, SamplerParameterName.TextureMinFilter, (int)sampler.MinFilter);
             GL.SamplerParameter(samp, SamplerParameterName.TextureMagFilter, (int)sampler.MagFilter);
             GL.SamplerParameter(samp, SamplerParameterName.TextureWrapS, (int)sampler.WrapS);

@@ -4,6 +4,7 @@ using System.Linq;
 using SharpGLTF.Schema2;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Scene;
+using SceneNode = RenderMaster.src.NewGraphics.Scene.Node;
 using RenderMaster.src.NewGraphics.Types;
 
 namespace RenderMaster.src.NewGraphics.Loading
@@ -25,7 +26,7 @@ namespace RenderMaster.src.NewGraphics.Loading
             var texMap = new Dictionary<SharpGLTF.Schema2.Texture, TextureHandle>();
             foreach (var tex in model.LogicalTextures)
             {
-                var bytes = tex.PrimaryImage?.Content?.Content.ToArray() ?? Array.Empty<byte>();
+                var bytes = tex.PrimaryImage != null ? tex.PrimaryImage.Content.Content.ToArray() : Array.Empty<byte>();
                 var prepared = new PreparedTexture(bytes);
                 var handle = table.AddTexture(prepared);
                 texMap[tex] = handle;
@@ -38,7 +39,7 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                 material.DoubleSided = mat.DoubleSided;
 
-                var pbr = mat.PbrMetallicRoughness;
+                var pbr = mat.PBRMetallicRoughness;
                 if (pbr != null)
                 {
                     material.BaseColorFactor = pbr.BaseColorFactor;
@@ -72,7 +73,7 @@ namespace RenderMaster.src.NewGraphics.Loading
 
             void ConvertNode(SharpGLTF.Schema2.Node src)
             {
-                var node = new Node();
+                var node = new SceneNode();
                 node.AddComponent(new TransformComponent(src.LocalMatrix));
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
