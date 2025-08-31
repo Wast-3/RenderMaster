@@ -36,7 +36,7 @@ public class Game : GameWindow
         Title = title
     })
     {
-        camera = new Camera(new OpenTK.Mathematics.Vector3(2, 0, 0), new OpenTK.Mathematics.Vector3(0, 0, 0),
+        camera = new Camera(new Vector3(2, 0, 0), new Vector3(0, 0, 0),
             0.8f, (float)width / height, 1, 4000);
         input = new Input(this, camera);
     }
@@ -105,14 +105,8 @@ public class Game : GameWindow
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         // Build frame constants and render scene
-        static Matrix4x4 ToNum(OpenTK.Mathematics.Matrix4 m) =>
-            new(m.M11, m.M12, m.M13, m.M14,
-                m.M21, m.M22, m.M23, m.M24,
-                m.M31, m.M32, m.M33, m.M34,
-                m.M41, m.M42, m.M43, m.M44);
-
-        var view = ToNum(camera.View);
-        var proj = ToNum(camera.Projection);
+        var view = camera.View;
+        var proj = camera.Projection;
 
         static bool MatrixHasNaN(in Matrix4x4 m) =>
             !(float.IsFinite(m.M11) && float.IsFinite(m.M22) && float.IsFinite(m.M33) && float.IsFinite(m.M44));
@@ -120,13 +114,13 @@ public class Game : GameWindow
         if (MatrixHasNaN(view) || MatrixHasNaN(proj))
             RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
-        // correct for GLSL column-major consuming VP in the shader
-        var viewProj = Matrix4x4.Transpose(view * proj);
+        // Compose projection and view for column-vector math in GLSL
+        var viewProj = proj * view;
 
         var frame = new FrameBlock
         {
             ViewProj = viewProj,
-            CameraWS = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z),
+            CameraWS = camera.Position,
             Time = (float)GLFW.GetTime()
         };
 

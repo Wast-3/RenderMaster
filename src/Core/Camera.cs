@@ -1,5 +1,4 @@
-using OpenTK.Windowing.Common;
-using OpenTK.Mathematics;
+using System.Numerics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace RenderMaster;
@@ -7,8 +6,8 @@ namespace RenderMaster;
 public class Camera
 {
     public Vector3 Position { get; set; }
-    public Matrix4 View { get; private set; }
-    public Matrix4 Projection { get; private set; }
+    public Matrix4x4 View { get; private set; }
+    public Matrix4x4 Projection { get; private set; }
 
     public float Yaw { get; private set; }
     public float Pitch { get; private set; }
@@ -30,8 +29,8 @@ public class Camera
     {
         Position = position;
         front = Vector3.Normalize(lookingAt - position);
-        Yaw = MathHelper.RadiansToDegrees(MathF.Atan2(front.Z, front.X));
-        Pitch = MathHelper.RadiansToDegrees(MathF.Asin(front.Y));
+        Yaw = MathF.Atan2(front.Z, front.X) * (180f / MathF.PI);
+        Pitch = MathF.Asin(front.Y) * (180f / MathF.PI);
         UpdateCameraVectors();
         SetPerspectiveProjection(fieldOfView, aspectRatio, nearPlane, farPlane);
         UpdateViewMatrix();
@@ -39,7 +38,7 @@ public class Camera
 
     public void UpdateViewMatrix()
     {
-        View = Matrix4.LookAt(Position, Position + front, up);
+        View = Matrix4x4.CreateLookAt(Position, Position + front, up);
     }
 
     public void SetPerspectiveProjection(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
@@ -53,7 +52,7 @@ public class Camera
 
     public void UpdateProjection()
     {
-        Projection = Matrix4.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlane, FarPlane);
+        Projection = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, NearPlane, FarPlane);
     }
 
     public void UpdateAspectRatio(float aspectRatio)
@@ -65,9 +64,11 @@ public class Camera
     void UpdateCameraVectors()
     {
         Vector3 f;
-        f.X = MathF.Cos(MathHelper.DegreesToRadians(Yaw)) * MathF.Cos(MathHelper.DegreesToRadians(Pitch));
-        f.Y = MathF.Sin(MathHelper.DegreesToRadians(Pitch));
-        f.Z = MathF.Sin(MathHelper.DegreesToRadians(Yaw)) * MathF.Cos(MathHelper.DegreesToRadians(Pitch));
+        float radYaw = Yaw * (MathF.PI / 180f);
+        float radPitch = Pitch * (MathF.PI / 180f);
+        f.X = MathF.Cos(radYaw) * MathF.Cos(radPitch);
+        f.Y = MathF.Sin(radPitch);
+        f.Z = MathF.Sin(radYaw) * MathF.Cos(radPitch);
         front = Vector3.Normalize(f);
         right = Vector3.Normalize(Vector3.Cross(front, Vector3.UnitY));
         up = Vector3.Normalize(Vector3.Cross(right, front));
@@ -102,7 +103,7 @@ public class Camera
 
         Yaw += deltaX;
         Pitch += InvertY ? deltaY : -deltaY;
-        Pitch = MathHelper.Clamp(Pitch, -89f, 89f);
+        Pitch = MathF.Clamp(Pitch, -89f, 89f);
 
         UpdateCameraVectors();
         UpdateViewMatrix();

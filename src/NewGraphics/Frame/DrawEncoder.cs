@@ -67,8 +67,8 @@ namespace RenderMaster.src.NewGraphics.Frame
 
                 var ob = new ObjectBlock
                 {
-                    World = Matrix4x4.Transpose(d.Packet.World),
-                    NormalWorld = Matrix4x4.Transpose(computeNormalWorld(d.Packet.World))
+                    World = d.Packet.World,
+                    NormalWorld = computeNormalWorld(d.Packet.World)
                 };
                 if (float.IsNaN(ob.World.M11) || float.IsNaN(ob.NormalWorld.M11))
                     RenderMaster.Engine.Logger.Log("ObjectBlock contains NaNs (world/normalWorld).", RenderMaster.Engine.LogLevel.Error);
