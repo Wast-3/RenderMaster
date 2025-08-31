@@ -15,6 +15,7 @@ namespace RenderMaster.src.NewGraphics.Resources
         public int[] CpuToGpu_Mesh  = Array.Empty<int>();
         public int[] CpuToGpu_Tex   = Array.Empty<int>();
         public int[] CpuToGpu_Mat   = Array.Empty<int>();
+        public int[] GpuToCpu_Mat   = Array.Empty<int>();
 
         public MeshGPUHandle Map(CpuMeshHandle h) =>
             h.IsValid && h.Id < CpuToGpu_Mesh.Length && CpuToGpu_Mesh[h.Id] >= 0

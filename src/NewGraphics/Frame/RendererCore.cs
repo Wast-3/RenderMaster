@@ -42,11 +42,15 @@ namespace RenderMaster.src.NewGraphics.Frame
                 draws, gpu, programs, uniforms,
                 materialBlockOf: h =>
                 {
+                    int cpuId = (h.Id < map.GpuToCpu_Mat.Length && map.GpuToCpu_Mat[h.Id] >= 0)
+                        ? map.GpuToCpu_Mat[h.Id]
+                        : 0;
+                    var m = cpu.Materials[cpuId];
                     var mb = new MaterialBlock
                     {
-                        BaseColorFactor = cpu.Materials[map.CpuToGpu_Mat[h.Id] >= 0 ? h.Id : 0].BaseColorFactor ?? new Vector4(1,1,1,1),
-                        Metallic   = cpu.Materials[h.Id].MetallicFactor ?? 1f,
-                        Roughness  = cpu.Materials[h.Id].RoughnessFactor ?? 1f,
+                        BaseColorFactor = m.BaseColorFactor ?? new Vector4(1, 1, 1, 1),
+                        Metallic = m.MetallicFactor ?? 1f,
+                        Roughness = m.RoughnessFactor ?? 1f,
                         AlphaCutoff = 0.5f,
                         Flags = 0f
                     };
