@@ -1,8 +1,14 @@
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
-using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using ImGuiNET;
+
+using RenderMaster.src.NewGraphics.Frame;
+using RenderMaster.src.NewGraphics.Loading;
+using RenderMaster.src.NewGraphics.Programs;
+using RenderMaster.src.NewGraphics.Resources;
+using RenderMaster.src.NewGraphics.Scene;
 
 namespace RenderMaster;
 
@@ -11,6 +17,16 @@ public class Game : GameWindow
     IUserInterface userInterface = null!; // initialized in OnLoad
     Camera camera;
     Input input;
+
+    // Renderer resources
+    CPUResourceTable cpu = new();
+    GPUResourceTable gpu = new();
+    ResourceUploader uploader = new(new SamplerDesc(TextureMinFilter.Linear, TextureMagFilter.Linear,
+        TextureWrapMode.Repeat, TextureWrapMode.Repeat));
+    UploadResult map = new();
+    ProgramLibrary programs = new();
+    ProgramUniforms uniforms = new();
+    LoadedNodes nodes = new();
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -33,6 +49,18 @@ public class Game : GameWindow
     {
         base.OnLoad();
         userInterface = new UI();
+
+        // Load a glTF scene if available
+        var modelPath = Path.Combine(EngineConfig.ModelDirectory, "scene.gltf");
+        if (File.Exists(modelPath))
+        {
+            var loader = new LoadFromGltfFile { filepath = modelPath };
+            loader.LoadResources(cpu);
+            map = uploader.UploadIncremental(cpu, gpu);
+            nodes = loader.Nodes;
+        }
+
+        GL.Enable(EnableCap.DepthTest);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
@@ -46,6 +74,26 @@ public class Game : GameWindow
     {
         GL.ClearColor(0.4f, 0.4f, 0.4f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        // Build frame constants and render scene
+        static System.Numerics.Matrix4x4 ToNum(OpenTK.Mathematics.Matrix4 m) =>
+            new(m.M11, m.M12, m.M13, m.M14,
+                m.M21, m.M22, m.M23, m.M24,
+                m.M31, m.M32, m.M33, m.M34,
+                m.M41, m.M42, m.M43, m.M44);
+
+        var view = ToNum(camera.View);
+        var proj = ToNum(camera.Projection);
+        var viewProj = System.Numerics.Matrix4x4.Transpose(view * proj);
+
+        var frame = new FrameBlock
+        {
+            ViewProj = viewProj,
+            CameraWS = new System.Numerics.Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z),
+            Time = (float)GLFW.GetTime()
+        };
+
+        RendererCore.Render(nodes, cpu, map, gpu, programs, uniforms, in frame);
 
         userInterface.Render();
         SwapBuffers();
