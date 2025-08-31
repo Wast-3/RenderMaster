@@ -1,44 +1,27 @@
-﻿using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using ImGuiNET;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using RenderMaster.Engine;
-using RenderMaster.src.Physics;
 
 namespace RenderMaster;
 
 public class Game : GameWindow
 {
-
-
     IUserInterface userInterface = null!; // initialized in OnLoad
-
-    Scene mainScene;
-    OpenGLStateStack openGLState;
-
-    const double FixedUpdateRate = 1.0 / 60.0;
-    double updateAccumulator = 0.0;
-
-    PhysicsEngine physicsEngine = new PhysicsEngine();
-    List<PhysicsBinding> physicsBindings = new List<PhysicsBinding>();
+    Camera camera;
     Input input;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
-
         ClientSize = (width, height),
         Title = title
     })
     {
-        this.mainScene = new Scene("main testing scene", width, height);
-        input = new Input(this, mainScene.camera);
-
-        physicsEngine.Setup();
-
-        openGLState = new OpenGLStateStack();
+        camera = new Camera(new OpenTK.Mathematics.Vector3(2, 0, 0), new OpenTK.Mathematics.Vector3(0, 0, 0),
+            0.8f, (float)width / height, 1, 4000);
+        input = new Input(this, camera);
     }
-
 
     static void Main(string[] args)
     {
@@ -49,92 +32,36 @@ public class Game : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-
-        Logger.Log("RENDERMASTER START: ", LogLevel.Info);
-
-        mainScene.RenderSceneSetup();
-        openGLState.PushState();
         userInterface = new UI();
-        openGLState.PopState();
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
-
-        updateAccumulator += args.Time;
-
-        while (updateAccumulator >= FixedUpdateRate)
-        {
-            mainScene.Update(FixedUpdateRate);
-            physicsEngine.simulation.Timestep((float)FixedUpdateRate);
-            updateAccumulator -= FixedUpdateRate;
-        }
-
-        physicsEngine.syncModelsToPhysics(physicsBindings);
-
         input.Update(args);
-
-        userInterface.Update(args, this.mainScene.camera, input.MouseGrabbed);
+        userInterface.Update(args, camera, input.MouseGrabbed);
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
     {
-        openGLState.PushState();
-        mainScene.RenderScene(args);
-        userInterface.Bind();
+        GL.ClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+        GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
         userInterface.Render();
-        userInterface.Unbind();
         SwapBuffers();
-
-        openGLState.PopState();
     }
 
-    protected override void OnKeyDown(KeyboardKeyEventArgs e)
-    {
-        input.OnKeyDown(e);
-    }
-
-    protected override void OnKeyUp(KeyboardKeyEventArgs e)
-    {
-        input.OnKeyUp(e);
-    }
-
-    protected override void OnTextInput(TextInputEventArgs e)
-    {
-        input.OnTextInput(e);
-    }
-
-    protected override void OnMouseMove(MouseMoveEventArgs e)
-    {
-        input.OnMouseMove(e);
-    }
-
-    protected override void OnMouseDown(MouseButtonEventArgs e)
-    {
-        input.OnMouseDown(e);
-    }
-
-    protected override void OnMouseUp(MouseButtonEventArgs e)
-    {
-        input.OnMouseUp(e);
-    }
-
-    protected override void OnMouseWheel(MouseWheelEventArgs e)
-    {
-        input.OnMouseWheel(e);
-    }
-
-    protected override void OnUnload()
-    {
-        base.OnUnload();
-    }
+    protected override void OnKeyDown(KeyboardKeyEventArgs e) => input.OnKeyDown(e);
+    protected override void OnKeyUp(KeyboardKeyEventArgs e) => input.OnKeyUp(e);
+    protected override void OnTextInput(TextInputEventArgs e) => input.OnTextInput(e);
+    protected override void OnMouseMove(MouseMoveEventArgs e) => input.OnMouseMove(e);
+    protected override void OnMouseDown(MouseButtonEventArgs e) => input.OnMouseDown(e);
+    protected override void OnMouseUp(MouseButtonEventArgs e) => input.OnMouseUp(e);
+    protected override void OnMouseWheel(MouseWheelEventArgs e) => input.OnMouseWheel(e);
 
     protected override void OnResize(ResizeEventArgs e)
     {
         base.OnResize(e);
-
-
         userInterface?.Resize(e);
 
         var io = ImGui.GetIO();
@@ -147,5 +74,4 @@ public class Game : GameWindow
             GL.Viewport(0, 0, fbWidth, fbHeight);
         }
     }
-
 }

@@ -93,4 +93,3 @@ public class Camera
         MovementSpeed = MathF.Max(0.1f, MovementSpeed + offset);
     }
 }
-

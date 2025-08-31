@@ -41,7 +41,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                 var variants = ProgramVariants.None;
                 if (d.Pass == PassKind.ForwardTransparent) variants |= ProgramVariants.AlphaBlend;
 
-                var key = new ProgramKey(d.Technique, d.Pass, variants, vertexLayoutVersion: 1);
+            var key = new ProgramKey(d.Technique, d.Pass, variants, VertexLayoutVersion: 1);
                 if (currentProg == null || !key.Equals(currentKey))
                 {
                     currentProg = programs.Get(key);
