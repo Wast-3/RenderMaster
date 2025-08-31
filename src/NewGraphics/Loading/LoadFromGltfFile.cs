@@ -34,9 +34,29 @@ namespace RenderMaster.src.NewGraphics.Loading
             foreach (var mat in model.LogicalMaterials)
             {
                 var material = new MaterialCPU();
-                var baseColor = mat.FindChannel("BaseColor")?.Texture;
-                if (baseColor != null && texMap.TryGetValue(baseColor, out var th))
-                    material.Textures["BaseColor"] = th;
+
+                material.DoubleSided = mat.DoubleSided;
+
+                var pbr = mat.PbrMetallicRoughness;
+                if (pbr != null)
+                {
+                    material.BaseColorFactor = pbr.BaseColorFactor;
+                    material.MetallicFactor = pbr.MetallicFactor;
+                    material.RoughnessFactor = pbr.RoughnessFactor;
+
+                    var bc = pbr.BaseColorTexture?.Texture;
+                    if (bc != null && texMap.TryGetValue(bc, out var bcHandle))
+                        material.Textures["BaseColorTexture"] = bcHandle;
+
+                    var mr = pbr.MetallicRoughnessTexture?.Texture;
+                    if (mr != null && texMap.TryGetValue(mr, out var mrHandle))
+                        material.Textures["MetallicRoughnessTexture"] = mrHandle;
+                }
+
+                var normal = mat.FindChannel("Normal")?.Texture;
+                if (normal != null && texMap.TryGetValue(normal, out var nHandle))
+                    material.Textures["NormalTexture"] = nHandle;
+
                 var mHandle = table.AddMaterial(material);
                 matMap[mat] = mHandle;
             }
