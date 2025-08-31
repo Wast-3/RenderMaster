@@ -50,6 +50,7 @@ namespace RenderMaster.src.NewGraphics.Resources
                     var gpuTexHandle = RemapTexture(cpuTexHandle);
                     if (!gpuTexHandle.IsValid)
                     {
+                        RenderMaster.Engine.Logger.Log($"Material texture unmapped: semantic='{semantic}' cpuTexId={cpuTexHandle.Id}", RenderMaster.Engine.LogLevel.Warning);
                         continue;
                     }
                     var tex = gpu.GetTexture(gpuTexHandle);
@@ -60,6 +61,10 @@ namespace RenderMaster.src.NewGraphics.Resources
                 matRemap[i] = gpuMat.Id;
             }
             uploadedMatCount = cpu.Materials.Count;
+
+            RenderMaster.Engine.Logger.Log(
+                $"UploadIncremental: cpu(tex={cpu.Textures.Count}, mesh={cpu.MeshBuffers.Count}, mat={cpu.Materials.Count}) → gpu(tex={uploadedTexCount}, mesh={uploadedMeshCount}, mat={uploadedMatCount})",
+                RenderMaster.Engine.LogLevel.Debug);
 
             return new UploadResult
             {

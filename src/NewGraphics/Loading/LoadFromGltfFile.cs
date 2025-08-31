@@ -22,6 +22,9 @@ namespace RenderMaster.src.NewGraphics.Loading
         public void LoadResources(CPUResourceTable table)
         {
             var model = ModelRoot.Load(filepath);
+            RenderMaster.Engine.Logger.Log(
+                $"Loaded glTF: tex={model.LogicalTextures.Count} mats={model.LogicalMaterials.Count} meshes={model.LogicalMeshes.Count} nodes={model.LogicalNodes.Count}",
+                RenderMaster.Engine.LogLevel.Info);
 
             var texMap = new Dictionary<SharpGLTF.Schema2.Texture, TextureHandle>();
             foreach (var tex in model.LogicalTextures)

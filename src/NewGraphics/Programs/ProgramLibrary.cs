@@ -8,6 +8,7 @@ namespace RenderMaster.src.NewGraphics.Programs
         public ShaderProgram Get(ProgramKey key)
         {
             if (_cache.TryGetValue(key, out var p)) return p;
+            RenderMaster.Engine.Logger.Log($"Program cache miss: {key}", RenderMaster.Engine.LogLevel.Debug);
             var (v, f) = ShaderSources.For(key);
             var prog = new ShaderProgram(v, f);
             BindStaticLayouts(prog.Handle);

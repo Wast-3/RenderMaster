@@ -24,9 +24,13 @@ namespace RenderMaster.src.NewGraphics.Programs
 
             GL.CreateBuffers(1, out _buffer);
             GL.NamedBufferStorage(_buffer, _size, IntPtr.Zero,
-                BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.DynamicStorageBit);
+                BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapCoherentBit);
             _ptr = GL.MapNamedBufferRange(_buffer, IntPtr.Zero, _size,
-                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapInvalidateRangeBit);
+                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit);
+
+            RenderMaster.Engine.Logger.Log(
+                $"UboRing<{typeof(T).Name}> stride={_stride} size={_size} perFrame={_perFrameCount} frames={_frames}",
+                RenderMaster.Engine.LogLevel.Debug);
         }
 
         public void BeginFrame()
@@ -38,7 +42,10 @@ namespace RenderMaster.src.NewGraphics.Programs
         public (int buffer, int offset) Push(in T data)
         {
             if (_cursor >= _perFrameCount)
+            {
+                RenderMaster.Engine.Logger.Log($"UboRing<{typeof(T).Name}> exhausted: cursor={_cursor} perFrame={_perFrameCount}", RenderMaster.Engine.LogLevel.Error);
                 throw new InvalidOperationException("UboRing exhausted for frame");
+            }
             int offset = (_frameIndex * _perFrameCount + _cursor) * _stride;
             unsafe
             {
