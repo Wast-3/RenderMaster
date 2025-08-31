@@ -45,12 +45,12 @@ namespace RenderMaster.src.NewGraphics.Frame
                     int cpuId = (h.Id < map.GpuToCpu_Mat.Length && map.GpuToCpu_Mat[h.Id] >= 0)
                         ? map.GpuToCpu_Mat[h.Id]
                         : 0;
-                    ref var m = ref cpu.Materials[cpuId];
+                    var m = cpu.Materials[cpuId];
                     var mb = new MaterialBlock
                     {
-                        BaseColorFactor = m.BaseColorFactor ?? new Vector4(1,1,1,1),
-                        Metallic   = m.MetallicFactor ?? 1f,
-                        Roughness  = m.RoughnessFactor ?? 1f,
+                        BaseColorFactor = m.BaseColorFactor ?? new Vector4(1, 1, 1, 1),
+                        Metallic = m.MetallicFactor ?? 1f,
+                        Roughness = m.RoughnessFactor ?? 1f,
                         AlphaCutoff = 0.5f,
                         Flags = 0f
                     };
