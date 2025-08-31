@@ -115,8 +115,8 @@ public class Game : GameWindow
         if (MatrixHasNaN(view) || MatrixHasNaN(proj))
             RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
-        // For column-major GLSL matrices, multiply projection * view and transpose
-        var viewProj = System.Numerics.Matrix4x4.Transpose(proj * view);
+        // correct for GLSL column-major consuming VP in the shader
+        var viewProj = System.Numerics.Matrix4x4.Transpose(view * proj);
 
         var frame = new FrameBlock
         {
