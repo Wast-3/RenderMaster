@@ -24,9 +24,9 @@ namespace RenderMaster.src.NewGraphics.Programs
 
             GL.CreateBuffers(1, out _buffer);
             GL.NamedBufferStorage(_buffer, _size, IntPtr.Zero,
-                BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.DynamicStorageBit);
+                BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapCoherentBit);
             _ptr = GL.MapNamedBufferRange(_buffer, IntPtr.Zero, _size,
-                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapInvalidateRangeBit);
+                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit);
         }
 
         public void BeginFrame()

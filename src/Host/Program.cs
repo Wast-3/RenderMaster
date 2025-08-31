@@ -87,7 +87,9 @@ public class Game : GameWindow
 
         var view = ToNum(camera.View);
         var proj = ToNum(camera.Projection);
-        var viewProj = System.Numerics.Matrix4x4.Transpose(view * proj);
+
+        // For column-major GLSL matrices, multiply projection * view and transpose
+        var viewProj = System.Numerics.Matrix4x4.Transpose(proj * view);
 
         var frame = new FrameBlock
         {

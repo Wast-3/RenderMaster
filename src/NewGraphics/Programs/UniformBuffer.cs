@@ -15,9 +15,9 @@ namespace RenderMaster.src.NewGraphics.Programs
             _size = Marshal.SizeOf<T>();
             GL.CreateBuffers(1, out _buffer);
             GL.NamedBufferStorage(_buffer, _size, IntPtr.Zero,
-                BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit | BufferStorageFlags.DynamicStorageBit);
+                BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapCoherentBit);
             _ptr = GL.MapNamedBufferRange(_buffer, IntPtr.Zero, _size,
-                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapInvalidateBufferBit);
+                BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit);
         }
 
         public void Update(in T data)
