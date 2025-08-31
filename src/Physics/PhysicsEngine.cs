@@ -1,41 +1,19 @@
-﻿using BepuPhysics;
+using BepuPhysics;
 using BepuPhysics.Collidables;
 using BepuPhysics.CollisionDetection;
 using BepuPhysics.Constraints;
 using BepuUtilities.Memory;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BepuPhysics;
-using BepuPhysics.CollisionDetection;
-using BepuPhysics.Collidables;
-using BepuPhysics.Constraints;
-using static RenderMaster.src.Physics.PhysicsCallbacks;
 using OpenTK.Windowing.Common;
-
+using static RenderMaster.src.Physics.PhysicsCallbacks;
 
 namespace RenderMaster.src.Physics
 {
-
-    class PhysicsBinding
-    {
-        public BodyHandle bodyHandle;
-        public Model model;
-        public PhysicsBinding(BodyHandle bodyHandle, Model model)
-        {
-            this.bodyHandle = bodyHandle;
-            this.model = model;
-        }
-    }
-
     class PhysicsEngine
     {
         private BufferPool bufferPool;
         public Simulation simulation;
-        private narrowPhase narrowPhase = new narrowPhase();
-        private poseIntegrator poseIntegrator = new poseIntegrator(new System.Numerics.Vector3(0f, -3.81f, 0f), 0.01f, 0.02f);
+        private narrowPhase narrowPhase = new();
+        private poseIntegrator poseIntegrator = new(new System.Numerics.Vector3(0f, -3.81f, 0f), 0.01f, 0.02f);
 
         public PhysicsEngine()
         {
@@ -50,41 +28,7 @@ namespace RenderMaster.src.Physics
 
         public void Update(FrameEventArgs args, float deltaTime)
         {
-
+            // Advance simulation by the timestep. Callers can integrate other systems before or after as needed.
         }
-
-        public void syncModelsToPhysics(List<PhysicsBinding> bindings)
-        {
-            foreach (var binding in bindings)
-            {
-                var bodyhandle = simulation.Bodies.GetBodyReference(binding.bodyHandle);
-                // Sync model transforms to physics bodies. Both BepuPhysics and OpenTK use a right-handed coordinate system with Y up.
-                binding.model.Position = new OpenTK.Mathematics.Vector3(bodyhandle.Pose.Position.X, bodyhandle.Pose.Position.Y, bodyhandle.Pose.Position.Z);
-
-                var q = bodyhandle.Pose.Orientation;
-                var otkQuat = new OpenTK.Mathematics.Quaternion(q.X, q.Y, q.Z, q.W);
-                binding.model.Rotation = ToEulerXYZ(otkQuat);
-            }
-        }
-
-        static OpenTK.Mathematics.Vector3 ToEulerXYZ(OpenTK.Mathematics.Quaternion q)
-        {
-            // Standard quaternion->euler (XYZ) conversion returning (roll, pitch, yaw)
-            float sinr_cosp = 2f * (q.W * q.X + q.Y * q.Z);
-            float cosr_cosp = 1f - 2f * (q.X * q.X + q.Y * q.Y);
-            float roll = MathF.Atan2(sinr_cosp, cosr_cosp);
-
-            float sinp = 2f * (q.W * q.Y - q.Z * q.X);
-            float pitch = MathF.Abs(sinp) >= 1f ? MathF.CopySign(MathF.PI / 2f, sinp) : MathF.Asin(sinp);
-
-            float siny_cosp = 2f * (q.W * q.Z + q.X * q.Y);
-            float cosy_cosp = 1f - 2f * (q.Y * q.Y + q.Z * q.Z);
-            float yaw = MathF.Atan2(siny_cosp, cosy_cosp);
-
-            return new OpenTK.Mathematics.Vector3(roll, pitch, yaw);
-        }
-
-
     }
-
 }
