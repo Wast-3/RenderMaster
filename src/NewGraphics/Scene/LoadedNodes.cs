@@ -9,5 +9,8 @@ namespace RenderMaster.src.NewGraphics.Scene
         {
             nodes.Add(node);
         }
+
+        // Expose a read-only view for traversal during extraction.
+        public IReadOnlyList<Node> All => nodes;
     }
 }
