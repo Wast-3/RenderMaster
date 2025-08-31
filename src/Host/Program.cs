@@ -82,6 +82,24 @@ public class Game : GameWindow
         }
 
         GL.Enable(EnableCap.DepthTest);
+
+        // Ensure the initial frame uses the correct framebuffer size and aspect
+        // ratio. On some high-DPI systems the first render can occur before a
+        // resize event fires, leaving the camera with the logical window size
+        // instead of the actual framebuffer dimensions.
+        var winSize = ClientSize;
+        userInterface.Resize(new ResizeEventArgs(winSize.X, winSize.Y));
+        var io = ImGui.GetIO();
+        io.DisplaySize = new System.Numerics.Vector2(winSize.X, winSize.Y);
+
+        unsafe
+        {
+            GLFW.GetFramebufferSize(WindowPtr, out int fbWidth, out int fbHeight);
+            io.DisplayFramebufferScale = new System.Numerics.Vector2((float)fbWidth / winSize.X,
+                (float)fbHeight / winSize.Y);
+            GL.Viewport(0, 0, fbWidth, fbHeight);
+            camera.UpdateAspectRatio((float)fbWidth / fbHeight);
+        }
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
