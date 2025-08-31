@@ -139,7 +139,8 @@ public class Game : GameWindow
             RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
         // correct for GLSL column-major consuming VP in the shader
-        var viewProj = Matrix4x4.Transpose(view * proj);
+        // GL expects column-major with projection preceding view
+        var viewProj = Matrix4x4.Transpose(proj * view);
 
         var frame = new FrameBlock
         {

@@ -55,8 +55,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                         Flags = 0f
                     };
                     return mb;
-                },
-                computeNormalWorld: w => DrawEncoder.ComputeNormalWorld(w));
+                });
         }
     }
 }

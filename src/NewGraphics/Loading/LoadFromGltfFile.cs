@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SharpGLTF.Schema2;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Scene;
@@ -78,10 +79,12 @@ namespace RenderMaster.src.NewGraphics.Loading
                 meshMap[mesh] = (meshHandle, prepared.Submeshes.ToArray());
             }
 
-            void ConvertNode(SharpGLTF.Schema2.Node src)
+            void ConvertNode(SharpGLTF.Schema2.Node src, Matrix4x4 parentWorld)
             {
+                var local = src.LocalMatrix;
+                var world = local * parentWorld;
                 var node = new SceneNode();
-                node.AddComponent(new TransformComponent(src.LocalMatrix));
+                node.AddComponent(new TransformComponent(world));
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
                 {
@@ -100,11 +103,11 @@ namespace RenderMaster.src.NewGraphics.Loading
                 Nodes.AddNode(node);
 
                 foreach (var child in src.VisualChildren)
-                    ConvertNode(child);
+                    ConvertNode(child, world);
             }
 
             foreach (var root in model.LogicalNodes.Where(n => n.VisualParent == null))
-                ConvertNode(root);
+                ConvertNode(root, Matrix4x4.Identity);
         }
     }
 }

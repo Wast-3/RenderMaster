@@ -18,8 +18,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             GPUResourceTable gpu,
             ProgramLibrary programs,
             ProgramUniforms uniforms,
-            Func<Handle<GPUResourceTable.MaterialGPU>, MaterialBlock> materialBlockOf,
-            Func<Matrix4x4, Matrix4x4> computeNormalWorld)
+            Func<Handle<GPUResourceTable.MaterialGPU>, MaterialBlock> materialBlockOf)
         {
             PassKind currentPass = (PassKind)(-1);
             int currentVao = -1;
@@ -68,7 +67,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                 var ob = new ObjectBlock
                 {
                     World = Matrix4x4.Transpose(d.Packet.World),
-                    NormalWorld = Matrix4x4.Transpose(computeNormalWorld(d.Packet.World))
+                    NormalWorld = ComputeNormalWorld(d.Packet.World)
                 };
                 if (float.IsNaN(ob.World.M11) || float.IsNaN(ob.NormalWorld.M11))
                     RenderMaster.Engine.Logger.Log("ObjectBlock contains NaNs (world/normalWorld).", RenderMaster.Engine.LogLevel.Error);
@@ -102,6 +101,9 @@ namespace RenderMaster.src.NewGraphics.Frame
         {
             Matrix4x4.Invert(world, out var inv);
             var nm = Matrix4x4.Transpose(inv);
+            nm.M14 = nm.M24 = nm.M34 = 0f;
+            nm.M41 = nm.M42 = nm.M43 = 0f;
+            nm.M44 = 1f;
             return nm;
         }
 
