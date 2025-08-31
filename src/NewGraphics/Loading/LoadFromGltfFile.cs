@@ -4,6 +4,7 @@ using System.Linq;
 using SharpGLTF.Schema2;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Scene;
+using SceneNode = RenderMaster.src.NewGraphics.Scene.Node;
 using RenderMaster.src.NewGraphics.Types;
 
 namespace RenderMaster.src.NewGraphics.Loading
@@ -25,7 +26,7 @@ namespace RenderMaster.src.NewGraphics.Loading
             var texMap = new Dictionary<SharpGLTF.Schema2.Texture, TextureHandle>();
             foreach (var tex in model.LogicalTextures)
             {
-                var bytes = tex.PrimaryImage?.Content?.Content.ToArray() ?? Array.Empty<byte>();
+                var bytes = tex.PrimaryImage != null ? tex.PrimaryImage.Content.Content.ToArray() : Array.Empty<byte>();
                 var prepared = new PreparedTexture(bytes);
                 var handle = table.AddTexture(prepared);
                 texMap[tex] = handle;
@@ -38,18 +39,22 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                 material.DoubleSided = mat.DoubleSided;
 
-                var pbr = mat.PbrMetallicRoughness;
-                if (pbr != null)
+                var baseColor = mat.FindChannel("BaseColor");
+                if (baseColor != null)
                 {
-                    material.BaseColorFactor = pbr.BaseColorFactor;
-                    material.MetallicFactor = pbr.MetallicFactor;
-                    material.RoughnessFactor = pbr.RoughnessFactor;
-
-                    var bc = pbr.BaseColorTexture?.Texture;
+                    material.BaseColorFactor = baseColor.Value.Color;
+                    var bc = baseColor.Value.Texture;
                     if (bc != null && texMap.TryGetValue(bc, out var bcHandle))
                         material.Textures["BaseColorTexture"] = bcHandle;
+                }
 
-                    var mr = pbr.MetallicRoughnessTexture?.Texture;
+                var mrChan = mat.FindChannel("MetallicRoughness");
+                if (mrChan != null)
+                {
+                    material.MetallicFactor = mrChan.Value.GetFactor("MetallicFactor");
+                    material.RoughnessFactor = mrChan.Value.GetFactor("RoughnessFactor");
+
+                    var mr = mrChan.Value.Texture;
                     if (mr != null && texMap.TryGetValue(mr, out var mrHandle))
                         material.Textures["MetallicRoughnessTexture"] = mrHandle;
                 }
@@ -72,7 +77,7 @@ namespace RenderMaster.src.NewGraphics.Loading
 
             void ConvertNode(SharpGLTF.Schema2.Node src)
             {
-                var node = new Node();
+                var node = new SceneNode();
                 node.AddComponent(new TransformComponent(src.LocalMatrix));
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
