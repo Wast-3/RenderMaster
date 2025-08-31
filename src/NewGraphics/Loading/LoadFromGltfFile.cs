@@ -39,7 +39,7 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                 material.DoubleSided = mat.DoubleSided;
 
-                var pbr = mat.PBRMetallicRoughness;
+                var pbr = mat.PbrMetallicRoughness;
                 if (pbr != null)
                 {
                     material.BaseColorFactor = pbr.BaseColorFactor;
