@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using RenderMaster.src.NewGraphics.Types;
 
@@ -36,9 +37,9 @@ namespace RenderMaster.src.NewGraphics.Resources
         readonly List<TextureGPU> textures = new();
         readonly List<MaterialGPU> materials = new();
 
-        public ref readonly MeshGPU GetMesh(MeshHandle h) => ref meshes[h.Id];
-        public ref readonly TextureGPU GetTexture(TextureHandle h) => ref textures[h.Id];
-        public ref readonly MaterialGPU GetMaterial(MaterialHandle h) => ref materials[h.Id];
+        public ref readonly MeshGPU GetMesh(MeshHandle h) => ref CollectionsMarshal.AsSpan(meshes)[h.Id];
+        public ref readonly TextureGPU GetTexture(TextureHandle h) => ref CollectionsMarshal.AsSpan(textures)[h.Id];
+        public ref readonly MaterialGPU GetMaterial(MaterialHandle h) => ref CollectionsMarshal.AsSpan(materials)[h.Id];
 
         public MeshHandle CreateMesh(PreparedMeshBuffer cpu)
         {
