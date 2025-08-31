@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using OpenTK.Graphics.OpenGL4;
 using RenderMaster.src.NewGraphics.Types;
 
@@ -35,6 +36,10 @@ namespace RenderMaster.src.NewGraphics.Resources
         readonly List<MeshGPU> meshes = new();
         readonly List<TextureGPU> textures = new();
         readonly List<MaterialGPU> materials = new();
+
+        public ref readonly MeshGPU GetMesh(MeshHandle h) => ref CollectionsMarshal.AsSpan(meshes)[h.Id];
+        public ref readonly TextureGPU GetTexture(TextureHandle h) => ref CollectionsMarshal.AsSpan(textures)[h.Id];
+        public ref readonly MaterialGPU GetMaterial(MaterialHandle h) => ref CollectionsMarshal.AsSpan(materials)[h.Id];
 
         public MeshHandle CreateMesh(PreparedMeshBuffer cpu)
         {
@@ -109,20 +114,33 @@ namespace RenderMaster.src.NewGraphics.Resources
             return new TextureHandle(textures.Count - 1);
         }
 
-        public MaterialHandle CreateMaterial(MaterialCPU cpu)
+        public MaterialHandle CreateMaterialResolved(Dictionary<string, (int textureId, int samplerId)> texDict)
         {
-            var mat = new MaterialGPU { textures = new Dictionary<string, (int, int)>() };
-            foreach (var kv in cpu.Textures)
-            {
-                var handle = kv.Value.Id;
-                if (handle >= 0 && handle < textures.Count)
-                {
-                    var tex = textures[handle];
-                    mat.textures[kv.Key] = (tex.id, tex.sampler);
-                }
-            }
+            var mat = new MaterialGPU { textures = texDict };
             materials.Add(mat);
             return new MaterialHandle(materials.Count - 1);
+        }
+
+        public void Destroy(MeshHandle h)
+        {
+            var mesh = meshes[h.Id];
+            if (mesh.ebo != 0) GL.DeleteBuffer(mesh.ebo);
+            GL.DeleteBuffer(mesh.vbo);
+            GL.DeleteVertexArray(mesh.vao);
+            meshes[h.Id] = default;
+        }
+
+        public void Destroy(TextureHandle h)
+        {
+            var tex = textures[h.Id];
+            GL.DeleteTexture(tex.id);
+            GL.DeleteSampler(tex.sampler);
+            textures[h.Id] = default;
+        }
+
+        public void Destroy(MaterialHandle h)
+        {
+            materials[h.Id] = default;
         }
     }
 }

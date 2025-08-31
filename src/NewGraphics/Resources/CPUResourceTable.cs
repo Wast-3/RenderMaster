@@ -13,6 +13,10 @@ namespace RenderMaster.src.NewGraphics.Resources
         List<PreparedTexture> textures = new List<PreparedTexture>();
         List<MaterialCPU> materials = new List<MaterialCPU>();
 
+        public IReadOnlyList<PreparedMeshBuffer> MeshBuffers => meshBuffers;
+        public IReadOnlyList<PreparedTexture> Textures => textures;
+        public IReadOnlyList<MaterialCPU> Materials => materials;
+
         public MeshHandle AddMeshBuffer(PreparedMeshBuffer buffer)
         {
             meshBuffers.Add(buffer);
