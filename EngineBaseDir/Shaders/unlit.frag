@@ -1,13 +1,19 @@
-in VS_OUT { vec3 P; vec3 N; vec2 UV; } fs;
-layout(location=0) out vec4 outColor;
+#version 450 core
+in vec2 vUV;
+out vec4 oColor;
 
-uniform sampler2D uBaseColorTex;
+#include "common_blocks.glsl"
 
 void main()
 {
-#ifdef VAR_ALPHABLEND
-    if (texture(uBaseColorTex, fs.UV).a < uAlphaCutoff) discard;
-#endif
-    vec4 bc = texture(uBaseColorTex, fs.UV) * uBaseColorFactor;
-    outColor = bc;
+    vec4 texColor = texture(uBaseColorTex, vUV);
+    vec4 base = uBaseColorFactor;
+    // If no texture is bound, texColor will be (0,0,0,1) or undefined; bias toward base factor:
+    vec4 color = base;
+    // If you want “use texture when present”, uncomment this line:
+    // color = base * (texColor.a > 0.0 ? texColor : vec4(1.0));
+
+    // simple alpha (no cutoff for now)
+    oColor = color;
 }
+

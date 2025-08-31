@@ -121,7 +121,7 @@ public class Game : GameWindow
             RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
         // correct for GLSL column-major consuming VP in the shader
-        var viewProj = Matrix4x4.Transpose(view * proj);
+        var viewProj = Matrix4x4.Transpose(proj * view);
 
         var frame = new FrameBlock
         {
@@ -158,6 +158,8 @@ public class Game : GameWindow
             io.DisplayFramebufferScale = new System.Numerics.Vector2((float)fbWidth / e.Width, (float)fbHeight / e.Height);
             GL.Viewport(0, 0, fbWidth, fbHeight);
         }
+        // Keep camera aspect in sync with the window:
+        camera.SetPerspectiveProjection(0.8f, (float)e.Width / e.Height, 1f, 4000f);
 
         RenderMaster.Engine.Logger.Log(
             $"Resize: win=({e.Width}x{e.Height}) fb=({io.DisplayFramebufferScale.X * e.Width}x{io.DisplayFramebufferScale.Y * e.Height}) scale=({io.DisplayFramebufferScale.X:F2},{io.DisplayFramebufferScale.Y:F2})",

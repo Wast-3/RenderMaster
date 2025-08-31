@@ -67,8 +67,10 @@ namespace RenderMaster.src.NewGraphics.Frame
 
                 var ob = new ObjectBlock
                 {
+                    // We keep CPU matrices row-major and transpose once for GLSL column-major:
                     World = Matrix4x4.Transpose(d.Packet.World),
-                    NormalWorld = Matrix4x4.Transpose(computeNormalWorld(d.Packet.World))
+                    // computeNormalWorld already returned transpose(inverse(world))
+                    NormalWorld = computeNormalWorld(d.Packet.World)
                 };
                 if (float.IsNaN(ob.World.M11) || float.IsNaN(ob.NormalWorld.M11))
                     RenderMaster.Engine.Logger.Log("ObjectBlock contains NaNs (world/normalWorld).", RenderMaster.Engine.LogLevel.Error);

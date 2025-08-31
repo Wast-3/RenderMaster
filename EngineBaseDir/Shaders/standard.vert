@@ -1,9 +1,18 @@
-out VS_OUT { vec3 P; vec3 N; vec2 UV; } vs;
+#version 450 core
+
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNormal;
+layout(location=2) in vec4 aTangent;
+layout(location=3) in vec2 aUV;
+
+#include "common_blocks.glsl"
+
+out vec2 vUV;
+
 void main()
 {
-    vec4 wp = uWorld * vec4(inPos, 1.0);
-    vs.P  = wp.xyz;
-    vs.N  = normalize((uNormalWorld * vec4(inNormal, 0.0)).xyz);
-    vs.UV = inUV;
-    gl_Position = uViewProj * wp;
+    vUV = aUV;
+    // CPU provided uViewProj and uWorld already transposed for column-major:
+    gl_Position = uViewProj * uWorld * vec4(aPos, 1.0);
 }
+
