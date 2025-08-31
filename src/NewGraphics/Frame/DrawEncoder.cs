@@ -63,7 +63,11 @@ namespace RenderMaster.src.NewGraphics.Frame
                     uniforms.MaterialRing.BindRange(BindingPoints.Material, lastMatUboOffset);
                 }
 
-                var ob = new ObjectBlock { World = d.Packet.World, NormalWorld = computeNormalWorld(d.Packet.World) };
+                var ob = new ObjectBlock
+                {
+                    World = Matrix4x4.Transpose(d.Packet.World),
+                    NormalWorld = Matrix4x4.Transpose(computeNormalWorld(d.Packet.World))
+                };
                 var (objBuf, objOff) = uniforms.ObjectRing.Push(ob);
                 GL.BindBufferRange(BufferRangeTarget.UniformBuffer, BindingPoints.Object, objBuf, (IntPtr)objOff, 256);
 
