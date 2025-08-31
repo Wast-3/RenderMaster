@@ -82,7 +82,7 @@ namespace RenderMaster.src.NewGraphics.Loading
             void ConvertNode(SharpGLTF.Schema2.Node src, Matrix4x4 parentWorld)
             {
                 var local = src.LocalMatrix;
-                var world = local * parentWorld;
+                var world = parentWorld * local;
                 var node = new SceneNode();
                 node.AddComponent(new TransformComponent(world));
 
