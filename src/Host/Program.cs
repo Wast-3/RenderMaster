@@ -25,7 +25,7 @@ public class Game : GameWindow
         TextureWrapMode.Repeat, TextureWrapMode.Repeat));
     UploadResult map = new();
     ProgramLibrary programs = new();
-    ProgramUniforms uniforms = new();
+    ProgramUniforms uniforms = null!;
     LoadedNodes nodes = new();
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
@@ -49,6 +49,9 @@ public class Game : GameWindow
     {
         base.OnLoad();
         userInterface = new UI();
+
+        // Initialize GL-dependent uniform buffers once context is ready
+        uniforms = new ProgramUniforms();
 
         // Load a glTF scene if available
         var modelPath = Path.Combine(EngineConfig.ModelDirectory, "scene.gltf");
