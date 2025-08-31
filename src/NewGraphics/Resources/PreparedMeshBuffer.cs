@@ -1,153 +1,14 @@
-﻿using BepuPhysics.Collidables;
-using OpenTK.Windowing.Common.Input;
-using SharpGLTF.Memory;
-using SharpGLTF.Schema2;
-using SharpGLTF.Validation;
-using StbImageSharp;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using SharpGLTF.Memory;
+using SharpGLTF.Schema2;
+using RenderMaster.src.NewGraphics.Types;
 
-
-namespace RenderMaster.src.NewGraphics
+namespace RenderMaster.src.NewGraphics.Resources
 {
-    using MeshHandle = Handle<PreparedMeshBuffer>;
-    using TextureHandle = Handle<PreparedTexture>;
-    using MaterialHandle = Handle<MaterialCPU>;
-
-
-    readonly record struct Handle<T>(int Id);
-
-    class CPUResourceTable
-    {
-        List<PreparedMeshBuffer> meshBuffers = new List<PreparedMeshBuffer>();
-        List<PreparedTexture> textures = new List<PreparedTexture>();
-        List<MaterialCPU> materials = new List<MaterialCPU>();
-
-        public MeshHandle AddMeshBuffer(PreparedMeshBuffer buffer)
-        {
-            meshBuffers.Add(buffer);
-            return new MeshHandle(meshBuffers.Count - 1);
-        }
-
-        public TextureHandle AddTexture(PreparedTexture tex)
-        {
-            textures.Add(tex);
-            return new TextureHandle(textures.Count - 1);
-        }
-
-        public MaterialHandle AddMaterial(MaterialCPU mat)
-        {
-            materials.Add(mat);
-            return new MaterialHandle(materials.Count - 1);
-        }
-    }
-
-    class LoadedNodes
-    {
-        List<SceneNode> nodes = new List<SceneNode>();
-        public void AddNode(SceneNode node)
-        {
-            nodes.Add(node);
-        }
-    }
-
-    class SceneNode
-    {
-        public required MeshHandle mesh { get; init; }
-        public required MaterialHandle material { get; init; }
-    }
-
-    interface ILoadsResourceTable
-    {
-        CPUResourceTable ResourceTable { get; }
-
-        void LoadResources(CPUResourceTable table);
-    }
-
-    class LoadFromGltfFile : ILoadsResourceTable
-    {
-        public string filepath { get; init; }
-        public CPUResourceTable ResourceTable { get; } = new CPUResourceTable();
-
-        public void LoadResources(CPUResourceTable table)
-        {
-            var model = ModelRoot.Load(filepath);
-
-            var texMap = new Dictionary<SharpGLTF.Schema2.Texture, TextureHandle>();
-            foreach (var tex in model.LogicalTextures)
-            {
-                var bytes = tex.PrimaryImage?.Content?.Content.ToArray() ?? Array.Empty<byte>();
-                var prepared = new PreparedTexture(bytes);
-                var handle = table.AddTexture(prepared);
-                texMap[tex] = handle;
-            }
-
-            var matMap = new Dictionary<SharpGLTF.Schema2.Material, MaterialHandle>();
-            foreach (var mat in model.LogicalMaterials)
-            {
-                var material = new MaterialCPU();
-                var baseColor = mat.FindChannel("BaseColor")?.Texture;
-                if (baseColor != null && texMap.TryGetValue(baseColor, out var th))
-                    material.Textures["BaseColor"] = th;
-                var mHandle = table.AddMaterial(material);
-                matMap[mat] = mHandle;
-            }
-
-            foreach (var mesh in model.LogicalMeshes)
-            {
-                var prepared = new PreparedMeshBuffer(mesh);
-                var meshHandle = table.AddMeshBuffer(prepared);
-
-                var prim = mesh.Primitives.FirstOrDefault();
-                var matHandle = prim != null && prim.Material != null && matMap.TryGetValue(prim.Material, out var mh)
-                    ? mh
-                    : new MaterialHandle(0);
-
-                var node = new SceneNode
-                {
-                    mesh = meshHandle,
-                    material = matHandle
-                };
-            }
-        }
-    }
-
-    class PreparedTexture
-    {
-        public int Width { get; }
-        public int Height { get; }
-        public byte[] Pixels { get; } = Array.Empty<byte>();
-
-        public PreparedTexture(byte[] bytes)
-        {
-            using var ms = new MemoryStream(bytes);
-            var img = ImageResult.FromStream(ms, ColorComponents.RedGreenBlueAlpha);
-            Width = img.Width;
-            Height = img.Height;
-            Pixels = img.Data;
-        }
-    }
-
-    class MaterialCPU
-    {
-        public Dictionary<string, TextureHandle> Textures { get; } = new();
-    }
-
-    // A contiguous index range you can draw with one material (one glTF primitive)
-    public readonly struct SubmeshSpan
-    {
-        public readonly int IndexStart;   // into the global index buffer (in elements, not bytes)
-        public readonly int IndexCount;   // number of indices to draw
-        public SubmeshSpan(int start, int count) { IndexStart = start; IndexCount = count; }
-    }
-
     class PreparedMeshBuffer
     {
         // Interleaved layout: P(3) N(3) T(3)+handedness(1) UV(2) => 12 floats
@@ -327,7 +188,5 @@ namespace RenderMaster.src.NewGraphics
             return outT;
         }
     }
-
 }
 
-    
