@@ -5,6 +5,7 @@ using OpenTK.Graphics.OpenGL4;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Programs;
 using RenderMaster.src.NewGraphics.Types;
+using RenderMaster.Engine;
 
 namespace RenderMaster.src.NewGraphics.Frame
 {
@@ -46,6 +47,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                 {
                     currentProg = programs.Get(key);
                     GL.UseProgram(currentProg.Handle);
+                    GlCheck("UseProgram");
                     currentKey = key;
                 }
 
@@ -68,11 +70,24 @@ namespace RenderMaster.src.NewGraphics.Frame
                     World = Matrix4x4.Transpose(d.Packet.World),
                     NormalWorld = Matrix4x4.Transpose(computeNormalWorld(d.Packet.World))
                 };
+                if (float.IsNaN(ob.World.M11) || float.IsNaN(ob.NormalWorld.M11))
+                    RenderMaster.Engine.Logger.Log("ObjectBlock contains NaNs (world/normalWorld).", RenderMaster.Engine.LogLevel.Error);
                 var (objBuf, objOff) = uniforms.ObjectRing.Push(ob);
                 GL.BindBufferRange(BufferRangeTarget.UniformBuffer, BindingPoints.Object, objBuf, (IntPtr)objOff, 256);
 
                 ref readonly var mesh = ref gpu.GetMesh(d.Packet.Mesh);
-                if (mesh.vao != currentVao) { GL.BindVertexArray(mesh.vao); currentVao = mesh.vao; }
+                if (mesh.indexCount == 0 && d.Packet.Span.IndexCount == 0)
+                    RenderMaster.Engine.Logger.Log($"Draw with empty index buffer: meshId={d.Packet.Mesh.Id}", RenderMaster.Engine.LogLevel.Warning);
+                if (d.Packet.Span.IndexStart + d.Packet.Span.IndexCount > mesh.indexCount && mesh.indexCount > 0)
+                    RenderMaster.Engine.Logger.Log(
+                        $"Submesh out-of-range: start={d.Packet.Span.IndexStart} count={d.Packet.Span.IndexCount} meshIndexCount={mesh.indexCount}",
+                        RenderMaster.Engine.LogLevel.Error);
+                if (mesh.vao != currentVao)
+                {
+                    GL.BindVertexArray(mesh.vao);
+                    GlCheck("BindVertexArray");
+                    currentVao = mesh.vao;
+                }
                 var indexSize = GetIndexElementSizeBytes(mesh.indexType);
                 var offsetBytes = d.Packet.Span.IndexStart * indexSize;
                 GL.DrawElements(PrimitiveType.Triangles, d.Packet.Span.IndexCount, mesh.indexType, new IntPtr(offsetBytes));
@@ -128,6 +143,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.ColorMask(false, false, false, false);
                     break;
             }
+            GlCheck("BindPassState");
         }
 
         private static void BindMaterialTextures(GPUResourceTable gpu, Types.Handle<GPUResourceTable.MaterialGPU> matHandle)
@@ -165,6 +181,13 @@ namespace RenderMaster.src.NewGraphics.Frame
             DrawElementsType.UnsignedInt => 4,
             _ => 4,
         };
+
+        static void GlCheck(string where)
+        {
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError)
+                RenderMaster.Engine.Logger.Log($"GL ERROR after {where}: {err}", RenderMaster.Engine.LogLevel.Error);
+        }
     }
 }
 

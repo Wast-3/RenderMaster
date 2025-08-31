@@ -49,6 +49,11 @@ namespace RenderMaster.src.NewGraphics.Resources
                 var norAcc = prim.GetVertexAccessor("NORMAL");
                 var tanAcc = prim.GetVertexAccessor("TANGENT");
                 var uv0Acc = prim.GetVertexAccessor("TEXCOORD_0");
+
+                if (norAcc == null)
+                    RenderMaster.Engine.Logger.Log("Mesh primitive has no NORMALs; generating defaults", RenderMaster.Engine.LogLevel.Warning);
+                if (uv0Acc == null)
+                    RenderMaster.Engine.Logger.Log("Mesh primitive has no TEXCOORD_0; using (0,0)", RenderMaster.Engine.LogLevel.Warning);
                 var idxAcc = prim.IndexAccessor;
 
                 var positions = posAcc.AsVector3Array(); // IAccessorArray<Vector3>

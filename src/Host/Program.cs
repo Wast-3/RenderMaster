@@ -9,6 +9,7 @@ using RenderMaster.src.NewGraphics.Loading;
 using RenderMaster.src.NewGraphics.Programs;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Scene;
+using RenderMaster.Engine;
 
 namespace RenderMaster;
 
@@ -50,6 +51,18 @@ public class Game : GameWindow
         base.OnLoad();
         userInterface = new UI();
 
+        GL.Enable(EnableCap.DebugOutput);
+        GL.Enable(EnableCap.DebugOutputSynchronous);
+        GL.DebugMessageCallback((src, type, id, severity, len, msg, user) =>
+        {
+            var txt = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(msg, len);
+            RenderMaster.Engine.Logger.Log($"GL DEBUG [{severity}] {type}/{src} #{id}: {txt}", RenderMaster.Engine.LogLevel.Debug);
+        }, IntPtr.Zero);
+
+        RenderMaster.Engine.Logger.Log(
+            $"GL_VENDOR={GL.GetString(StringName.Vendor)} GL_RENDERER={GL.GetString(StringName.Renderer)} GL_VERSION={GL.GetString(StringName.Version)}",
+            RenderMaster.Engine.LogLevel.Info);
+
         // Initialize GL-dependent uniform buffers once context is ready
         uniforms = new ProgramUniforms();
 
@@ -71,6 +84,14 @@ public class Game : GameWindow
         base.OnUpdateFrame(args);
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
+
+        if ((int)GLFW.GetTime() % 5 == 0)
+        {
+            var p = camera.Position;
+            RenderMaster.Engine.Logger.Log(
+                $"Camera pos=({p.X:F2},{p.Y:F2},{p.Z:F2}) yaw={camera.Yaw:F1} pitch={camera.Pitch:F1}",
+                RenderMaster.Engine.LogLevel.Debug);
+        }
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -87,6 +108,12 @@ public class Game : GameWindow
 
         var view = ToNum(camera.View);
         var proj = ToNum(camera.Projection);
+
+        static bool MatrixHasNaN(in System.Numerics.Matrix4x4 m) =>
+            !(float.IsFinite(m.M11) && float.IsFinite(m.M22) && float.IsFinite(m.M33) && float.IsFinite(m.M44));
+
+        if (MatrixHasNaN(view) || MatrixHasNaN(proj))
+            RenderMaster.Engine.Logger.Log($"NaN in view/proj! view={view} proj={proj}", RenderMaster.Engine.LogLevel.Error);
 
         // For column-major GLSL matrices, multiply projection * view and transpose
         var viewProj = System.Numerics.Matrix4x4.Transpose(proj * view);
@@ -126,5 +153,9 @@ public class Game : GameWindow
             io.DisplayFramebufferScale = new System.Numerics.Vector2((float)fbWidth / e.Width, (float)fbHeight / e.Height);
             GL.Viewport(0, 0, fbWidth, fbHeight);
         }
+
+        RenderMaster.Engine.Logger.Log(
+            $"Resize: win=({e.Width}x{e.Height}) fb=({io.DisplayFramebufferScale.X * e.Width}x{io.DisplayFramebufferScale.Y * e.Height}) scale=({io.DisplayFramebufferScale.X:F2},{io.DisplayFramebufferScale.Y:F2})",
+            RenderMaster.Engine.LogLevel.Debug);
     }
 }
