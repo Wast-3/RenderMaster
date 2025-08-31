@@ -101,8 +101,7 @@ namespace RenderMaster.src.NewGraphics.Frame
         public static Matrix4x4 ComputeNormalWorld(Matrix4x4 world)
         {
             Matrix4x4.Invert(world, out var inv);
-            var nm = Matrix4x4.Transpose(inv);
-            return nm;
+            return inv;
         }
 
         private static void BindPassState(PassKind pass)

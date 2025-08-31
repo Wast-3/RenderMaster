@@ -60,6 +60,8 @@ public class Game : GameWindow
             RenderMaster.Engine.Logger.Log($"GL DEBUG [{severity}] {type}/{src} #{id}: {txt}", RenderMaster.Engine.LogLevel.Debug);
         }, IntPtr.Zero);
 
+        GL.ClipControl(ClipOrigin.LowerLeft, ClipDepthMode.ZeroToOne);
+
         RenderMaster.Engine.Logger.Log(
             $"GL_VENDOR={GL.GetString(StringName.Vendor)} GL_RENDERER={GL.GetString(StringName.Renderer)} GL_VERSION={GL.GetString(StringName.Version)}",
             RenderMaster.Engine.LogLevel.Info);
