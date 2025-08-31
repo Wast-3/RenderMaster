@@ -68,13 +68,17 @@ public class Game : GameWindow
         uniforms = new ProgramUniforms();
 
         // Load a glTF scene if available
-        var modelPath = Path.Combine(EngineConfig.ModelDirectory, "scene.gltf");
+        var modelPath = Path.Combine(EngineConfig.ModelDirectory, "scene.glb");
         if (File.Exists(modelPath))
         {
             var loader = new LoadFromGltfFile { filepath = modelPath };
             loader.LoadResources(cpu);
             map = uploader.UploadIncremental(cpu, gpu);
             nodes = loader.Nodes;
+        }
+        else
+        {
+            throw new FileNotFoundException($"No model found at {modelPath}");
         }
 
         GL.Enable(EnableCap.DepthTest);

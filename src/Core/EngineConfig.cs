@@ -12,7 +12,7 @@ public class EngineConfig
 
     static EngineConfig()
     {
-        BaseDirectory = "H:\\Google Drive Sync\\dev\\Development\\RenderMaster\\EngineBaseDir";
+        BaseDirectory = "H:\\Google Drive Sync\\dev\\clones\\RenderMaster\\EngineBaseDir";
         ShaderDirectory = Path.Combine(BaseDirectory, "Shaders");
         ModelDirectory = Path.Combine(BaseDirectory, "Models");
         TextureDirectory = Path.Combine(BaseDirectory, "Textures");
