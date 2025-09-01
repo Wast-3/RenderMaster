@@ -15,7 +15,6 @@ namespace RenderMaster.src.NewGraphics.Frame
         // Extract + classify in one pass to avoid re-lookups.
         public static List<ClassifiedDraw> Build(LoadedNodes nodes, CPUResourceTable cpu, UploadResult map)
         {
-            nodes.UpdateWorldTransforms();
             var draws = new List<ClassifiedDraw>(capacity: 256);
 
             void Traverse(Node node)
@@ -41,7 +40,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     Traverse(child);
             }
 
-            foreach (var root in nodes.All)
+            foreach (var root in nodes.Roots)
                 Traverse(root);
 
             return draws;
