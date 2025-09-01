@@ -111,6 +111,9 @@ public class Game : GameWindow
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
+        // Update scene graph transforms so other systems see current world matrices.
+        nodes.UpdateWorldTransforms();
+
         if ((int)GLFW.GetTime() % 5 == 0)
         {
             var p = camera.Position;

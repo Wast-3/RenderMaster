@@ -13,10 +13,13 @@ namespace RenderMaster.src.NewGraphics.Scene
 
     class TransformComponent : INodeComponent
     {
-        public Matrix4x4 Transform { get; set; }
-        public TransformComponent(Matrix4x4 transform)
+        public Matrix4x4 LocalTransform { get; set; }
+        public Matrix4x4 WorldTransform { get; set; }
+
+        public TransformComponent(Matrix4x4 localTransform)
         {
-            Transform = transform;
+            LocalTransform = localTransform;
+            WorldTransform = localTransform;
         }
     }
 
@@ -37,8 +40,18 @@ namespace RenderMaster.src.NewGraphics.Scene
     class Node
     {
         readonly List<INodeComponent> _components = new();
+        readonly List<Node> _children = new();
+
+        public Node? Parent { get; private set; }
+        public IReadOnlyList<Node> Children => _children;
 
         public void AddComponent(INodeComponent comp) => _components.Add(comp);
+
+        public void AddChild(Node child)
+        {
+            child.Parent = this;
+            _children.Add(child);
+        }
 
         public IEnumerable<T> GetComponents<T>() where T : class, INodeComponent
             => _components.OfType<T>();
