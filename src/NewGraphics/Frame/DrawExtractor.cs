@@ -15,11 +15,12 @@ namespace RenderMaster.src.NewGraphics.Frame
         // Extract + classify in one pass to avoid re-lookups.
         public static List<ClassifiedDraw> Build(LoadedNodes nodes, CPUResourceTable cpu, UploadResult map)
         {
+            nodes.UpdateWorldTransforms();
             var draws = new List<ClassifiedDraw>(capacity: 256);
 
-            foreach (var node in nodes.All)
+            void Traverse(Node node)
             {
-                var xf = node.GetComponent<TransformComponent>()?.Transform ?? Matrix4x4.Identity;
+                var xf = node.GetComponent<TransformComponent>()?.WorldTransform ?? Matrix4x4.Identity;
                 foreach (var mc in node.GetComponents<MeshComponent>())
                 {
                     var meshGpu = map.Map(mc.Mesh);
@@ -35,7 +36,13 @@ namespace RenderMaster.src.NewGraphics.Frame
 
                     draws.Add(new ClassifiedDraw(packet, tech, pass, pipeline));
                 }
+
+                foreach (var child in node.Children)
+                    Traverse(child);
             }
+
+            foreach (var root in nodes.All)
+                Traverse(root);
 
             return draws;
         }
