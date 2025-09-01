@@ -115,8 +115,8 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.Disable(EnableCap.Blend);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    //GL.Enable(EnableCap.CullFace);
-                    //GL.CullFace(CullFaceMode.Back);
+                    GL.Enable(EnableCap.CullFace);
+                    GL.CullFace(CullFaceMode.Back);
                     GL.ColorMask(true, true, true, true);
                     break;
 

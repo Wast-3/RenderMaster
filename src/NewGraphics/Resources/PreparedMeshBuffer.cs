@@ -106,6 +106,12 @@ namespace RenderMaster.src.NewGraphics.Resources
                 baseVertex += (uint)positions.Count;
             }
 
+            // Flip winding order to match OpenGL's default counter-clockwise convention
+            for (int i = 0; i + 2 < idx32.Count; i += 3)
+            {
+                (idx32[i + 2], idx32[i + 1]) = (idx32[i + 1], idx32[i + 2]);
+            }
+
             // Finalize
             Vertices = verts.ToArray();
             VertexCount = Vertices.Length / FloatsPerVertex;
