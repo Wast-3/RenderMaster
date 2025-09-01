@@ -40,6 +40,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     Traverse(child);
             }
 
+            // Begin traversal from scene roots so each node is processed once.
             foreach (var root in nodes.Roots)
                 Traverse(root);
 
