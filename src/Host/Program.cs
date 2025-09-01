@@ -33,7 +33,10 @@ public class Game : GameWindow
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
         ClientSize = (width, height),
-        Title = title
+        Title = title,
+        Flags = ContextFlags.ForwardCompatible,
+        Profile = ContextProfile.Core,
+        APIVersion = new Version(4, 5)
     })
     {
         camera = new Camera(new OpenTK.Mathematics.Vector3(2, 0, 0), new OpenTK.Mathematics.Vector3(0, 0, 0),
@@ -141,7 +144,7 @@ public class Game : GameWindow
         // correct for GLSL column-major consuming VP in the shader
         // GL expects column-major matrices; transpose each part then
         // multiply in projection * view order
-        var viewProj = Matrix4x4.Transpose(proj) * Matrix4x4.Transpose(view);
+        var viewProj = view * proj;
 
         var frame = new FrameBlock
         {
