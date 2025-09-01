@@ -282,6 +282,15 @@ public class DebugMenu : IUIElement
                 ImGui.EndTabItem();
             }
 
+            if (ImGui.BeginTabItem("NodeGraph Inspector"))
+            {
+                if (ImGui.TreeNode("NodeGraph"))
+                {
+                    ImGui.Text("Not implemented yet.");
+                    ImGui.TreePop();
+                }
+            }
+
             ImGui.EndTabBar();
         }
     }

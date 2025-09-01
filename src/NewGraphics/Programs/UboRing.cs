@@ -22,9 +22,13 @@ namespace RenderMaster.src.NewGraphics.Programs
             _frames = frames;
             _size = _stride * perFrameCount * frames;
 
+            //create exactly one buffer
             GL.CreateBuffers(1, out _buffer);
+            //mark the buffer as being written to by the cpu so that it's placed in a performant region of memory, keep the buffer permanently mapped, let driver handle coherency (no explicit flushes)
             GL.NamedBufferStorage(_buffer, _size, IntPtr.Zero,
                 BufferStorageFlags.MapPersistentBit | BufferStorageFlags.MapWriteBit | BufferStorageFlags.MapCoherentBit);
+
+            //get a pointer to the buffer memory
             _ptr = GL.MapNamedBufferRange(_buffer, IntPtr.Zero, _size,
                 BufferAccessMask.MapWriteBit | BufferAccessMask.MapPersistentBit | BufferAccessMask.MapCoherentBit);
 

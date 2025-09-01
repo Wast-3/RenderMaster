@@ -18,6 +18,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             GPUResourceTable gpu,
             ProgramLibrary programs,
             ProgramUniforms uniforms,
+            //So, materialBlockOf is a variable that holds a function. This function's job is to convert a GPU material handle into the actual data that needs to be uploaded for rendering.
             Func<Handle<GPUResourceTable.MaterialGPU>, MaterialBlock> materialBlockOf)
         {
             PassKind currentPass = (PassKind)(-1);

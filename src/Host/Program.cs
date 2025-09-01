@@ -55,14 +55,19 @@ public class Game : GameWindow
         base.OnLoad();
         userInterface = new UI();
 
-        GL.Enable(EnableCap.DebugOutput);
-        GL.Enable(EnableCap.DebugOutputSynchronous);
-        GL.DebugMessageCallback((src, type, id, severity, len, msg, user) =>
-        {
-            var txt = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(msg, len);
-            RenderMaster.Engine.Logger.Log($"GL DEBUG [{severity}] {type}/{src} #{id}: {txt}", RenderMaster.Engine.LogLevel.Debug);
-        }, IntPtr.Zero);
 
+        //if we're on debug build, otherwise disable
+#if DEBUG
+        {
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
+            GL.DebugMessageCallback((src, type, id, severity, len, msg, user) =>
+            {
+                var txt = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(msg, len);
+                RenderMaster.Engine.Logger.Log($"GL DEBUG [{severity}] {type}/{src} #{id}: {txt}", RenderMaster.Engine.LogLevel.Debug);
+            }, IntPtr.Zero);
+        }
+#endif
         RenderMaster.Engine.Logger.Log(
             $"GL_VENDOR={GL.GetString(StringName.Vendor)} GL_RENDERER={GL.GetString(StringName.Renderer)} GL_VERSION={GL.GetString(StringName.Version)}",
             RenderMaster.Engine.LogLevel.Info);

@@ -16,6 +16,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             uniforms.Frame.Update(frame);
             uniforms.Frame.Bind(BindingPoints.Frame);
 
+            //returns a list of draws, classified by technique and pass, for best drawing order
             var draws = DrawExtractor.Build(nodes, cpu, map);
             if (draws.Count == 0)
                 RenderMaster.Engine.Logger.Log("No draws extracted this frame (0). Check glTF load/map or camera frustum.", RenderMaster.Engine.LogLevel.Warning);
