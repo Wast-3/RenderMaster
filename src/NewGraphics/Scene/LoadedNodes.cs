@@ -24,7 +24,7 @@ namespace RenderMaster.src.NewGraphics.Scene
         // Flat list of every node for systems that need random access.
         public IReadOnlyList<Node> All => _all;
 
-        // Top-level roots for hierarchy traversal.
+        // Only the top-level nodes. Begin traversals here to avoid duplicates.
         public IReadOnlyList<Node> Roots => _roots;
 
         public void UpdateWorldTransforms()
