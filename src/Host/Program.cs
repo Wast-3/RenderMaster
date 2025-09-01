@@ -71,7 +71,7 @@ public class Game : GameWindow
         uniforms = new ProgramUniforms();
 
         // Load a glTF scene if available
-        var modelPath = Path.Combine(EngineConfig.ModelDirectory, "gltfWorkflowTesting\\scene.glb");
+        var modelPath = Path.Combine(EngineConfig.ModelDirectory, "scene.glb");
         if (File.Exists(modelPath))
         {
             var loader = new LoadFromGltfFile { filepath = modelPath };
@@ -110,6 +110,9 @@ public class Game : GameWindow
         base.OnUpdateFrame(args);
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
+
+        // Update scene graph transforms so other systems see current world matrices.
+        nodes.UpdateWorldTransforms();
 
         if ((int)GLFW.GetTime() % 5 == 0)
         {

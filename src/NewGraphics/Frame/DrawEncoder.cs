@@ -66,7 +66,7 @@ namespace RenderMaster.src.NewGraphics.Frame
 
                 var ob = new ObjectBlock
                 {
-                    World = Matrix4x4.Transpose(d.Packet.World),
+                    World = d.Packet.World,
                     NormalWorld = ComputeNormalWorld(d.Packet.World)
                 };
                 if (float.IsNaN(ob.World.M11) || float.IsNaN(ob.NormalWorld.M11))
@@ -115,8 +115,8 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.Disable(EnableCap.Blend);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    //GL.Enable(EnableCap.CullFace);
-                    //GL.CullFace(CullFaceMode.Back);
+                    GL.Enable(EnableCap.CullFace);
+                    GL.CullFace(CullFaceMode.Back);
                     GL.ColorMask(true, true, true, true);
                     break;
 
