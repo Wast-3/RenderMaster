@@ -80,7 +80,7 @@ void main()
     // --- Lighting (using a simple hardcoded directional light for now) ---
     vec3 Lo = vec3(0.0); // Outgoing radiance (the final color)
     vec3 lightPos = uCameraWS;
-    vec3 lightColor = vec3(150.0, 150.0, 150.0);
+    vec3 lightColor = 150.0 * (0.5 + 0.5 * cos(2.0 * PI * uTime + vec3(0.0, 2.0*PI/3.0, 4.0*PI/3.0)));
     
     // Light calculation
     vec3 L = normalize(lightPos - fs.P);
