@@ -29,6 +29,7 @@ public class Game : GameWindow
     ProgramLibrary programs = new();
     ProgramUniforms uniforms = null!;
     LoadedNodes nodes = new();
+    private ShaderHotReloader _shaderReloader = null!;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -75,6 +76,8 @@ public class Game : GameWindow
         // Initialize GL-dependent uniform buffers once context is ready
         uniforms = new ProgramUniforms();
 
+        _shaderReloader = new ShaderHotReloader(EngineConfig.ShaderDirectory);
+
         // Load a glTF scene if available
         var modelPath = Path.Combine(EngineConfig.ModelDirectory, "AdvancedScene\\dungeon.glb");
         if (File.Exists(modelPath))
@@ -115,6 +118,7 @@ public class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+        _shaderReloader.ProcessChanges(programs);
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
@@ -167,6 +171,12 @@ public class Game : GameWindow
 
         userInterface.Render();
         SwapBuffers();
+    }
+
+    protected override void OnUnload()
+    {
+        _shaderReloader.Dispose();
+        base.OnUnload();
     }
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e) => input.OnKeyDown(e);

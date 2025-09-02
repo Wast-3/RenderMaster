@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using System.IO;
+
 namespace RenderMaster.src.NewGraphics.Programs
 {
     static class ShaderSources
     {
-        public static (string vert, string frag) For(ProgramKey key)
+        public static (string vert, string frag, List<string> dependencies) For(ProgramKey key)
         {
             var defs =
 $@"#version 450 core
@@ -12,9 +14,19 @@ $@"#version 450 core
 {(key.Variants.HasFlag(ProgramVariants.DoubleSided) ? "#define VAR_DOUBLESIDED 1" : "")}
 {(key.Variants.HasFlag(ProgramVariants.AlphaBlend)  ? "#define VAR_ALPHABLEND 1" : "")}
 ";
+
             string dir = EngineConfig.ShaderDirectory;
-            string common = File.ReadAllText(Path.Combine(dir, "common_blocks.glsl"));
-            string vert   = File.ReadAllText(Path.Combine(dir, "standard.vert"));
+
+            var dependencies = new List<string>();
+
+            string commonPath = Path.Combine(dir, "common_blocks.glsl");
+            dependencies.Add(commonPath);
+            string common = File.ReadAllText(commonPath);
+
+            string vertPath = Path.Combine(dir, "standard.vert");
+            dependencies.Add(vertPath);
+            string vert = File.ReadAllText(vertPath);
+
             string fragFile;
             switch (key.Tech)
             {
@@ -27,10 +39,13 @@ $@"#version 450 core
                     fragFile = "unlit.frag";
                     break;
             }
-            string frag = File.ReadAllText(Path.Combine(dir, fragFile));
+
+            string fragPath = Path.Combine(dir, fragFile);
+            dependencies.Add(fragPath);
+            string frag = File.ReadAllText(fragPath);
+
             //literally return a tuple containing the full shader
-            return ($"{defs}\n{common}\n{vert}", $"{defs}\n{common}\n{frag}");
+            return ($"{defs}\n{common}\n{vert}", $"{defs}\n{common}\n{frag}", dependencies);
         }
     }
 }
-//		frag	"in VS_OUT { vec3 P; vec3 N; vec2 UV; } fs;\r\nlayout(location=0) out vec4 outColor;\r\n\r\nuniform sampler2D uBaseColorTex;\r\n\r\nvoid main()\r\n{\r\n#ifdef VAR_ALPHABLEND\r\n    if (texture(uBaseColorTex, fs.UV).a < uAlphaCutoff) discard;\r\n#endif\r\n    vec4 bc = texture(uBaseColorTex, fs.UV) * uBaseColorFactor;\r\n    outColor = bc;\r\n}\r\n"	string
