@@ -115,6 +115,7 @@ public class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+        programs.PumpHotReload();
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
 

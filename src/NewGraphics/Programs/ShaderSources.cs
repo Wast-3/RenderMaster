@@ -1,9 +1,23 @@
+using System.Collections.Generic;
 using System.IO;
+
 namespace RenderMaster.src.NewGraphics.Programs
 {
     static class ShaderSources
     {
+        static string ReadWithLine(string path)
+        {
+            string name = Path.GetFileName(path).Replace("\\", "/");
+            return $"#line 1 \"{name}\"\n{File.ReadAllText(path)}";
+        }
+
         public static (string vert, string frag) For(ProgramKey key)
+        {
+            var (v, f, _) = ForWithDeps(key);
+            return (v, f);
+        }
+
+        public static (string vert, string frag, string[] deps) ForWithDeps(ProgramKey key)
         {
             var defs =
 $@"#version 450 core
@@ -12,9 +26,18 @@ $@"#version 450 core
 {(key.Variants.HasFlag(ProgramVariants.DoubleSided) ? "#define VAR_DOUBLESIDED 1" : "")}
 {(key.Variants.HasFlag(ProgramVariants.AlphaBlend)  ? "#define VAR_ALPHABLEND 1" : "")}
 ";
+
             string dir = EngineConfig.ShaderDirectory;
-            string common = File.ReadAllText(Path.Combine(dir, "common_blocks.glsl"));
-            string vert   = File.ReadAllText(Path.Combine(dir, "standard.vert"));
+            List<string> deps = new();
+
+            string commonPath = Path.Combine(dir, "common_blocks.glsl");
+            deps.Add(commonPath);
+            string common = ReadWithLine(commonPath);
+
+            string vertPath = Path.Combine(dir, "standard.vert");
+            deps.Add(vertPath);
+            string vertBody = ReadWithLine(vertPath);
+
             string fragFile;
             switch (key.Tech)
             {
@@ -27,10 +50,16 @@ $@"#version 450 core
                     fragFile = "unlit.frag";
                     break;
             }
-            string frag = File.ReadAllText(Path.Combine(dir, fragFile));
-            //literally return a tuple containing the full shader
-            return ($"{defs}\n{common}\n{vert}", $"{defs}\n{common}\n{frag}");
+
+            string fragPath = Path.Combine(dir, fragFile);
+            deps.Add(fragPath);
+            string fragBody = ReadWithLine(fragPath);
+
+            string vert = $"{defs}\n{common}\n{vertBody}";
+            string frag = $"{defs}\n{common}\n{fragBody}";
+
+            return (vert, frag, deps.ToArray());
         }
     }
 }
-//		frag	"in VS_OUT { vec3 P; vec3 N; vec2 UV; } fs;\r\nlayout(location=0) out vec4 outColor;\r\n\r\nuniform sampler2D uBaseColorTex;\r\n\r\nvoid main()\r\n{\r\n#ifdef VAR_ALPHABLEND\r\n    if (texture(uBaseColorTex, fs.UV).a < uAlphaCutoff) discard;\r\n#endif\r\n    vec4 bc = texture(uBaseColorTex, fs.UV) * uBaseColorFactor;\r\n    outColor = bc;\r\n}\r\n"	string
+
