@@ -115,6 +115,7 @@ public class Game : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+        programs.PumpHotReload();
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
@@ -132,8 +133,6 @@ public class Game : GameWindow
 
     protected override void OnRenderFrame(FrameEventArgs args)
     {
-        programs.PumpHotReload();
-
         GL.ClearColor(0.4f, 0.4f, 0.4f, 1.0f);
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
