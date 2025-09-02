@@ -100,7 +100,8 @@ namespace RenderMaster.src.NewGraphics.Resources
         public TextureHandle CreateTexture(PreparedTexture cpu, SamplerDesc sampler)
         {
             GL.CreateTextures(TextureTarget.Texture2D, 1, out int tex);
-            GL.TextureStorage2D(tex, 1, SizedInternalFormat.Rgba8, cpu.Width, cpu.Height);
+            var internalFmt = cpu.IsSrgb ? SizedInternalFormat.Srgb8Alpha8 : SizedInternalFormat.Rgba8;
+            GL.TextureStorage2D(tex, 1, internalFmt, cpu.Width, cpu.Height);
             GL.TextureSubImage2D(tex, 0, 0, 0, cpu.Width, cpu.Height, PixelFormat.Rgba, PixelType.UnsignedByte, cpu.Pixels);
 
             GL.CreateSamplers(1, out int samp);

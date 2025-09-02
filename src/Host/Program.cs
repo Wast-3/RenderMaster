@@ -90,6 +90,8 @@ public class Game : GameWindow
         }
 
         GL.Enable(EnableCap.DepthTest);
+        // Enable automatic sRGB conversion when writing to the default framebuffer
+        GL.Enable(EnableCap.FramebufferSrgb);
 
         // Ensure the initial frame uses the correct framebuffer size and aspect
         // ratio. On some high-DPI systems the first render can occur before a

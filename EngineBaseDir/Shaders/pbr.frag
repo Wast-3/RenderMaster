@@ -113,7 +113,5 @@ void main()
     vec3 ambient = vec3(0.03) * albedo.rgb;
     vec3 color = ambient + Lo;
     color = color / (color + vec3(1.0)); // Basic Reinhard tone mapping
-    color = pow(color, vec3(1.0/2.2));   // Gamma correction
-    
     outColor = vec4(color, albedo.a);
 }
