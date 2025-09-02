@@ -117,7 +117,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
                     GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Back);
+                    GL.CullFace(CullFaceMode.Front);
                     GL.ColorMask(true, true, true, true);
                     break;
 
@@ -127,7 +127,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(false);
                     GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Back);
+                    GL.CullFace(CullFaceMode.Front);
                     GL.ColorMask(true, true, true, true);
                     break;
 

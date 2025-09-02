@@ -15,7 +15,19 @@ $@"#version 450 core
             string dir = EngineConfig.ShaderDirectory;
             string common = File.ReadAllText(Path.Combine(dir, "common_blocks.glsl"));
             string vert   = File.ReadAllText(Path.Combine(dir, "standard.vert"));
-            string frag   = File.ReadAllText(Path.Combine(dir, "unlit.frag"));
+            string fragFile;
+            switch (key.Tech)
+            {
+                case Frame.TechniqueKind.PBR_MetalRough:
+                    fragFile = "pbr.frag";
+                    break;
+
+                case Frame.TechniqueKind.Unlit:
+                default:
+                    fragFile = "unlit.frag";
+                    break;
+            }
+            string frag = File.ReadAllText(Path.Combine(dir, fragFile));
             //literally return a tuple containing the full shader
             return ($"{defs}\n{common}\n{vert}", $"{defs}\n{common}\n{frag}");
         }
