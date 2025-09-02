@@ -108,6 +108,15 @@ public class Input
     {
         MouseGrabbed = !MouseGrabbed;
         window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
+
+        // Raw mouse works only when grabbed; guard by capability.
+        if (window.SupportsRawMouseInput)
+            window.RawMouseInput = MouseGrabbed;
+
+        // Optional: when grabbing, clear any accumulated deltas so we don't
+        // apply a big jump from the last OS-accelerated movement.
+        _accumulatedDeltaX = 0f;
+        _accumulatedDeltaY = 0f;
     }
 }
 
