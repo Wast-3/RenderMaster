@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Text;
 using ImGuiNET;
 using SharpGLTF.Schema2;
 
@@ -17,7 +19,6 @@ public class DebugMenu : IUIElement
     private string gltfPath = string.Empty;
     private string gltfLoadMessage = string.Empty;
     private System.Numerics.Vector4 gltfLoadMessageColor = new(1, 1, 1, 1);
-    private readonly float[] _plotBuffer = new float[300];
 
     public DebugMenu()
     {
@@ -37,22 +38,9 @@ public class DebugMenu : IUIElement
 
                 foreach (var entry in TimingAspect.Timings)
                 {
-                    double sum = 0;
-                    double latestTiming = 0;
-                    int count = 0;
-
-                    foreach (var timing in entry.Value.Values)
-                    {
-                        sum += timing;
-                        latestTiming = timing;
-                        if (count < _plotBuffer.Length)
-                        {
-                            _plotBuffer[count] = (float)timing;
-                        }
-                        count++;
-                    }
-
-                    var averageTiming = count > 0 ? sum / count : 0;
+                    var timingsList = entry.Value.Values.ToList();
+                    var averageTiming = timingsList.Average();
+                    var latestTiming = timingsList.LastOrDefault();
 
                     if (isOddRow)
                     {
@@ -65,13 +53,14 @@ public class DebugMenu : IUIElement
 
                     if (ImGui.TreeNode($"Method: {entry.Key}"))
                     {
-                        ImGui.Text($"Average Execution Time (last {count}): {averageTiming:F4} ms");
-                        ImGui.Text($"Latest Execution Time: {latestTiming:F4} ms");
+                        ImGui.Text($"Average Execution Time (last 100): {averageTiming} ms");
+                        ImGui.Text($"Latest Execution Time: {latestTiming} ms");
 
-                        if (count > 0)
+                        float[] timingsArray = timingsList.Select(t => (float)t).ToArray();
+
+                        if (timingsArray.Length > 0)
                         {
-                            ImGui.PlotLines("Timings", ref _plotBuffer[0], count, 0, null, 0.0f, float.MaxValue,
-                                new System.Numerics.Vector2(0, 80));
+                            ImGui.PlotLines("Timings", ref timingsArray[0], timingsArray.Length, 0, null, 0.0f, float.MaxValue, new System.Numerics.Vector2(0, 80));
                         }
 
                         ImGui.TreePop();
