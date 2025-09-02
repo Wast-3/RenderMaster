@@ -49,7 +49,11 @@ namespace RenderMaster.src.NewGraphics.Loading
                     material.BaseColorFactor = baseColor.Value.Color;
                     var bc = baseColor.Value.Texture;
                     if (bc != null && texMap.TryGetValue(bc, out var bcHandle))
+                    {
                         material.Textures["BaseColorTexture"] = bcHandle;
+                        // Base color textures are encoded in sRGB space
+                        table.Textures[bcHandle.Id].IsSrgb = true;
+                    }
                 }
 
                 var mrChan = mat.FindChannel("MetallicRoughness");
@@ -60,12 +64,20 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                     var mr = mrChan.Value.Texture;
                     if (mr != null && texMap.TryGetValue(mr, out var mrHandle))
+                    {
                         material.Textures["MetallicRoughnessTexture"] = mrHandle;
+                        // Metallic-roughness textures should remain in linear space
+                        table.Textures[mrHandle.Id].IsSrgb = false;
+                    }
                 }
 
                 var normal = mat.FindChannel("Normal")?.Texture;
                 if (normal != null && texMap.TryGetValue(normal, out var nHandle))
+                {
                     material.Textures["NormalTexture"] = nHandle;
+                    // Normal maps also use linear color space
+                    table.Textures[nHandle.Id].IsSrgb = false;
+                }
 
                 var mHandle = table.AddMaterial(material);
                 matMap[mat] = mHandle;
