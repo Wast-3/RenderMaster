@@ -10,6 +10,9 @@ public class Input
     private readonly GameWindow window;
     private readonly Camera camera;
 
+    private float _accumulatedDeltaX;
+    private float _accumulatedDeltaY;
+
     public bool MouseGrabbed { get; private set; } = false;
 
     public Input(GameWindow window, Camera camera)
@@ -23,6 +26,13 @@ public class Input
         if (MouseGrabbed)
         {
             camera.ProcessKeyboard(window.KeyboardState, (float)args.Time);
+
+            if (_accumulatedDeltaX != 0 || _accumulatedDeltaY != 0)
+            {
+                camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
+                _accumulatedDeltaX = 0f;
+                _accumulatedDeltaY = 0f;
+            }
         }
     }
 
@@ -70,7 +80,8 @@ public class Input
 
         if (MouseGrabbed)
         {
-            camera.ProcessMouseMovement(e.DeltaX, e.DeltaY);
+            _accumulatedDeltaX += e.DeltaX;
+            _accumulatedDeltaY += e.DeltaY;
         }
     }
 
