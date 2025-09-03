@@ -26,6 +26,8 @@ public class Camera
     Vector3 up = Vector3.UnitY;
     Vector3 right = Vector3.UnitX;
 
+    public Vector3 Front => front;
+
     public Camera(Vector3 position, Vector3 lookingAt, float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
     {
         Position = position;

@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using ImGuiNET;
 using System.Numerics;
+using System.Collections.Generic;
 
 using RenderMaster.src.NewGraphics.Frame;
 using RenderMaster.src.NewGraphics.Loading;
@@ -13,6 +14,7 @@ using RenderMaster.src.NewGraphics.Scene;
 using RenderMaster.Engine;
 using RenderMaster.src.Contracts;
 using RenderMaster.src.ControlPlane;
+using RenderMaster.src.NewGraphics.Types;
 
 namespace RenderMaster;
 
@@ -82,20 +84,27 @@ public class Game : GameWindow
         {
             var loader = new LoadFromGltfFile { filepath = modelPath };
             loader.LoadResources(cpu);
+
+            var projectileMesh = BuildProjectileMesh(0.5f, 16, 16);
+            var projMeshHandle = cpu.AddMeshBuffer(projectileMesh);
+            var projectileMaterial = new MaterialCPU { BaseColorFactor = new Vector4(1f, 1f, 1f, 1f) };
+            var projMatHandle = cpu.AddMaterial(projectileMaterial);
+            var projSpan = projectileMesh.Submeshes[0];
+
             map = uploader.UploadIncremental(cpu, gpu);
             nodes = loader.Nodes;
+
+            _control = new EngineControl(
+                programs, nodes, cpu, gpu, map, projMeshHandle, projMatHandle, projSpan);
+            input.Bind(_control.Commands);
         }
         else
         {
             throw new FileNotFoundException($"No model found at {modelPath}");
         }
-
         GL.Enable(EnableCap.DepthTest);
         // Enable automatic sRGB conversion when writing to the default framebuffer
         GL.Enable(EnableCap.FramebufferSrgb);
-
-        _control = new EngineControl(
-            programs, nodes, cpu, gpu, map);
 
         userInterface = new UI(_control.Commands, _control.Queries);
 
@@ -170,6 +179,7 @@ public class Game : GameWindow
         // === end event pump ===
 
         input.Update(args);
+        _control.Simulate((float)args.Time);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
         // Update scene graph transforms so other systems see current world matrices.
@@ -251,5 +261,50 @@ public class Game : GameWindow
         RenderMaster.Engine.Logger.Log(
             $"Resize: win=({e.Width}x{e.Height}) fb=({io.DisplayFramebufferScale.X * e.Width}x{io.DisplayFramebufferScale.Y * e.Height}) scale=({io.DisplayFramebufferScale.X:F2},{io.DisplayFramebufferScale.Y:F2})",
             RenderMaster.Engine.LogLevel.Debug);
+    }
+
+    private static PreparedMeshBuffer BuildProjectileMesh(float radius, int latSegments, int lonSegments)
+    {
+        var verts = new List<float>();
+        var indices = new List<int>();
+        for (int lat = 0; lat <= latSegments; lat++)
+        {
+            float theta = lat * MathF.PI / latSegments;
+            float sinTheta = MathF.Sin(theta);
+            float cosTheta = MathF.Cos(theta);
+            for (int lon = 0; lon <= lonSegments; lon++)
+            {
+                float phi = lon * 2 * MathF.PI / lonSegments;
+                float sinPhi = MathF.Sin(phi);
+                float cosPhi = MathF.Cos(phi);
+                float x = cosPhi * sinTheta;
+                float y = cosTheta;
+                float z = sinPhi * sinTheta;
+                var normal = new System.Numerics.Vector3(x, y, z);
+                var tangent = Vector3.Normalize(new System.Numerics.Vector3(-sinPhi, 0, cosPhi));
+                float u = (float)lon / lonSegments;
+                float v = (float)lat / latSegments;
+
+                verts.Add(radius * x); verts.Add(radius * y); verts.Add(radius * z);
+                verts.Add(normal.X); verts.Add(normal.Y); verts.Add(normal.Z);
+                verts.Add(tangent.X); verts.Add(tangent.Y); verts.Add(tangent.Z); verts.Add(1f);
+                verts.Add(u); verts.Add(v);
+            }
+        }
+        for (int lat = 0; lat < latSegments; lat++)
+        {
+            for (int lon = 0; lon < lonSegments; lon++)
+            {
+                int first = lat * (lonSegments + 1) + lon;
+                int second = first + lonSegments + 1;
+                indices.Add(first);
+                indices.Add(second);
+                indices.Add(first + 1);
+                indices.Add(second);
+                indices.Add(second + 1);
+                indices.Add(first + 1);
+            }
+        }
+        return new PreparedMeshBuffer(verts.ToArray(), indices.ToArray());
     }
 }

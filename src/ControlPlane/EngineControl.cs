@@ -3,7 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using BepuPhysics;
+using BepuPhysics.Collidables;
+using BepuUtilities.Memory;
 using RenderMaster.src.Contracts;
+using RenderMaster.src.Physics;
+using RenderMaster.src.NewGraphics.Scene;
+using RenderMaster.src.NewGraphics.Resources;
+using RenderMaster.src.NewGraphics.Types;
+using RenderMaster.src.NewGraphics.Programs;
 
 namespace RenderMaster.src.ControlPlane;
 
@@ -28,18 +36,29 @@ public sealed class EngineControl : IDisposable
     private readonly IProjection[] _projections;
 
     // Engine references used by handlers
-    private readonly NewGraphics.Programs.ProgramLibrary _programs;
-    private readonly NewGraphics.Scene.LoadedNodes _nodes;
-    private readonly NewGraphics.Resources.CPUResourceTable _cpu;
-    private readonly NewGraphics.Resources.GPUResourceTable _gpu;
-    private readonly NewGraphics.Resources.UploadResult _map;
+    private readonly ProgramLibrary _programs;
+    private readonly LoadedNodes _nodes;
+    private readonly CPUResourceTable _cpu;
+    private readonly GPUResourceTable _gpu;
+    private readonly UploadResult _map;
+
+    private readonly BufferPool _bufferPool = new();
+    private readonly Simulation _simulation;
+    private readonly Dictionary<BodyHandle, NodeId> _bodyToNode = new();
+    private readonly Handle<PreparedMeshBuffer> _projMesh;
+    private readonly Handle<MaterialCPU> _projMaterial;
+    private readonly SubmeshSpan _projSpan;
+    private readonly TypedIndex _projShape;
 
     internal EngineControl(
-        NewGraphics.Programs.ProgramLibrary programs,
-        NewGraphics.Scene.LoadedNodes nodes,
-        NewGraphics.Resources.CPUResourceTable cpu,
-        NewGraphics.Resources.GPUResourceTable gpu,
-        NewGraphics.Resources.UploadResult map)
+        ProgramLibrary programs,
+        LoadedNodes nodes,
+        CPUResourceTable cpu,
+        GPUResourceTable gpu,
+        UploadResult map,
+        Handle<PreparedMeshBuffer> projectileMesh,
+        Handle<MaterialCPU> projectileMaterial,
+        SubmeshSpan projectileSpan)
     {
         Commands = new CommandBus();
         Queries = new QueryBus();
@@ -50,6 +69,15 @@ public sealed class EngineControl : IDisposable
         _cpu = cpu;
         _gpu = gpu;
         _map = map;
+        _projMesh = projectileMesh;
+        _projMaterial = projectileMaterial;
+        _projSpan = projectileSpan;
+
+        var narrow = new PhysicsCallbacks.narrowPhase();
+        var pose = new PhysicsCallbacks.poseIntegrator(new Vector3(0f, -9.81f, 0f));
+        _simulation = Simulation.Create(_bufferPool, narrow, pose, new SolveDescription(8, 1));
+        _projShape = _simulation.Shapes.Add(new Sphere(0.5f));
+        _simulation.Statics.Add(new StaticDescription(new Vector3(0, -0.5f, 0), _simulation.Shapes.Add(new Box(2500, 1, 2500))));
 
         // Projections (share registries so ids match write-side)
         _debug = new DebugProjection(_nodeIds, _matIds);
@@ -81,6 +109,25 @@ public sealed class EngineControl : IDisposable
         // Rebuild all read models
         foreach (var p in _projections)
             p.Rebuild(_nodes, _cpu, _map);
+    }
+
+    public void Simulate(float dt)
+    {
+        _simulation.Timestep(dt);
+        foreach (var kv in _bodyToNode)
+        {
+            var pose = _simulation.Bodies.GetBodyReference(kv.Key).Pose;
+            if (_nodeById.TryGetValue(kv.Value.Value, out var node))
+            {
+                var tc = node.GetComponent<TransformComponent>();
+                if (tc != null)
+                {
+                    var rot = Matrix4x4.CreateFromQuaternion(pose.Orientation);
+                    var trans = Matrix4x4.CreateTranslation(pose.Position);
+                    tc.LocalTransform = rot * trans;
+                }
+            }
+        }
     }
 
     private void RebuildReverseIndexes()
@@ -165,6 +212,27 @@ public sealed class EngineControl : IDisposable
             // publish it here. For now, just log.
             Engine.Logger.Log($"FocusCamera requested: target={cmd.Target.Value} distance={cmd.Distance:F2}", Engine.LogLevel.Info);
         });
+
+        d.Register<FireProjectile>(cmd =>
+        {
+            var bodyDesc = new BodyDescription
+            {
+                Pose = new RigidPose(cmd.Origin),
+                Velocity = new BodyVelocity(cmd.Direction * 20f),
+                LocalInertia = new Sphere(0.5f).ComputeInertia(1f),
+                Collidable = new CollidableDescription(_projShape, 0.1f),
+                Activity = new BodyActivityDescription(0.01f)
+            };
+            var handle = _simulation.Bodies.Add(bodyDesc);
+
+            var node = new Node();
+            node.AddComponent(new TransformComponent(Matrix4x4.Identity));
+            node.AddComponent(new MeshComponent(_projMesh, _projMaterial, _projSpan));
+            _nodes.AddNode(node);
+            var nodeId = new NodeId(_nodeIds.GetOrAdd(node));
+            _nodeById[nodeId.Value] = node;
+            _bodyToNode[handle] = nodeId;
+        });
     }
 
     private bool TryGetNode(NodeId id, out NewGraphics.Scene.Node node)
@@ -217,6 +285,7 @@ public sealed class EngineControl : IDisposable
 
     public void Dispose()
     {
-        // nothing yet
+        _simulation.Dispose();
+        _bufferPool.Clear();
     }
 }

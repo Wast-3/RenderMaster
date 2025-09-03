@@ -2,6 +2,10 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using RenderMaster.src.ControlPlane;
+using RenderMaster.src.Contracts;
+using System;
+using System.Numerics;
 
 namespace RenderMaster;
 
@@ -9,6 +13,7 @@ public class Input
 {
     private readonly GameWindow window;
     private readonly Camera camera;
+    private ICommandBus? _commands;
 
     private float _accumulatedDeltaX;
     private float _accumulatedDeltaY;
@@ -20,6 +25,8 @@ public class Input
         this.window = window;
         this.camera = camera;
     }
+
+    public void Bind(ICommandBus commands) => _commands = commands;
 
     public void Update(FrameEventArgs args)
     {
@@ -89,6 +96,14 @@ public class Input
     {
         var io = ImGui.GetIO();
         io.AddMouseButtonEvent((int)e.Button, true);
+        if (e.Button == MouseButton.Left && _commands != null && !io.WantCaptureMouse)
+        {
+            var pos = camera.Position;
+            var origin = new Vector3(pos.X, pos.Y, pos.Z);
+            var f = camera.Front;
+            var dir = Vector3.Normalize(new Vector3(f.X, f.Y, f.Z));
+            _commands.Post(new FireProjectile(Guid.NewGuid(), origin, dir));
+        }
     }
 
     public void OnMouseUp(MouseButtonEventArgs e)
