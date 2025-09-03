@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using ImGuiNET;
 using AspectInjector.Broker;
 using RenderMaster.src.NewGraphics.Programs;
+using RenderMaster.src.ControlPlane;
 
 namespace RenderMaster;
 
@@ -26,9 +27,13 @@ public class UI : IUserInterface
     private IntPtr context;
     private int fontTexture;
     private ImDrawDataPtr drawData;
-    private DebugMenu debugMenu = new();
+    private DebugMenu debugMenu;
 
-    public UI() => Setup();
+    public UI(ICommandBus commands, IQueryBus queries)
+    {
+        debugMenu = new DebugMenu(commands, queries);
+        Setup();
+    }
 
     private void Setup()
     {

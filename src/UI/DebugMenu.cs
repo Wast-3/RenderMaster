@@ -2,14 +2,22 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 using ImGuiNET;
 using SharpGLTF.Schema2;
+using RenderMaster.src.ControlPlane;
+using RenderMaster.src.Contracts;
 
 namespace RenderMaster;
 
 public class DebugMenu : IUIElement
 {
     public string FpsString { get; set; } = string.Empty;
+
+    private readonly ICommandBus _commands;
+    private readonly IQueryBus _queries;
+    private NodeId? _selectedNode;
 
     // list of loaded glTFs are stored in this list along with their JSON text
     private readonly List<(string path, ModelRoot model, string json)> gltfList = new();
@@ -20,8 +28,10 @@ public class DebugMenu : IUIElement
     private System.Numerics.Vector4 gltfLoadMessageColor = new(1, 1, 1, 1);
     private readonly float[] _plotBuffer = new float[300];
 
-    public DebugMenu()
+    public DebugMenu(ICommandBus commands, IQueryBus queries)
     {
+        _commands = commands;
+        _queries = queries;
         findGltfs();
     }
 
@@ -296,14 +306,97 @@ public class DebugMenu : IUIElement
 
             if (ImGui.BeginTabItem("NodeGraph Inspector"))
             {
-                if (ImGui.TreeNode("NodeGraph"))
-                {
-                    ImGui.Text("Not implemented yet.");
-                    ImGui.TreePop();
-                }
+                RenderSceneGraph();
+                ImGui.EndTabItem();
             }
 
             ImGui.EndTabBar();
+        }
+    }
+
+    private void RenderSceneGraph()
+    {
+        SceneGraphSnapshot graph;
+        MaterialsSnapshot mats;
+        try
+        {
+            graph = _queries.Ask(new GetSceneGraph());
+            mats = _queries.Ask(new GetMaterials());
+        }
+        catch (Exception ex)
+        {
+            ImGui.Text($"Query failed: {ex.Message}");
+            return;
+        }
+
+        var childMap = new Dictionary<NodeId, List<NodeRow>>();
+        foreach (var row in graph.Nodes)
+        {
+            if (row.ParentId.HasValue)
+            {
+                if (!childMap.TryGetValue(row.ParentId.Value, out var list))
+                    childMap[row.ParentId.Value] = list = new List<NodeRow>();
+                list.Add(row);
+            }
+        }
+
+        foreach (var row in graph.Nodes.Where(n => !n.ParentId.HasValue))
+            RenderNodeRow(row, childMap);
+
+        if (_selectedNode.HasValue)
+        {
+            var snap = _queries.Ask(new GetNodeSnapshot(_selectedNode.Value));
+            ImGui.Separator();
+            ImGui.Text($"Selected: {snap.Name} ({snap.Id.Value})");
+
+            int sub = 0;
+            foreach (var comp in snap.Components)
+            {
+                if (comp.Kind == "MaterialBinding")
+                {
+                    var prop = comp.Properties.FirstOrDefault(p => p.Name == "MaterialId");
+                    int currentId = prop?.Value is int v ? v : -1;
+                    string currentName = mats.Materials.FirstOrDefault(m => m.Id.Value == currentId)?.Name ?? "[none]";
+
+                    if (ImGui.BeginCombo($"Submesh {sub}", currentName))
+                    {
+                        foreach (var mat in mats.Materials)
+                        {
+                            bool sel = mat.Id.Value == currentId;
+                            if (ImGui.Selectable(mat.Name, sel))
+                            {
+                                _commands.Post(new ChangeMaterial(Guid.NewGuid(), snap.Id, sub, mat.Id));
+                            }
+                            if (sel) ImGui.SetItemDefaultFocus();
+                        }
+                        ImGui.EndCombo();
+                    }
+
+                    sub++;
+                }
+            }
+        }
+    }
+
+    private void RenderNodeRow(NodeRow row, Dictionary<NodeId, List<NodeRow>> childMap)
+    {
+        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth;
+        if (_selectedNode.HasValue && _selectedNode.Value.Equals(row.Id))
+            flags |= ImGuiTreeNodeFlags.Selected;
+
+        bool open = ImGui.TreeNodeEx($"{row.Name}##{row.Id.Value}", flags);
+        if (ImGui.IsItemClicked())
+        {
+            _selectedNode = row.Id;
+            _commands.Post(new SelectNode(Guid.NewGuid(), row.Id));
+        }
+
+        if (open)
+        {
+            if (childMap.TryGetValue(row.Id, out var children))
+                foreach (var ch in children)
+                    RenderNodeRow(ch, childMap);
+            ImGui.TreePop();
         }
     }
 
