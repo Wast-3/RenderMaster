@@ -56,7 +56,6 @@ public class Game : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-        userInterface = new UI();
 
         //if we're on debug build, otherwise disable
 #if DEBUG
@@ -95,6 +94,11 @@ public class Game : GameWindow
         // Enable automatic sRGB conversion when writing to the default framebuffer
         GL.Enable(EnableCap.FramebufferSrgb);
 
+        _control = new EngineControl(
+            programs, nodes, cpu, gpu, map);
+
+        userInterface = new UI(_control.Commands, _control.Queries);
+
         // Ensure the initial frame uses the correct framebuffer size and aspect
         // ratio. On some high-DPI systems the first render can occur before a
         // resize event fires, leaving the camera with the logical window size
@@ -112,9 +116,6 @@ public class Game : GameWindow
             GL.Viewport(0, 0, fbWidth, fbHeight);
             camera.UpdateAspectRatio((float)fbWidth / fbHeight);
         }
-
-        _control = new EngineControl(
-            programs, nodes, cpu, gpu, map);
 
         // Optionally: expose capabilities for adapters (if you have a bridge)
         var caps = new EngineCapabilities(
