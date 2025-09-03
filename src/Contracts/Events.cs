@@ -11,3 +11,6 @@ public sealed record MaterialChanged(Guid CorrelationId, long Sequence, Material
 
 public sealed record ShadersReloaded(Guid CorrelationId, long Sequence)
     : IEngineEvent;
+
+public sealed record CameraFocusRequested(Guid CorrelationId, long Sequence, NodeId Target, float Distance)
+    : IEngineEvent;

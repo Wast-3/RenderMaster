@@ -58,7 +58,6 @@ public class Game : GameWindow
         base.OnLoad();
         userInterface = new UI();
 
-
         //if we're on debug build, otherwise disable
 #if DEBUG
         {
@@ -115,7 +114,7 @@ public class Game : GameWindow
         }
 
         _control = new EngineControl(
-    programs, nodes, cpu, gpu, map);
+            programs, nodes, cpu, gpu, map);
 
         // Optionally: expose capabilities for adapters (if you have a bridge)
         var caps = new EngineCapabilities(
@@ -139,6 +138,35 @@ public class Game : GameWindow
         if (processed > 0)
             RenderMaster.Engine.Logger.Log($"Processed {processed} commands", RenderMaster.Engine.LogLevel.Debug);
 
+        while (_control.Events.TryRead(out var ev))
+        {
+            switch (ev)
+            {
+                case NodeSelected ns:
+                    break;
+
+                case CameraFocusRequested cf:
+                    {
+                        var snap = _control.Debug.GetNodeSnapshot(cf.Target);
+
+                        var tx = snap.World.M41; var ty = snap.World.M42; var tz = snap.World.M43;
+                        var target = new OpenTK.Mathematics.Vector3(tx, ty, tz);
+
+                        var forward = new OpenTK.Mathematics.Vector3(
+                            (float)System.Math.Cos(OpenTK.Mathematics.MathHelper.DegreesToRadians(camera.Yaw)) *
+                            (float)System.Math.Cos(OpenTK.Mathematics.MathHelper.DegreesToRadians(camera.Pitch)),
+                            (float)System.Math.Sin(OpenTK.Mathematics.MathHelper.DegreesToRadians(camera.Pitch)),
+                            (float)System.Math.Sin(OpenTK.Mathematics.MathHelper.DegreesToRadians(camera.Yaw)) *
+                            (float)System.Math.Cos(OpenTK.Mathematics.MathHelper.DegreesToRadians(camera.Pitch)));
+
+                        var pos = target - forward.Normalized() * cf.Distance;
+                        camera.Position = pos;
+                        camera.UpdateViewMatrix();
+                        break;
+                    }
+            }
+        }
+        // === end event pump ===
 
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);

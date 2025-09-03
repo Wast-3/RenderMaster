@@ -32,7 +32,7 @@ namespace RenderMaster.src.NewGraphics.Scene
     class MeshComponent : INodeComponent
     {
         public MeshHandle Mesh { get; }
-        public MaterialHandle Material { get; }
+        public MaterialHandle Material { get; set; }
         public SubmeshSpan Submesh { get; }
 
         public MeshComponent(MeshHandle mesh, MaterialHandle material, SubmeshSpan submesh)
