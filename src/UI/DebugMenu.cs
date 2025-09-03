@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Numerics;
 using ImGuiNET;
 using SharpGLTF.Schema2;
 using RenderMaster.src.ControlPlane;
@@ -360,7 +361,8 @@ public class DebugMenu : IUIElement
                 {
                     var prop = comp.Properties.FirstOrDefault(p => p.Name == "MaterialId");
                     int currentId = prop?.Value is int v ? v : -1;
-                    string currentName = mats.Materials.FirstOrDefault(m => m.Id.Value == currentId)?.Name ?? "[none]";
+                    var matRow = mats.Materials.FirstOrDefault(m => m.Id.Value == currentId);
+                    string currentName = matRow?.Name ?? "[none]";
 
                     if (ImGui.BeginCombo($"Submesh {sub}", currentName))
                     {
@@ -370,10 +372,31 @@ public class DebugMenu : IUIElement
                             if (ImGui.Selectable(mat.Name, sel))
                             {
                                 _commands.Post(new ChangeMaterial(Guid.NewGuid(), snap.Id, sub, mat.Id));
+                                currentId = mat.Id.Value;
+                                matRow = mat;
                             }
                             if (sel) ImGui.SetItemDefaultFocus();
                         }
                         ImGui.EndCombo();
+                    }
+
+                    if (matRow is not null)
+                    {
+                        var color = matRow.BaseColor;
+                        if (ImGui.ColorEdit4($"BaseColor##{sub}", ref color))
+                            _commands.Post(new SetMaterialParam(Guid.NewGuid(), matRow.Id, "BaseColor", color));
+
+                        float metallic = matRow.Metallic;
+                        if (ImGui.SliderFloat($"Metallic##{sub}", ref metallic, 0f, 1f))
+                            _commands.Post(new SetMaterialParam(Guid.NewGuid(), matRow.Id, "Metallic", metallic));
+
+                        float rough = matRow.Roughness;
+                        if (ImGui.SliderFloat($"Roughness##{sub}", ref rough, 0f, 1f))
+                            _commands.Post(new SetMaterialParam(Guid.NewGuid(), matRow.Id, "Roughness", rough));
+
+                        bool dbl = matRow.DoubleSided;
+                        if (ImGui.Checkbox($"DoubleSided##{sub}", ref dbl))
+                            _commands.Post(new SetMaterialParam(Guid.NewGuid(), matRow.Id, "DoubleSided", dbl));
                     }
 
                     sub++;
