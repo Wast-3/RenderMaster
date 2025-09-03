@@ -19,6 +19,10 @@ public class DebugMenu : IUIElement
     private readonly IQueryBus _queries;
     private NodeId? _selectedNode;
 
+    // ImGui 1.92+ exposes hierarchy lines via ImGuiTreeNodeFlags_DrawLinesFull (bit 19).
+    // Define the constant here for compatibility with older ImGui.NET versions.
+    private const ImGuiTreeNodeFlags TreeLineFlag = (ImGuiTreeNodeFlags)(1 << 19);
+
     // list of loaded glTFs are stored in this list along with their JSON text
     private readonly List<(string path, ModelRoot model, string json)> gltfList = new();
     // list of all glTF files discovered on startup
@@ -380,9 +384,11 @@ public class DebugMenu : IUIElement
 
     private void RenderNodeRow(NodeRow row, Dictionary<NodeId, List<NodeRow>> childMap)
     {
-        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth;
+        var flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.SpanAvailWidth | TreeLineFlag;
         if (_selectedNode.HasValue && _selectedNode.Value.Equals(row.Id))
             flags |= ImGuiTreeNodeFlags.Selected;
+        if (!childMap.ContainsKey(row.Id))
+            flags |= ImGuiTreeNodeFlags.Leaf;
 
         bool open = ImGui.TreeNodeEx($"{row.Name}##{row.Id.Value}", flags);
         if (ImGui.IsItemClicked())
