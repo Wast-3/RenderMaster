@@ -45,7 +45,17 @@ public sealed class EngineControl : IDisposable
 
     private readonly BufferPool _bufferPool = new();
     private readonly Simulation _simulation;
-    private readonly Dictionary<BodyHandle, NodeId> _bodyToNode = new();
+    private sealed class ProjectileState
+    {
+        public NodeId Node;
+        public float Ttl;
+        public ProjectileState(NodeId node, float ttl)
+        {
+            Node = node;
+            Ttl = ttl;
+        }
+    }
+    private readonly Dictionary<BodyHandle, ProjectileState> _projectiles = new();
     private readonly Dictionary<StaticHandle, MeshComponent> _staticToMesh = new();
     private readonly Random _rng = new();
     private readonly Handle<PreparedMeshBuffer> _projMesh;
@@ -118,10 +128,12 @@ public sealed class EngineControl : IDisposable
     public void Simulate(float dt)
     {
         _simulation.Timestep(dt);
-        foreach (var kv in _bodyToNode)
+        var toRemove = new List<BodyHandle>();
+        foreach (var kv in _projectiles)
         {
             var pose = _simulation.Bodies.GetBodyReference(kv.Key).Pose;
-            if (_nodeById.TryGetValue(kv.Value.Value, out var node))
+            var proj = kv.Value;
+            if (_nodeById.TryGetValue(proj.Node.Value, out var node))
             {
                 var tc = node.GetComponent<TransformComponent>();
                 if (tc != null)
@@ -131,6 +143,22 @@ public sealed class EngineControl : IDisposable
                     tc.LocalTransform = rot * trans;
                 }
             }
+
+            proj.Ttl -= dt;
+            if (proj.Ttl <= 0f)
+                toRemove.Add(kv.Key);
+        }
+
+        foreach (var handle in toRemove)
+        {
+            var proj = _projectiles[handle];
+            if (_nodeById.TryGetValue(proj.Node.Value, out var node))
+            {
+                _nodes.RemoveNode(node);
+                _nodeById.Remove(proj.Node.Value);
+            }
+            _simulation.Bodies.Remove(handle);
+            _projectiles.Remove(handle);
         }
     }
 
@@ -144,7 +172,7 @@ public sealed class EngineControl : IDisposable
 
     private void ApplyHit(BodyHandle body, StaticHandle stat)
     {
-        if (!_bodyToNode.ContainsKey(body) || !_staticToMesh.TryGetValue(stat, out var mc))
+        if (!_projectiles.ContainsKey(body) || !_staticToMesh.TryGetValue(stat, out var mc))
             return;
         int idx = _rng.Next(_cpu.Materials.Count);
         mc.Material = new Handle<MaterialCPU>(idx);
@@ -302,7 +330,7 @@ public sealed class EngineControl : IDisposable
             _nodes.AddNode(node);
             var nodeId = new NodeId(_nodeIds.GetOrAdd(node));
             _nodeById[nodeId.Value] = node;
-            _bodyToNode[handle] = nodeId;
+            _projectiles[handle] = new ProjectileState(nodeId, 10f);
         });
     }
 
