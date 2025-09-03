@@ -1,10 +1,9 @@
 ﻿// RenderMaster.ControlPlane/CommandDispatcher.cs
 using System;
 using System.Collections.Generic;
-using RenderMaster.Contracts;
 using RenderMaster.src.Contracts;
 
-namespace RenderMaster.ControlPlane;
+namespace RenderMaster.src.ControlPlane;
 
 public interface ICommandMiddleware { void Invoke(object command, Action next); }
 
@@ -19,7 +18,7 @@ public sealed class CommandDispatcher
     public void Dispatch(object command)
     {
         if (_handlers.TryGetValue(command.GetType(), out var h)) h(command);
-        else RenderMaster.Engine.Logger.Log($"No command handler for {command.GetType().Name}", RenderMaster.Engine.LogLevel.Warning);
+        else Engine.Logger.Log($"No command handler for {command.GetType().Name}", Engine.LogLevel.Warning);
     }
 }
 
@@ -31,7 +30,7 @@ public sealed class CommandPipeline
     private readonly CommandDispatcher _dispatcher;
 
     public CommandPipeline(IEnumerable<ICommandMiddleware> mw, CommandDispatcher dispatcher)
-    { _mw = (mw as ICommandMiddleware[]) ?? new List<ICommandMiddleware>(mw).ToArray(); _dispatcher = dispatcher; }
+    { _mw = mw as ICommandMiddleware[] ?? new List<ICommandMiddleware>(mw).ToArray(); _dispatcher = dispatcher; }
 
     public void Execute(object command)
     {
@@ -51,7 +50,7 @@ public sealed class LoggingMiddleware : ICommandMiddleware
 {
     public void Invoke(object command, Action next)
     {
-        RenderMaster.Engine.Logger.Log($"CMD {command.GetType().Name}", RenderMaster.Engine.LogLevel.Debug);
+        Engine.Logger.Log($"CMD {command.GetType().Name}", Engine.LogLevel.Debug);
         next();
     }
 }

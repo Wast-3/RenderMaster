@@ -1,8 +1,7 @@
 ﻿// RenderMaster.Contracts/Events.cs
-using RenderMaster.src.Contracts;
 using System;
 
-namespace RenderMaster.Contracts;
+namespace RenderMaster.src.Contracts;
 
 public sealed record NodeSelected(Guid CorrelationId, long Sequence, NodeId Node)
     : IEngineEvent;

@@ -1,8 +1,7 @@
 ﻿// RenderMaster.Contracts/Commands.cs
-using RenderMaster.src.Contracts;
 using System;
 
-namespace RenderMaster.Contracts;
+namespace RenderMaster.src.Contracts;
 
 public sealed record ChangeMaterial(Guid CorrelationId, NodeId Node, int SubmeshIndex, MaterialId Material)
     : ICommand<Unit>;
@@ -18,5 +17,3 @@ public sealed record ReloadShaders(Guid CorrelationId)
 
 public sealed record FocusCamera(Guid CorrelationId, NodeId Target, float Distance)
     : ICommand<Unit>;
-
-public readonly record struct Unit;

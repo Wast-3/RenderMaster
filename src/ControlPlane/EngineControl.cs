@@ -1,8 +1,8 @@
 ﻿// RenderMaster.ControlPlane/EngineControl.cs
 using System;
-using RenderMaster.Contracts;
+using RenderMaster.src.Contracts;
 
-namespace RenderMaster.ControlPlane;
+namespace RenderMaster.src.ControlPlane;
 
 public sealed class EngineControl : IDisposable
 {
@@ -11,19 +11,24 @@ public sealed class EngineControl : IDisposable
     public IEventBus Events { get; }
     public CommandPipeline Pipeline { get; }
 
+    private readonly DebugProjection _debug;
+    public IDebugProjectionReader Debug => _debug;
+
+    private readonly IProjection[] _projections;
+
     // Engine references you’ll need inside handlers
-    private readonly RenderMaster.src.NewGraphics.Programs.ProgramLibrary _programs;
-    private readonly RenderMaster.src.NewGraphics.Scene.LoadedNodes _nodes;
-    private readonly RenderMaster.src.NewGraphics.Resources.CPUResourceTable _cpu;
-    private readonly RenderMaster.src.NewGraphics.Resources.GPUResourceTable _gpu;
-    private readonly RenderMaster.src.NewGraphics.Resources.UploadResult _map;
+    private readonly NewGraphics.Programs.ProgramLibrary _programs;
+    private readonly NewGraphics.Scene.LoadedNodes _nodes;
+    private readonly NewGraphics.Resources.CPUResourceTable _cpu;
+    private readonly NewGraphics.Resources.GPUResourceTable _gpu;
+    private readonly NewGraphics.Resources.UploadResult _map;
 
     internal EngineControl(
-        RenderMaster.src.NewGraphics.Programs.ProgramLibrary programs,
-        RenderMaster.src.NewGraphics.Scene.LoadedNodes nodes,
-        RenderMaster.src.NewGraphics.Resources.CPUResourceTable cpu,
-        RenderMaster.src.NewGraphics.Resources.GPUResourceTable gpu,
-        RenderMaster.src.NewGraphics.Resources.UploadResult map)
+        NewGraphics.Programs.ProgramLibrary programs,
+        NewGraphics.Scene.LoadedNodes nodes,
+        NewGraphics.Resources.CPUResourceTable cpu,
+        NewGraphics.Resources.GPUResourceTable gpu,
+        NewGraphics.Resources.UploadResult map)
     {
         Commands = new CommandBus();
         Queries = new QueryBus();
@@ -35,6 +40,10 @@ public sealed class EngineControl : IDisposable
         _gpu = gpu;
         _map = map;
 
+        // Projections
+        _debug = new DebugProjection();
+        _projections = new IProjection[] { _debug };
+
         // Build dispatcher + pipeline
         var dispatcher = new CommandDispatcher();
         RegisterCommandHandlers(dispatcher);
@@ -43,8 +52,16 @@ public sealed class EngineControl : IDisposable
             mw: new ICommandMiddleware[] { new LoggingMiddleware() }, // add more later
             dispatcher: dispatcher);
 
-        RegisterQueryHandlers((QueryBus)Queries);
+        foreach (var p in _projections)
+        p.RegisterQueries((QueryBus)Queries);
     }
+
+    public void RebuildProjections()
+    {
+        foreach (var p in _projections)
+            p.Rebuild(_nodes, _cpu, _map);
+    }
+
 
     public int DrainCommands() => ((CommandBus)Commands).Drain(Pipeline.Execute);
 
@@ -55,7 +72,7 @@ public sealed class EngineControl : IDisposable
         d.Register<ReloadShaders>(cmd =>
         {
             // You call _programs.PumpHotReload() each frame already; this is a 'nudge' command.
-            RenderMaster.Engine.Logger.Log("ReloadShaders requested.", RenderMaster.Engine.LogLevel.Info);
+            Engine.Logger.Log("ReloadShaders requested.", Engine.LogLevel.Info);
         });
 
         d.Register<SelectNode>(cmd =>

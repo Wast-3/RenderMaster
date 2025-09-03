@@ -15,6 +15,8 @@ public interface IEngineEvent
     long Sequence { get; }
 }
 
+public readonly record struct Unit;
+
 public sealed record EngineCapabilities(
     int ApiMajor,
     string[] SupportedCommands,

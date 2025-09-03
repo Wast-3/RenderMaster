@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Numerics;
-
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("RenderMaster.src.ControlPlane")]
 namespace RenderMaster.src.NewGraphics.Scene
 {
-    class LoadedNodes
+    internal class LoadedNodes
     {
         readonly List<Node> _roots = new();
         readonly List<Node> _all = new();

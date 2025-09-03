@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using RenderMaster.Contracts;
 using RenderMaster.src.Contracts;
 
-namespace RenderMaster.ControlPlane;
+namespace RenderMaster.src.ControlPlane;
 
 public interface IQueryBus
 {

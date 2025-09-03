@@ -11,6 +11,8 @@ using RenderMaster.src.NewGraphics.Programs;
 using RenderMaster.src.NewGraphics.Resources;
 using RenderMaster.src.NewGraphics.Scene;
 using RenderMaster.Engine;
+using RenderMaster.src.Contracts;
+using RenderMaster.src.ControlPlane;
 
 namespace RenderMaster;
 
@@ -29,7 +31,7 @@ public class Game : GameWindow
     ProgramLibrary programs = new();
     ProgramUniforms uniforms = null!;
     LoadedNodes nodes = new();
-    private RenderMaster.ControlPlane.EngineControl _control = null!;
+    private EngineControl _control = null!;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -112,19 +114,19 @@ public class Game : GameWindow
             camera.UpdateAspectRatio((float)fbWidth / fbHeight);
         }
 
-        _control = new RenderMaster.ControlPlane.EngineControl(
+        _control = new EngineControl(
     programs, nodes, cpu, gpu, map);
 
         // Optionally: expose capabilities for adapters (if you have a bridge)
-        var caps = new RenderMaster.src.Contracts.EngineCapabilities(
+        var caps = new EngineCapabilities(
             ApiMajor: 1,
-            SupportedCommands: new[] { nameof(RenderMaster.Contracts.ReloadShaders),
-                                   nameof(RenderMaster.Contracts.SelectNode),
-                                   nameof(RenderMaster.Contracts.ChangeMaterial),
-                                   nameof(RenderMaster.Contracts.SetMaterialParam) },
-            AvailableQueries: new[] { nameof(RenderMaster.Contracts.GetSceneGraph),
-                                nameof(RenderMaster.Contracts.GetMaterials),
-                                nameof(RenderMaster.Contracts.GetNodeSnapshot) });
+            SupportedCommands: new[] { nameof(ReloadShaders),
+                                   nameof(SelectNode),
+                                   nameof(ChangeMaterial),
+                                   nameof(SetMaterialParam) },
+            AvailableQueries: new[] { nameof(GetSceneGraph),
+                                nameof(GetMaterials),
+                                nameof(GetNodeSnapshot) });
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
@@ -143,6 +145,7 @@ public class Game : GameWindow
 
         // Update scene graph transforms so other systems see current world matrices.
         nodes.UpdateWorldTransforms();
+        _control.RebuildProjections();
 
         if ((int)GLFW.GetTime() % 5 == 0)
         {

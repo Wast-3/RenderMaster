@@ -1,10 +1,9 @@
 ﻿// RenderMaster.ControlPlane/EventBus.cs
 using System;
 using System.Threading.Channels;
-using RenderMaster.Contracts;
 using RenderMaster.src.Contracts;
 
-namespace RenderMaster.ControlPlane;
+namespace RenderMaster.src.ControlPlane;
 
 public interface IEventBus
 {
@@ -19,7 +18,7 @@ public sealed class EventBus : IEventBus
     private readonly Channel<IEngineEvent> _ch =
         Channel.CreateUnbounded<IEngineEvent>(new UnboundedChannelOptions { SingleReader = false, SingleWriter = false });
 
-    public long NextSeq() => System.Threading.Interlocked.Increment(ref _seq);
+    public long NextSeq() => Interlocked.Increment(ref _seq);
 
     public void Publish(IEngineEvent ev) => _ch.Writer.TryWrite(ev);
 

@@ -1,7 +1,5 @@
 ﻿// RenderMaster.Contracts/Queries.cs
-using RenderMaster.src.Contracts;
-
-namespace RenderMaster.Contracts;
+namespace RenderMaster.src.Contracts;
 
 public sealed record GetSceneGraph() : IQuery<SceneGraphSnapshot>;
 public sealed record GetNodeSnapshot(NodeId Node) : IQuery<NodeSnapshot>;

@@ -3,7 +3,7 @@ using System;
 using System.Numerics;
 using System.Collections.Generic;
 
-namespace RenderMaster.Contracts;
+namespace RenderMaster.src.Contracts;
 
 // Ids are plain ints or Guids. (We’ll add a registry to assign them; Part 2.)
 public readonly record struct NodeId(int Value);

@@ -1,10 +1,8 @@
 ﻿// RenderMaster.ControlPlane/CommandBus.cs
-using System;
 using System.Threading.Channels;
-using RenderMaster.Contracts;
 using RenderMaster.src.Contracts;
 
-namespace RenderMaster.ControlPlane;
+namespace RenderMaster.src.ControlPlane;
 
 public interface ICommandBus
 {
