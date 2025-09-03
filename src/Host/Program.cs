@@ -29,6 +29,7 @@ public class Game : GameWindow
     ProgramLibrary programs = new();
     ProgramUniforms uniforms = null!;
     LoadedNodes nodes = new();
+    private RenderMaster.ControlPlane.EngineControl _control = null!;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -110,12 +111,33 @@ public class Game : GameWindow
             GL.Viewport(0, 0, fbWidth, fbHeight);
             camera.UpdateAspectRatio((float)fbWidth / fbHeight);
         }
+
+        _control = new RenderMaster.ControlPlane.EngineControl(
+    programs, nodes, cpu, gpu, map);
+
+        // Optionally: expose capabilities for adapters (if you have a bridge)
+        var caps = new RenderMaster.src.Contracts.EngineCapabilities(
+            ApiMajor: 1,
+            SupportedCommands: new[] { nameof(RenderMaster.Contracts.ReloadShaders),
+                                   nameof(RenderMaster.Contracts.SelectNode),
+                                   nameof(RenderMaster.Contracts.ChangeMaterial),
+                                   nameof(RenderMaster.Contracts.SetMaterialParam) },
+            AvailableQueries: new[] { nameof(RenderMaster.Contracts.GetSceneGraph),
+                                nameof(RenderMaster.Contracts.GetMaterials),
+                                nameof(RenderMaster.Contracts.GetNodeSnapshot) });
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
         programs.PumpHotReload();
+
+        // Process all posted commands deterministically on this thread.
+        int processed = _control.DrainCommands();
+        if (processed > 0)
+            RenderMaster.Engine.Logger.Log($"Processed {processed} commands", RenderMaster.Engine.LogLevel.Debug);
+
+
         input.Update(args);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
