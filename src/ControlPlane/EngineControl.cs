@@ -146,14 +146,14 @@ public sealed class EngineControl : IDisposable
 
             foreach (var mc in node.GetComponents<MeshComponent>())
             {
-                var mesh = _cpu.MeshBuffers[mc.Mesh.Value];
+                var mesh = _cpu.MeshBuffers[mc.Mesh.Id];
                 var verts = mesh.Vertices;
                 var span = mc.Submesh;
                 Vector3 min = new(float.MaxValue);
                 Vector3 max = new(float.MinValue);
-                for (int i = 0; i < span.Count; i++)
+                for (int i = 0; i < span.IndexCount; i++)
                 {
-                    int vidx = ReadIndex(mesh, span.Start + i);
+                    int vidx = ReadIndex(mesh, span.IndexStart + i);
                     int baseOff = vidx * PreparedMeshBuffer.FloatsPerVertex;
                     Vector3 p = new(verts[baseOff], verts[baseOff + 1], verts[baseOff + 2]);
                     p *= scale;
