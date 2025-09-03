@@ -1,5 +1,6 @@
 ﻿// RenderMaster.ControlPlane/EngineControl.cs
 using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -78,6 +79,7 @@ public sealed class EngineControl : IDisposable
         _simulation = Simulation.Create(_bufferPool, narrow, pose, new SolveDescription(8, 1));
         _projShape = _simulation.Shapes.Add(new Sphere(0.5f));
         _simulation.Statics.Add(new StaticDescription(new Vector3(0, -0.5f, 0), _simulation.Shapes.Add(new Box(2500, 1, 2500))));
+        AddSceneMeshStatics();
 
         // Projections (share registries so ids match write-side)
         _debug = new DebugProjection(_nodeIds, _matIds);
@@ -128,6 +130,56 @@ public sealed class EngineControl : IDisposable
                 }
             }
         }
+    }
+
+    private void AddSceneMeshStatics()
+    {
+        _nodes.UpdateWorldTransforms();
+        foreach (var node in _nodes.All)
+        {
+            var tc = node.GetComponent<TransformComponent>();
+            Vector3 scale = Vector3.One;
+            Quaternion rotation = Quaternion.Identity;
+            Vector3 translation = Vector3.Zero;
+            if (tc != null)
+                Matrix4x4.Decompose(tc.WorldTransform, out scale, out rotation, out translation);
+
+            foreach (var mc in node.GetComponents<MeshComponent>())
+            {
+                var mesh = _cpu.MeshBuffers[mc.Mesh.Value];
+                var verts = mesh.Vertices;
+                var span = mc.Submesh;
+                Vector3 min = new(float.MaxValue);
+                Vector3 max = new(float.MinValue);
+                for (int i = 0; i < span.Count; i++)
+                {
+                    int vidx = ReadIndex(mesh, span.Start + i);
+                    int baseOff = vidx * PreparedMeshBuffer.FloatsPerVertex;
+                    Vector3 p = new(verts[baseOff], verts[baseOff + 1], verts[baseOff + 2]);
+                    p *= scale;
+                    min = Vector3.Min(min, p);
+                    max = Vector3.Max(max, p);
+                }
+                var size = max - min;
+                var center = (min + max) * 0.5f;
+                var worldCenter = Vector3.Transform(center, rotation) + translation;
+                var handle = _simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
+                _simulation.Statics.Add(new StaticDescription(worldCenter, rotation, handle));
+            }
+        }
+    }
+
+    private static int ReadIndex(PreparedMeshBuffer mesh, int element)
+    {
+        if (mesh.IndexElementSize == 0)
+            return element;
+        var indices = mesh.Indices.AsSpan();
+        return mesh.IndexElementSize switch
+        {
+            1 => indices[element],
+            2 => BinaryPrimitives.ReadUInt16LittleEndian(indices.Slice(element * 2, 2)),
+            _ => BinaryPrimitives.ReadInt32LittleEndian(indices.Slice(element * 4, 4))
+        };
     }
 
     private void RebuildReverseIndexes()
@@ -218,7 +270,7 @@ public sealed class EngineControl : IDisposable
             var bodyDesc = new BodyDescription
             {
                 Pose = new RigidPose(cmd.Origin),
-                Velocity = new BodyVelocity(cmd.Direction * 20f),
+                Velocity = new BodyVelocity(cmd.Direction * 60f),
                 LocalInertia = new Sphere(0.5f).ComputeInertia(1f),
                 Collidable = new CollidableDescription(_projShape, 0.1f),
                 Activity = new BodyActivityDescription(0.01f)
