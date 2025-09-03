@@ -16,6 +16,15 @@ namespace RenderMaster.src.Physics
     {
         public struct narrowPhase : INarrowPhaseCallbacks
         {
+            private readonly Action<CollidableReference, CollidableReference>? _onCollision;
+
+            public narrowPhase(Action<CollidableReference, CollidableReference>? onCollision)
+            {
+                _onCollision = onCollision;
+            }
+
+            public narrowPhase() : this(null) { }
+
             public void Initialize(Simulation simulation)
             {
                 // Optionally stash references to Simulation/BufferPool/etc.
@@ -35,6 +44,7 @@ namespace RenderMaster.src.Physics
                     frictionCoefficient: 0.01f,
                     maximumRecoveryVelocity: 2f,
                     springSettings: new SpringSettings(30f, 1f)); // (stiffness, damping)
+                _onCollision?.Invoke(pair.A, pair.B);
                 return true; // create a constraint for this manifold
             }
 
@@ -45,7 +55,10 @@ namespace RenderMaster.src.Physics
             // Child-level manifold hook (convex only). Return false to exclude this child manifold from parent aggregation.
             public bool ConfigureContactManifold(
                 int workerIndex, CollidablePair pair, int childIndexA, int childIndexB, ref ConvexContactManifold manifold)
-                => true;
+            {
+                _onCollision?.Invoke(pair.A, pair.B);
+                return true;
+            }
 
             public void Dispose()
             {

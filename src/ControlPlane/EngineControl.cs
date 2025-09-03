@@ -46,6 +46,8 @@ public sealed class EngineControl : IDisposable
     private readonly BufferPool _bufferPool = new();
     private readonly Simulation _simulation;
     private readonly Dictionary<BodyHandle, NodeId> _bodyToNode = new();
+    private readonly Dictionary<StaticHandle, MeshComponent> _staticToMesh = new();
+    private readonly Random _rng = new();
     private readonly Handle<PreparedMeshBuffer> _projMesh;
     private readonly Handle<MaterialCPU> _projMaterial;
     private readonly SubmeshSpan _projSpan;
@@ -74,7 +76,7 @@ public sealed class EngineControl : IDisposable
         _projMaterial = projectileMaterial;
         _projSpan = projectileSpan;
 
-        var narrow = new PhysicsCallbacks.narrowPhase();
+        var narrow = new PhysicsCallbacks.narrowPhase(OnCollision);
         var pose = new PhysicsCallbacks.poseIntegrator(new Vector3(0f, -9.81f, 0f));
         _simulation = Simulation.Create(_bufferPool, narrow, pose, new SolveDescription(8, 1));
         _projShape = _simulation.Shapes.Add(new Sphere(0.5f));
@@ -132,6 +134,22 @@ public sealed class EngineControl : IDisposable
         }
     }
 
+    private void OnCollision(CollidableReference a, CollidableReference b)
+    {
+        if (a.Mobility == CollidableMobility.Dynamic && b.Mobility == CollidableMobility.Static)
+            ApplyHit(a.BodyHandle, b.StaticHandle);
+        else if (b.Mobility == CollidableMobility.Dynamic && a.Mobility == CollidableMobility.Static)
+            ApplyHit(b.BodyHandle, a.StaticHandle);
+    }
+
+    private void ApplyHit(BodyHandle body, StaticHandle stat)
+    {
+        if (!_bodyToNode.ContainsKey(body) || !_staticToMesh.TryGetValue(stat, out var mc))
+            return;
+        int idx = _rng.Next(_cpu.Materials.Count);
+        mc.Material = new Handle<MaterialCPU>(idx);
+    }
+
     private void AddSceneMeshStatics()
     {
         _nodes.UpdateWorldTransforms();
@@ -164,7 +182,8 @@ public sealed class EngineControl : IDisposable
                 var center = (min + max) * 0.5f;
                 var worldCenter = Vector3.Transform(center, rotation) + translation;
                 var handle = _simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
-                _simulation.Statics.Add(new StaticDescription(worldCenter, rotation, handle));
+                var sh = _simulation.Statics.Add(new StaticDescription(worldCenter, rotation, handle));
+                _staticToMesh[sh] = mc;
             }
         }
     }
