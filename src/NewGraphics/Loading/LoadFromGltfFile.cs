@@ -95,6 +95,7 @@ namespace RenderMaster.src.NewGraphics.Loading
             {
                 var local = src.LocalMatrix;
                 var node = new SceneNode();
+                node.AddComponent(new NameComponent(src.Name ?? "(unnamed)"));
                 node.AddComponent(new TransformComponent(local));
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))

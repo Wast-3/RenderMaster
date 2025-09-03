@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using RenderMaster.src.NewGraphics.Types;
-
+[assembly: InternalsVisibleTo("RenderMaster.src.ControlPlane")]
 namespace RenderMaster.src.NewGraphics.Resources
 {
     using MeshHandle = Handle<PreparedMeshBuffer>;
     using TextureHandle = Handle<PreparedTexture>;
     using MaterialHandle = Handle<MaterialCPU>;
 
-    class CPUResourceTable
+    internal class CPUResourceTable
     {
         List<PreparedMeshBuffer> meshBuffers = new List<PreparedMeshBuffer>();
         List<PreparedTexture> textures = new List<PreparedTexture>();

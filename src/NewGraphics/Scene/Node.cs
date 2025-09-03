@@ -11,6 +11,12 @@ namespace RenderMaster.src.NewGraphics.Scene
 
     interface INodeComponent { }
 
+    class NameComponent : INodeComponent
+    {
+        public string Name { get; }
+        public NameComponent(string name) => Name = string.IsNullOrWhiteSpace(name) ? "(unnamed)" : name;
+    }
+
     class TransformComponent : INodeComponent
     {
         public Matrix4x4 LocalTransform { get; set; }
@@ -26,7 +32,7 @@ namespace RenderMaster.src.NewGraphics.Scene
     class MeshComponent : INodeComponent
     {
         public MeshHandle Mesh { get; }
-        public MaterialHandle Material { get; }
+        public MaterialHandle Material { get; set; }
         public SubmeshSpan Submesh { get; }
 
         public MeshComponent(MeshHandle mesh, MaterialHandle material, SubmeshSpan submesh)
