@@ -62,6 +62,8 @@ public sealed class EngineControl : IDisposable
     private readonly Handle<MaterialCPU> _projMaterial;
     private readonly SubmeshSpan _projSpan;
     private readonly TypedIndex _projShape;
+    private BodyHandle _playerBody;
+    private bool _playerExists;
 
     internal EngineControl(
         ProgramLibrary programs,
@@ -123,6 +125,31 @@ public sealed class EngineControl : IDisposable
         // Rebuild all read models
         foreach (var p in _projections)
             p.Rebuild(_nodes, _cpu, _map);
+    }
+
+    public void EnsurePlayerBody(Vector3 start)
+    {
+        if (_playerExists)
+            return;
+        var capsule = new Capsule(0.5f, 1f);
+        var shape = _simulation.Shapes.Add(capsule);
+        var body = BodyDescription.CreateDynamic(new RigidPose(start), capsule.ComputeInertia(1f), new CollidableDescription(shape, 0.1f), new BodyActivityDescription(0.01f));
+        _playerBody = _simulation.Bodies.Add(body);
+        _playerExists = true;
+    }
+
+    public Vector3 UpdatePlayer(Vector3 move, bool jump, float dt)
+    {
+        if (!_playerExists)
+            return Vector3.Zero;
+        var body = _simulation.Bodies.GetBodyReference(_playerBody);
+        var vel = body.Velocity.Linear;
+        vel.X = move.X * 5f;
+        vel.Z = move.Z * 5f;
+        if (jump && MathF.Abs(vel.Y) < 0.01f)
+            vel.Y = 5f;
+        body.Velocity.Linear = vel;
+        return body.Pose.Position;
     }
 
     public void Simulate(float dt)

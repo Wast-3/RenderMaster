@@ -20,6 +20,11 @@ public class Input
 
     public bool MouseGrabbed { get; private set; } = false;
 
+    public enum ControlMode { None, Noclip, Character }
+    public ControlMode Mode { get; private set; } = ControlMode.None;
+    public Vector3 CharacterMovement { get; private set; }
+    public bool CharacterJump { get; private set; }
+
     public Input(GameWindow window, Camera camera)
     {
         this.window = window;
@@ -30,17 +35,42 @@ public class Input
 
     public void Update(FrameEventArgs args)
     {
-        if (MouseGrabbed)
-        {
-            camera.ProcessKeyboard(window.KeyboardState, (float)args.Time);
+        if (!MouseGrabbed)
+            return;
 
-            if (_accumulatedDeltaX != 0 || _accumulatedDeltaY != 0)
-            {
-                camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
-                _accumulatedDeltaX = 0f;
-                _accumulatedDeltaY = 0f;
-            }
+        if (_accumulatedDeltaX != 0 || _accumulatedDeltaY != 0)
+        {
+            camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
+            _accumulatedDeltaX = 0f;
+            _accumulatedDeltaY = 0f;
         }
+
+        switch (Mode)
+        {
+            case ControlMode.Noclip:
+                camera.ProcessKeyboard(window.KeyboardState, (float)args.Time);
+                break;
+            case ControlMode.Character:
+                ProcessCharacterInput();
+                break;
+        }
+    }
+
+    private void ProcessCharacterInput()
+    {
+        var ks = window.KeyboardState;
+        Vector2 move = Vector2.Zero;
+        if (ks.IsKeyDown(Keys.W)) move.Y += 1f;
+        if (ks.IsKeyDown(Keys.S)) move.Y -= 1f;
+        if (ks.IsKeyDown(Keys.A)) move.X -= 1f;
+        if (ks.IsKeyDown(Keys.D)) move.X += 1f;
+
+        var f = camera.Front; f.Y = 0; f = f.LengthSquared > 0 ? f.Normalized() : f;
+        var r = OpenTK.Mathematics.Vector3.Normalize(OpenTK.Mathematics.Vector3.Cross(f, OpenTK.Mathematics.Vector3.UnitY));
+        var dir = f * move.Y + r * move.X;
+        dir = dir.LengthSquared > 0 ? dir.Normalized() : OpenTK.Mathematics.Vector3.Zero;
+        CharacterMovement = new System.Numerics.Vector3(dir.X, 0, dir.Z);
+        CharacterJump = ks.IsKeyDown(Keys.Space);
     }
 
     public void OnKeyDown(KeyboardKeyEventArgs e)
@@ -54,10 +84,24 @@ public class Input
         io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
         io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
 
-        if (e.Key == Keys.Z && !e.IsRepeat)
+        if (!e.IsRepeat)
         {
-            ToggleMouseGrab();
+            if (e.Key == Keys.Z)
+                SetMode(Mode == ControlMode.Noclip ? ControlMode.None : ControlMode.Noclip);
+            else if (e.Key == Keys.X)
+                SetMode(Mode == ControlMode.Character ? ControlMode.None : ControlMode.Character);
         }
+    }
+
+    private void SetMode(ControlMode mode)
+    {
+        Mode = mode;
+        MouseGrabbed = mode != ControlMode.None;
+        window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
+        if (window.SupportsRawMouseInput)
+            window.RawMouseInput = MouseGrabbed;
+        _accumulatedDeltaX = 0f;
+        _accumulatedDeltaY = 0f;
     }
 
     public void OnKeyUp(KeyboardKeyEventArgs e)
@@ -117,21 +161,6 @@ public class Input
         var io = ImGui.GetIO();
         io.AddMouseWheelEvent(e.OffsetX, e.OffsetY);
         camera.ProcessMouseScroll(e.OffsetY);
-    }
-
-    private void ToggleMouseGrab()
-    {
-        MouseGrabbed = !MouseGrabbed;
-        window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
-
-        // Raw mouse works only when grabbed; guard by capability.
-        if (window.SupportsRawMouseInput)
-            window.RawMouseInput = MouseGrabbed;
-
-        // Optional: when grabbing, clear any accumulated deltas so we don't
-        // apply a big jump from the last OS-accelerated movement.
-        _accumulatedDeltaX = 0f;
-        _accumulatedDeltaY = 0f;
     }
 }
 

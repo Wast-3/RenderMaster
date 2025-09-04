@@ -179,6 +179,14 @@ public class Game : GameWindow
         // === end event pump ===
 
         input.Update(args);
+        if (input.Mode == Input.ControlMode.Character)
+        {
+            _control.EnsurePlayerBody(new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
+            var p = _control.UpdatePlayer(input.CharacterMovement, input.CharacterJump, (float)args.Time);
+            camera.Position = new OpenTK.Mathematics.Vector3(p.X, p.Y + 1f, p.Z);
+            camera.UpdateViewMatrix();
+        }
+
         _control.Simulate((float)args.Time);
         userInterface.Update(args, camera, input.MouseGrabbed);
 
