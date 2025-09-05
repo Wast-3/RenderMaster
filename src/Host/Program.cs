@@ -85,7 +85,7 @@ public class Game : GameWindow
             var loader = new LoadFromGltfFile { filepath = modelPath };
             loader.LoadResources(cpu);
 
-            var projectileMesh = BuildProjectileMesh(0.5f, 16, 16);
+            var projectileMesh = BuildProjectileMesh(0.25f, 16, 16);
             var projMeshHandle = cpu.AddMeshBuffer(projectileMesh);
             var projectileMaterial = new MaterialCPU { BaseColorFactor = new Vector4(1f, 1f, 1f, 1f) };
             var projMatHandle = cpu.AddMaterial(projectileMaterial);

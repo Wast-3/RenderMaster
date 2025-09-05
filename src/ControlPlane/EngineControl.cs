@@ -91,7 +91,7 @@ public sealed class EngineControl : IDisposable
         var narrow = new PhysicsCallbacks.narrowPhase(OnCollision);
         var pose = new PhysicsCallbacks.poseIntegrator(new Vector3(0f, -9.81f, 0f));
         _simulation = Simulation.Create(_bufferPool, narrow, pose, new SolveDescription(8, 1));
-        _projShape = _simulation.Shapes.Add(new Sphere(0.5f));
+        _projShape = _simulation.Shapes.Add(new Sphere(0.25f));
         _simulation.Statics.Add(new StaticDescription(new Vector3(0, -0.5f, 0), _simulation.Shapes.Add(new Box(2500, 1, 2500))));
         AddSceneMeshStatics();
 
@@ -220,24 +220,25 @@ public sealed class EngineControl : IDisposable
             foreach (var mc in node.GetComponents<MeshComponent>())
             {
                 var mesh = _cpu.MeshBuffers[mc.Mesh.Id];
-                var verts = mesh.Vertices;
                 var span = mc.Submesh;
-                Vector3 min = new(float.MaxValue);
-                Vector3 max = new(float.MinValue);
-                for (int i = 0; i < span.IndexCount; i++)
+                int triCount = span.IndexCount / 3;
+                _bufferPool.Take<Triangle>(triCount, out var tris);
+                for (int t = 0; t < triCount; t++)
                 {
-                    int vidx = ReadIndex(mesh, span.IndexStart + i);
-                    int baseOff = vidx * PreparedMeshBuffer.FloatsPerVertex;
-                    Vector3 p = new(verts[baseOff], verts[baseOff + 1], verts[baseOff + 2]);
-                    p *= scale;
-                    min = Vector3.Min(min, p);
-                    max = Vector3.Max(max, p);
+                    int i0 = ReadIndex(mesh, span.IndexStart + t * 3);
+                    int i1 = ReadIndex(mesh, span.IndexStart + t * 3 + 1);
+                    int i2 = ReadIndex(mesh, span.IndexStart + t * 3 + 2);
+                    int b0 = i0 * PreparedMeshBuffer.FloatsPerVertex;
+                    int b1 = i1 * PreparedMeshBuffer.FloatsPerVertex;
+                    int b2 = i2 * PreparedMeshBuffer.FloatsPerVertex;
+                    tris[t] = new Triangle(
+                        new Vector3(mesh.Vertices[b0], mesh.Vertices[b0 + 1], mesh.Vertices[b0 + 2]) * scale,
+                        new Vector3(mesh.Vertices[b1], mesh.Vertices[b1 + 1], mesh.Vertices[b1 + 2]) * scale,
+                        new Vector3(mesh.Vertices[b2], mesh.Vertices[b2 + 1], mesh.Vertices[b2 + 2]) * scale);
                 }
-                var size = max - min;
-                var center = (min + max) * 0.5f;
-                var worldCenter = Vector3.Transform(center, rotation) + translation;
-                var handle = _simulation.Shapes.Add(new Box(size.X, size.Y, size.Z));
-                var sh = _simulation.Statics.Add(new StaticDescription(worldCenter, rotation, handle));
+                var meshShape = new Mesh(tris, Vector3.One, _bufferPool);
+                var shapeHandle = _simulation.Shapes.Add(meshShape);
+                var sh = _simulation.Statics.Add(new StaticDescription(translation, rotation, shapeHandle));
                 _staticToMesh[sh] = mc;
             }
         }
@@ -344,8 +345,8 @@ public sealed class EngineControl : IDisposable
             var bodyDesc = new BodyDescription
             {
                 Pose = new RigidPose(cmd.Origin),
-                Velocity = new BodyVelocity(cmd.Direction * 60f),
-                LocalInertia = new Sphere(0.5f).ComputeInertia(1f),
+                Velocity = new BodyVelocity(cmd.Direction * 120f),
+                LocalInertia = new Sphere(0.25f).ComputeInertia(1f),
                 Collidable = new CollidableDescription(_projShape, 0.1f),
                 Activity = new BodyActivityDescription(0.01f)
             };

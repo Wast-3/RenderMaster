@@ -20,6 +20,10 @@ public class Input
 
     public bool MouseGrabbed { get; private set; } = false;
 
+    private bool _firing;
+    private double _fireTimer;
+    private const double FireInterval = 60.0 / 900.0; // 900 RPM
+
     public enum ControlMode { None, Noclip, Character }
     public ControlMode Mode { get; private set; } = ControlMode.None;
     public Vector3 CharacterMovement { get; private set; }
@@ -43,6 +47,16 @@ public class Input
             camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
             _accumulatedDeltaX = 0f;
             _accumulatedDeltaY = 0f;
+        }
+
+        if (_firing && _commands != null && !ImGui.GetIO().WantCaptureMouse)
+        {
+            _fireTimer += args.Time;
+            while (_fireTimer >= FireInterval)
+            {
+                _fireTimer -= FireInterval;
+                FireOnce();
+            }
         }
 
         switch (Mode)
@@ -140,13 +154,12 @@ public class Input
     {
         var io = ImGui.GetIO();
         io.AddMouseButtonEvent((int)e.Button, true);
-        if (e.Button == MouseButton.Left && _commands != null && !io.WantCaptureMouse)
+        if (e.Button == MouseButton.Left)
         {
-            var pos = camera.Position;
-            var origin = new Vector3(pos.X, pos.Y, pos.Z);
-            var f = camera.Front;
-            var dir = Vector3.Normalize(new Vector3(f.X, f.Y, f.Z));
-            _commands.Post(new FireProjectile(Guid.NewGuid(), origin, dir));
+            _firing = true;
+            _fireTimer = 0;
+            if (_commands != null && !io.WantCaptureMouse)
+                FireOnce();
         }
     }
 
@@ -154,6 +167,8 @@ public class Input
     {
         var io = ImGui.GetIO();
         io.AddMouseButtonEvent((int)e.Button, false);
+        if (e.Button == MouseButton.Left)
+            _firing = false;
     }
 
     public void OnMouseWheel(MouseWheelEventArgs e)
@@ -161,6 +176,17 @@ public class Input
         var io = ImGui.GetIO();
         io.AddMouseWheelEvent(e.OffsetX, e.OffsetY);
         camera.ProcessMouseScroll(e.OffsetY);
+    }
+
+    private void FireOnce()
+    {
+        if (_commands == null)
+            return;
+        var pos = camera.Position;
+        var origin = new Vector3(pos.X, pos.Y, pos.Z);
+        var f = camera.Front;
+        var dir = Vector3.Normalize(new Vector3(f.X, f.Y, f.Z));
+        _commands.Post(new FireProjectile(Guid.NewGuid(), origin, dir));
     }
 }
 
