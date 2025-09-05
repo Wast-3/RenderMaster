@@ -75,6 +75,14 @@ public class Camera
         up = Vector3.Normalize(Vector3.Cross(right, front));
     }
 
+    public void AddRotation(float yawDelta, float pitchDelta)
+    {
+        Yaw += yawDelta;
+        Pitch = MathHelper.Clamp(Pitch + pitchDelta, -89f, 89f);
+        UpdateCameraVectors();
+        UpdateViewMatrix();
+    }
+
     public void ProcessKeyboard(KeyboardState input, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;

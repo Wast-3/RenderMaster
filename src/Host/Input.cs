@@ -24,6 +24,9 @@ public class Input
     private double _fireTimer;
     private const double FireInterval = 60.0 / 900.0; // 900 RPM
 
+    private Vector2 _recoilVelocity;
+    private readonly Random _rng = new();
+
     public enum ControlMode { None, Noclip, Character }
     public ControlMode Mode { get; private set; } = ControlMode.None;
     public Vector3 CharacterMovement { get; private set; }
@@ -47,6 +50,12 @@ public class Input
             camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
             _accumulatedDeltaX = 0f;
             _accumulatedDeltaY = 0f;
+        }
+
+        if (_recoilVelocity != Vector2.Zero)
+        {
+            camera.AddRotation(_recoilVelocity.X * (float)args.Time, _recoilVelocity.Y * (float)args.Time);
+            _recoilVelocity = Vector2.Lerp(_recoilVelocity, Vector2.Zero, 10f * (float)args.Time);
         }
 
         if (_firing && _commands != null && !ImGui.GetIO().WantCaptureMouse)
@@ -187,6 +196,10 @@ public class Input
         var f = camera.Front;
         var dir = Vector3.Normalize(new Vector3(f.X, f.Y, f.Z));
         _commands.Post(new FireProjectile(Guid.NewGuid(), origin, dir));
+        _recoilVelocity.X += ((float)_rng.NextDouble() - 0.5f) * 20f;
+        _recoilVelocity.Y += 40f;
+        camera.Position -= camera.Front * 0.05f;
+        camera.UpdateViewMatrix();
     }
 }
 
