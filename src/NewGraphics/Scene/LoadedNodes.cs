@@ -15,11 +15,24 @@ namespace RenderMaster.src.NewGraphics.Scene
             Register(node);
         }
 
+        public void RemoveNode(Node node)
+        {
+            if (_roots.Remove(node))
+                Unregister(node);
+        }
+
         void Register(Node node)
         {
             _all.Add(node);
             foreach (var child in node.Children)
                 Register(child);
+        }
+
+        void Unregister(Node node)
+        {
+            _all.Remove(node);
+            foreach (var child in node.Children)
+                Unregister(child);
         }
 
         // Flat list of every node for systems that need random access.

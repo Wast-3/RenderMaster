@@ -113,14 +113,13 @@ namespace RenderMaster.src.NewGraphics.Frame
 
         private static void BindPassState(PassKind pass)
         {
+            GL.Disable(EnableCap.CullFace);
             switch (pass)
             {
                 case PassKind.ForwardOpaque:
                     GL.Disable(EnableCap.Blend);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(true);
-                    GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Front);
                     GL.ColorMask(true, true, true, true);
                     break;
 
@@ -129,8 +128,6 @@ namespace RenderMaster.src.NewGraphics.Frame
                     GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                     GL.Enable(EnableCap.DepthTest);
                     GL.DepthMask(false);
-                    GL.Enable(EnableCap.CullFace);
-                    GL.CullFace(CullFaceMode.Front);
                     GL.ColorMask(true, true, true, true);
                     break;
 

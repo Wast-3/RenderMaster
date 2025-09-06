@@ -2,6 +2,10 @@ using ImGuiNET;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using RenderMaster.src.ControlPlane;
+using RenderMaster.src.Contracts;
+using System;
+using System.Numerics;
 
 namespace RenderMaster;
 
@@ -9,11 +13,24 @@ public class Input
 {
     private readonly GameWindow window;
     private readonly Camera camera;
+    private ICommandBus? _commands;
 
     private float _accumulatedDeltaX;
     private float _accumulatedDeltaY;
 
     public bool MouseGrabbed { get; private set; } = false;
+
+    private bool _firing;
+    private double _fireTimer;
+    private const double FireInterval = 60.0 / 900.0; // 900 RPM
+
+    private Vector2 _recoilVelocity;
+    private readonly Random _rng = new();
+
+    public enum ControlMode { None, Noclip, Character }
+    public ControlMode Mode { get; private set; } = ControlMode.None;
+    public Vector3 CharacterMovement { get; private set; }
+    public bool CharacterJump { get; private set; }
 
     public Input(GameWindow window, Camera camera)
     {
@@ -21,19 +38,62 @@ public class Input
         this.camera = camera;
     }
 
+    public void Bind(ICommandBus commands) => _commands = commands;
+
     public void Update(FrameEventArgs args)
     {
-        if (MouseGrabbed)
-        {
-            camera.ProcessKeyboard(window.KeyboardState, (float)args.Time);
+        if (!MouseGrabbed)
+            return;
 
-            if (_accumulatedDeltaX != 0 || _accumulatedDeltaY != 0)
+        if (_accumulatedDeltaX != 0 || _accumulatedDeltaY != 0)
+        {
+            camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
+            _accumulatedDeltaX = 0f;
+            _accumulatedDeltaY = 0f;
+        }
+
+        if (_recoilVelocity != Vector2.Zero)
+        {
+            camera.AddRotation(_recoilVelocity.X * (float)args.Time, _recoilVelocity.Y * (float)args.Time);
+            _recoilVelocity = Vector2.Lerp(_recoilVelocity, Vector2.Zero, 10f * (float)args.Time);
+        }
+
+        if (_firing && _commands != null && !ImGui.GetIO().WantCaptureMouse)
+        {
+            _fireTimer += args.Time;
+            while (_fireTimer >= FireInterval)
             {
-                camera.ProcessMouseMovement(_accumulatedDeltaX, _accumulatedDeltaY);
-                _accumulatedDeltaX = 0f;
-                _accumulatedDeltaY = 0f;
+                _fireTimer -= FireInterval;
+                FireOnce();
             }
         }
+
+        switch (Mode)
+        {
+            case ControlMode.Noclip:
+                camera.ProcessKeyboard(window.KeyboardState, (float)args.Time);
+                break;
+            case ControlMode.Character:
+                ProcessCharacterInput();
+                break;
+        }
+    }
+
+    private void ProcessCharacterInput()
+    {
+        var ks = window.KeyboardState;
+        Vector2 move = Vector2.Zero;
+        if (ks.IsKeyDown(Keys.W)) move.Y += 1f;
+        if (ks.IsKeyDown(Keys.S)) move.Y -= 1f;
+        if (ks.IsKeyDown(Keys.A)) move.X -= 1f;
+        if (ks.IsKeyDown(Keys.D)) move.X += 1f;
+
+        var f = camera.Front; f.Y = 0; f = f.LengthSquared > 0 ? f.Normalized() : f;
+        var r = OpenTK.Mathematics.Vector3.Normalize(OpenTK.Mathematics.Vector3.Cross(f, OpenTK.Mathematics.Vector3.UnitY));
+        var dir = f * move.Y + r * move.X;
+        dir = dir.LengthSquared > 0 ? dir.Normalized() : OpenTK.Mathematics.Vector3.Zero;
+        CharacterMovement = new System.Numerics.Vector3(dir.X, 0, dir.Z);
+        CharacterJump = ks.IsKeyDown(Keys.Space);
     }
 
     public void OnKeyDown(KeyboardKeyEventArgs e)
@@ -47,10 +107,24 @@ public class Input
         io.AddKeyEvent(ImGuiKey.ModAlt, e.Alt);
         io.AddKeyEvent(ImGuiKey.ModSuper, e.Modifiers.HasFlag(KeyModifiers.Super));
 
-        if (e.Key == Keys.Z && !e.IsRepeat)
+        if (!e.IsRepeat)
         {
-            ToggleMouseGrab();
+            if (e.Key == Keys.Z)
+                SetMode(Mode == ControlMode.Noclip ? ControlMode.None : ControlMode.Noclip);
+            else if (e.Key == Keys.X)
+                SetMode(Mode == ControlMode.Character ? ControlMode.None : ControlMode.Character);
         }
+    }
+
+    private void SetMode(ControlMode mode)
+    {
+        Mode = mode;
+        MouseGrabbed = mode != ControlMode.None;
+        window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
+        if (window.SupportsRawMouseInput)
+            window.RawMouseInput = MouseGrabbed;
+        _accumulatedDeltaX = 0f;
+        _accumulatedDeltaY = 0f;
     }
 
     public void OnKeyUp(KeyboardKeyEventArgs e)
@@ -89,12 +163,21 @@ public class Input
     {
         var io = ImGui.GetIO();
         io.AddMouseButtonEvent((int)e.Button, true);
+        if (e.Button == MouseButton.Left)
+        {
+            _firing = true;
+            _fireTimer = 0;
+            if (_commands != null && !io.WantCaptureMouse)
+                FireOnce();
+        }
     }
 
     public void OnMouseUp(MouseButtonEventArgs e)
     {
         var io = ImGui.GetIO();
         io.AddMouseButtonEvent((int)e.Button, false);
+        if (e.Button == MouseButton.Left)
+            _firing = false;
     }
 
     public void OnMouseWheel(MouseWheelEventArgs e)
@@ -104,19 +187,19 @@ public class Input
         camera.ProcessMouseScroll(e.OffsetY);
     }
 
-    private void ToggleMouseGrab()
+    private void FireOnce()
     {
-        MouseGrabbed = !MouseGrabbed;
-        window.CursorState = MouseGrabbed ? CursorState.Grabbed : CursorState.Normal;
-
-        // Raw mouse works only when grabbed; guard by capability.
-        if (window.SupportsRawMouseInput)
-            window.RawMouseInput = MouseGrabbed;
-
-        // Optional: when grabbing, clear any accumulated deltas so we don't
-        // apply a big jump from the last OS-accelerated movement.
-        _accumulatedDeltaX = 0f;
-        _accumulatedDeltaY = 0f;
+        if (_commands == null)
+            return;
+        var pos = camera.Position;
+        var origin = new Vector3(pos.X, pos.Y, pos.Z);
+        var f = camera.Front;
+        var dir = Vector3.Normalize(new Vector3(f.X, f.Y, f.Z));
+        _commands.Post(new FireProjectile(Guid.NewGuid(), origin, dir));
+        _recoilVelocity.X += ((float)_rng.NextDouble() - 0.5f) * 20f;
+        _recoilVelocity.Y += 40f;
+        camera.Position -= camera.Front * 0.05f;
+        camera.UpdateViewMatrix();
     }
 }
 

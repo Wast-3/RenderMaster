@@ -32,6 +32,22 @@ namespace RenderMaster.src.NewGraphics.Resources
         public IReadOnlyList<SubmeshSpan> Submeshes => _submeshes;
         private readonly List<SubmeshSpan> _submeshes = new();
 
+        public PreparedMeshBuffer(float[] vertices, int[] indices)
+        {
+            Vertices = vertices;
+            VertexCount = vertices.Length / FloatsPerVertex;
+
+            IndexCount = indices.Length;
+            IndexElementSize = 4;
+            Indices = new byte[IndexCount * 4];
+            var span = Indices.AsSpan();
+            for (int i = 0; i < IndexCount; i++)
+                BinaryPrimitives.WriteInt32LittleEndian(span.Slice(i * 4, 4), indices[i]);
+
+            _submeshes.Add(new SubmeshSpan(0, IndexCount));
+            Primitive = PrimitiveType.TRIANGLES;
+        }
+
         public PreparedMeshBuffer(SharpGLTF.Schema2.Mesh mesh)
         {
             var verts = new List<float>(mesh.Primitives.Sum(p => (p.GetVertexAccessor("POSITION")?.Count ?? 0)) * FloatsPerVertex);
