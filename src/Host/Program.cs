@@ -2,13 +2,13 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using RenderMaster.src.Core;
+using EngineCore = RenderMaster.src.Core.Engine;
 
 namespace RenderMaster;
 
 public class Game : GameWindow
 {
-    private Engine _engine = null!;
+    private EngineCore _engine = null!;
 
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
@@ -43,7 +43,7 @@ public class Game : GameWindow
         }
 #endif
 
-        _engine = new Engine(this);
+        _engine = new EngineCore(this);
         _engine.Initialize();
     }
 
