@@ -155,6 +155,8 @@ public sealed class EngineControl : IDisposable
                 return;
             }
 
+            _cpu.UpdateMaterialBlock(cpuMatIndex);
+
             // Render path pulls factors from CPU into the MaterialBlock UBO next frame.
             Engine.Logger.Log($"SetMaterialParam: matCpu#{cpuMatIndex} {cmd.Param} = {cmd.Value}", Engine.LogLevel.Info);
         });

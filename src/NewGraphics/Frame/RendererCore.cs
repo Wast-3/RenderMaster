@@ -39,24 +39,7 @@ namespace RenderMaster.src.NewGraphics.Frame
 
             DrawSorter.SortInPlace(draws);
 
-            DrawEncoder.EncodeAndDraw(
-                draws, gpu, programs, uniforms,
-                materialBlockOf: h =>
-                {
-                    int cpuId = (h.Id < map.GpuToCpu_Mat.Length && map.GpuToCpu_Mat[h.Id] >= 0)
-                        ? map.GpuToCpu_Mat[h.Id]
-                        : 0;
-                    var m = cpu.Materials[cpuId];
-                    var mb = new MaterialBlock
-                    {
-                        BaseColorFactor = m.BaseColorFactor ?? new Vector4(1, 1, 1, 1),
-                        Metallic = m.MetallicFactor ?? 1f,
-                        Roughness = m.RoughnessFactor ?? 1f,
-                        AlphaCutoff = 0.5f,
-                        Flags = 0f
-                    };
-                    return mb;
-                });
+            DrawEncoder.EncodeAndDraw(draws, gpu, programs, uniforms, map, cpu.MaterialBlocks);
         }
     }
 }

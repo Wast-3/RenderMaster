@@ -18,8 +18,8 @@ namespace RenderMaster.src.NewGraphics.Frame
             GPUResourceTable gpu,
             ProgramLibrary programs,
             ProgramUniforms uniforms,
-            //So, materialBlockOf is a variable that holds a function. This function's job is to convert a GPU material handle into the actual data that needs to be uploaded for rendering.
-            Func<Handle<GPUResourceTable.MaterialGPU>, MaterialBlock> materialBlockOf)
+            UploadResult map,
+            IReadOnlyList<MaterialBlock> materialBlocks)
         {
             PassKind currentPass = (PassKind)(-1);
             int currentVao = -1;
@@ -53,7 +53,10 @@ namespace RenderMaster.src.NewGraphics.Frame
 
                 if (d.Packet.Material.IsValid && d.Packet.Material.Id != lastMaterialId)
                 {
-                    var mb = materialBlockOf(d.Packet.Material);
+                    int cpuId = (d.Packet.Material.Id < map.GpuToCpu_Mat.Length && map.GpuToCpu_Mat[d.Packet.Material.Id] >= 0)
+                        ? map.GpuToCpu_Mat[d.Packet.Material.Id]
+                        : 0;
+                    var mb = materialBlocks[cpuId];
                     var (buf, off) = uniforms.MaterialRing.Push(mb);
                     GL.BindBufferRange(BufferRangeTarget.UniformBuffer, BindingPoints.Material, buf, (IntPtr)off, 256);
                     lastMaterialId = d.Packet.Material.Id;
