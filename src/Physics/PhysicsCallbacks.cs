@@ -33,7 +33,10 @@ namespace RenderMaster.src.Physics
             // High-level pair filter + chance to tweak speculative margin.
             public bool AllowContactGeneration(
                 int workerIndex, CollidableReference a, CollidableReference b, ref float speculativeMargin)
-                => true; // allow all pairs
+                {
+                    speculativeMargin = MathF.Max(speculativeMargin, 0.1f);
+                    return true; // allow all pairs
+                }
 
             // Configure materials (friction / recovery / spring) for any manifold type (convex or nonconvex).
             public bool ConfigureContactManifold<TManifold>(
@@ -41,7 +44,7 @@ namespace RenderMaster.src.Physics
                 where TManifold : unmanaged, IContactManifold<TManifold>
             {
                 pairMaterial = new PairMaterialProperties(
-                    frictionCoefficient: 0.01f,
+                    frictionCoefficient: 1f,
                     maximumRecoveryVelocity: 2f,
                     springSettings: new SpringSettings(30f, 1f)); // (stiffness, damping)
                 _onCollision?.Invoke(pair.A, pair.B);

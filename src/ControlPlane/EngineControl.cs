@@ -6,6 +6,7 @@ using System.Linq;
 using System.Numerics;
 using BepuPhysics;
 using BepuPhysics.Collidables;
+using BepuPhysics.CollisionDetection;
 using BepuUtilities.Memory;
 using RenderMaster.src.Contracts;
 using RenderMaster.src.Physics;
@@ -65,6 +66,15 @@ public sealed class EngineControl : IDisposable
     private BodyHandle _playerBody;
     private bool _playerExists;
 
+    private bool IsPlayerGrounded()
+    {
+        if (!_playerExists)
+            return false;
+        var body = _simulation.Bodies.GetBodyReference(_playerBody);
+        var ray = new Ray(body.Pose.Position, new Vector3(0, -1, 0));
+        return _simulation.RayCast(ray, 0.6f, out RayHit _);
+    }
+
     internal EngineControl(
         ProgramLibrary programs,
         LoadedNodes nodes,
@@ -92,7 +102,6 @@ public sealed class EngineControl : IDisposable
         var pose = new PhysicsCallbacks.poseIntegrator(new Vector3(0f, -9.81f, 0f));
         _simulation = Simulation.Create(_bufferPool, narrow, pose, new SolveDescription(8, 1));
         _projShape = _simulation.Shapes.Add(new Sphere(0.25f));
-        _simulation.Statics.Add(new StaticDescription(new Vector3(0, -0.5f, 0), _simulation.Shapes.Add(new Box(2500, 1, 2500))));
         AddSceneMeshStatics();
 
         // Projections (share registries so ids match write-side)
@@ -143,12 +152,15 @@ public sealed class EngineControl : IDisposable
         if (!_playerExists)
             return Vector3.Zero;
         var body = _simulation.Bodies.GetBodyReference(_playerBody);
-        var vel = body.Velocity.Linear;
-        vel.X = move.X * 5f;
-        vel.Z = move.Z * 5f;
-        if (jump && MathF.Abs(vel.Y) < 0.01f)
-            vel.Y = 5f;
-        body.Velocity.Linear = vel;
+        ref var vel = ref body.Velocity;
+        body.Pose.Orientation = Quaternion.Identity;
+        vel.Angular = Vector3.Zero;
+
+        var desired = move * 7f;
+        vel.Linear.X = desired.X;
+        vel.Linear.Z = desired.Z;
+        if (jump && IsPlayerGrounded())
+            vel.Linear.Y = 5f;
         return body.Pose.Position;
     }
 
