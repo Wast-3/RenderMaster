@@ -34,7 +34,8 @@ namespace RenderMaster.src.NewGraphics.Frame
                     {
                         PositionType = new Vector4(pos, (float)light.Kind),
                         DirectionRange = new Vector4(dir, light.Range),
-                        ColorIntensity = new Vector4(light.Color * light.Intensity, light.Intensity),
+                        // keep color and intensity separate so the shader doesn't square the intensity
+                        ColorIntensity = new Vector4(light.Color, light.Intensity),
                         SpotAngles = new Vector4(
                             System.MathF.Cos(light.InnerConeAngle),
                             System.MathF.Cos(light.OuterConeAngle), 0, 0)

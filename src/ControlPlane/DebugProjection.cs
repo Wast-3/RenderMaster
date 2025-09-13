@@ -91,6 +91,7 @@ sealed class DebugProjection : IProjection, IDebugProjectionReader
         var tags = new List<string>(3);
         if (n.GetComponent<TransformComponent>() != null) tags.Add("Transform");
         foreach (var _ in n.GetComponents<MeshComponent>()) tags.Add("Mesh");
+        if (n.GetComponent<LightComponent>() != null) tags.Add("Light");
         return tags.ToArray();
     }
 
@@ -130,6 +131,22 @@ sealed class DebugProjection : IProjection, IDebugProjectionReader
                     new PropertyDescriptor("HasBaseColorTex", "bool", HasTex(cpu, mc.Material, "BaseColorTexture")),
                     new PropertyDescriptor("HasNormalTex", "bool", HasTex(cpu, mc.Material, "NormalTexture")),
                     new PropertyDescriptor("HasMetalRoughTex", "bool", HasTex(cpu, mc.Material, "MetallicRoughnessTexture")),
+                }));
+        }
+
+        var lc = n.GetComponent<LightComponent>();
+        if (lc != null)
+        {
+            list.Add(new ComponentDescriptor(
+                "Light",
+                new[]
+                {
+                    new PropertyDescriptor("Kind", "enum", lc.Kind.ToString()),
+                    new PropertyDescriptor("Color", "vec3", lc.Color),
+                    new PropertyDescriptor("Intensity", "float", lc.Intensity),
+                    new PropertyDescriptor("Range", "float", lc.Range),
+                    new PropertyDescriptor("InnerCone", "float", lc.InnerConeAngle),
+                    new PropertyDescriptor("OuterCone", "float", lc.OuterConeAngle),
                 }));
         }
 

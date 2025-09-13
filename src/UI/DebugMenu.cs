@@ -345,6 +345,9 @@ public class DebugMenu : IUIElement
             }
         }
 
+        int lightCount = graph.Nodes.Count(n => n.Components.Contains("Light"));
+        ImGui.Text($"Lights: {lightCount}");
+
         foreach (var row in graph.Nodes.Where(n => !n.ParentId.HasValue))
             RenderNodeRow(row, childMap);
 
@@ -413,7 +416,10 @@ public class DebugMenu : IUIElement
         if (!childMap.ContainsKey(row.Id))
             flags |= ImGuiTreeNodeFlags.Leaf;
 
-        bool open = ImGui.TreeNodeEx($"{row.Name}##{row.Id.Value}", flags);
+        string label = row.Name;
+        if (row.Components.Length > 0)
+            label += $" [{string.Join(",", row.Components)}]";
+        bool open = ImGui.TreeNodeEx($"{label}##{row.Id.Value}", flags);
         if (ImGui.IsItemClicked())
         {
             _selectedNode = row.Id;
