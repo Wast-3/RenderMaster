@@ -71,8 +71,23 @@ public sealed class EngineControl : IDisposable
         if (!_playerExists)
             return false;
         var body = _simulation.Bodies.GetBodyReference(_playerBody);
-        var ray = new Ray(body.Pose.Position, new Vector3(0, -1, 0));
-        return _simulation.RayCast(ray, 0.6f, out RayHit _);
+        var origin = body.Pose.Position;
+        var direction = new Vector3(0, -1, 0);
+        var handler = new GroundHitHandler();
+        _simulation.RayCast(ref origin, ref direction, 0.6f, ref handler);
+        return handler.Hit;
+    }
+
+    private struct GroundHitHandler : IRayHitHandler
+    {
+        public bool Hit;
+        public bool AllowTest(CollidableReference collidable) => true;
+        public bool AllowTest(CollidableReference collidable, int childIndex) => true;
+        public void OnRayHit(in BepuPhysics.Trees.RayData ray, ref float maximumT, float t, in Vector3 normal, CollidableReference collidable, int childIndex)
+        {
+            Hit = true;
+            maximumT = t;
+        }
     }
 
     internal EngineControl(
