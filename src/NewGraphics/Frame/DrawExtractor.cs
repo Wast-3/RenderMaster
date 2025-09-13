@@ -49,7 +49,7 @@ namespace RenderMaster.src.NewGraphics.Frame
 
         private static (TechniqueKind, PassKind) Classify(CPUResourceTable cpu, CpuMatHandle matHandle)
         {
-            // Defaults: treat as opaque PBR if information is missing.
+            // Defaults: treat as opaque PBR. Only switch when explicit material hints exist.
             TechniqueKind tech = TechniqueKind.PBR_MetalRough;
             PassKind pass = PassKind.ForwardOpaque;
 
@@ -57,20 +57,14 @@ namespace RenderMaster.src.NewGraphics.Frame
             {
                 var mat = cpu.Materials[matHandle.Id];
 
-                // Heuristic: if base color factor alpha < 1, mark transparent.
+                // Mark transparent if the base color alpha is below 1.
                 if (mat.BaseColorFactor.HasValue && mat.BaseColorFactor.Value.W < 0.999f)
                 {
                     pass = PassKind.ForwardTransparent;
                 }
 
-                // Heuristic: if no PBR factors are present, fall back to unlit (for future unlit pipeline)
-                bool hasPbr = mat.MetallicFactor.HasValue || mat.RoughnessFactor.HasValue ||
-                               mat.Textures.ContainsKey("MetallicRoughnessTexture") ||
-                               mat.Textures.ContainsKey("NormalTexture");
-                if (!hasPbr)
-                {
-                    tech = TechniqueKind.Unlit;
-                }
+                // TODO: Support KHR_materials_unlit. For now assume all materials are PBR
+                // unless an explicit unlit extension is encountered during load.
             }
 
             return (tech, pass);
