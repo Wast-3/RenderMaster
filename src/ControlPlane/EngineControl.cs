@@ -157,7 +157,12 @@ public sealed class EngineControl : IDisposable
             return;
         var capsule = new Capsule(0.5f, 1f);
         var shape = _simulation.Shapes.Add(capsule);
-        var body = BodyDescription.CreateDynamic(new RigidPose(start), capsule.ComputeInertia(1f), new CollidableDescription(shape, 0.1f), new BodyActivityDescription(0.01f));
+        // Disable sleeping so the player doesn't freeze after landing.
+        var body = BodyDescription.CreateDynamic(
+            new RigidPose(start),
+            capsule.ComputeInertia(1f),
+            new CollidableDescription(shape, 0.1f),
+            new BodyActivityDescription(0f));
         _playerBody = _simulation.Bodies.Add(body);
         _playerExists = true;
     }
@@ -167,6 +172,7 @@ public sealed class EngineControl : IDisposable
         if (!_playerExists)
             return Vector3.Zero;
         var body = _simulation.Bodies.GetBodyReference(_playerBody);
+        _simulation.Awakener.AwakenBody(_playerBody);
         ref var vel = ref body.Velocity;
         body.Pose.Orientation = Quaternion.Identity;
         vel.Angular = Vector3.Zero;
