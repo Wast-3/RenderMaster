@@ -35,6 +35,9 @@ public class Game : GameWindow
     LoadedNodes nodes = new();
     private EngineControl _control = null!;
 
+    Node? _cameraLight;
+    TransformComponent? _cameraLightTx;
+
     public Game(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings()
     {
         ClientSize = (width, height),
@@ -97,6 +100,19 @@ public class Game : GameWindow
             _control = new EngineControl(
                 programs, nodes, cpu, gpu, map, projMeshHandle, projMatHandle, projSpan);
             input.Bind(_control.Commands);
+
+            _cameraLightTx = new TransformComponent(Matrix4x4.Identity);
+            _cameraLight = new Node();
+            _cameraLight.AddComponent(new NameComponent("CameraLight"));
+            _cameraLight.AddComponent(_cameraLightTx);
+            _cameraLight.AddComponent(new LightComponent(
+                LightKind.Point,
+                new Vector3(1f, 1f, 1f),
+                10f,
+                20f,
+                0f,
+                0f));
+            nodes.AddNode(_cameraLight);
         }
         else
         {
@@ -191,6 +207,11 @@ public class Game : GameWindow
         userInterface.Update(args, camera, input.MouseGrabbed);
 
         // Update scene graph transforms so other systems see current world matrices.
+        if (_cameraLightTx != null)
+        {
+            _cameraLightTx.LocalTransform = Matrix4x4.CreateTranslation(
+                new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z));
+        }
         nodes.UpdateWorldTransforms();
         _control.RebuildProjections();
 
