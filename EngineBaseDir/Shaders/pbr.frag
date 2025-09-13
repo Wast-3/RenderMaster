@@ -77,36 +77,38 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, albedo.rgb, metallic);
 
-    // --- Lighting (using a simple hardcoded directional light for now) ---
-    vec3 Lo = vec3(0.0); // Outgoing radiance (the final color)
-    vec3 lightPos = uCameraWS;
-    vec3 lightColor = 150.0 * (0.5 + 0.5 * cos(2.0 * PI * uTime + vec3(0.0, 2.0*PI/3.0, 4.0*PI/3.0)));
-    
-    // Light calculation
-    vec3 L = normalize(lightPos - fs.P);
-    vec3 H = normalize(V + L);
-    float distance = length(lightPos - fs.P);
-    float attenuation = 1.0 / (distance * distance);
-    vec3 radiance = lightColor * attenuation;
-        
-    // --- Cook-Torrance Bidirectional Reflectance Distribution Function (BRDF) ---
-    float NDF = DistributionGGX(N, H, roughness);   
-    float G = GeometrySmith(N, V, L, roughness);      
-    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-    
-    // Specular BRDF component
-    vec3 numerator = NDF * G * F;
-    float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // 0.0001 to prevent division by zero
-    vec3 specular = numerator / denominator;
-    
-    // kS is the Fresnel value, determining the ratio of specular to diffuse reflection
-    vec3 kS = F;
-    // kD is the remaining light, used for diffuse reflection.
-    vec3 kD = vec3(1.0) - kS;
-    kD *= 1.0 - metallic; // Metals absorb all refracted light, so they have no diffuse color.
-     
-    float NdotL = max(dot(N, L), 0.0);        
-    Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+    vec3 Lo = vec3(0.0);
+    for(int i = 0; i < uLightCount; ++i)
+    {
+        Light l = uLights[i];
+        vec3 L;
+        vec3 radiance;
+        if (l.positionType.w == 0.0)
+        {
+            L = normalize(-l.directionRange.xyz);
+            radiance = l.colorIntensity.rgb * l.colorIntensity.w;
+        }
+        else
+        {
+            vec3 toLight = l.positionType.xyz - fs.P;
+            float dist = length(toLight);
+            L = toLight / dist;
+            float attenuation = 1.0 / (dist * dist);
+            radiance = l.colorIntensity.rgb * l.colorIntensity.w * attenuation;
+        }
+        vec3 H = normalize(V + L);
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, L, roughness);
+        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        vec3 numerator = NDF * G * F;
+        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001;
+        vec3 specular = numerator / denominator;
+        vec3 kS = F;
+        vec3 kD = vec3(1.0) - kS;
+        kD *= 1.0 - metallic;
+        float NdotL = max(dot(N, L), 0.0);
+        Lo += (kD * albedo.rgb / PI + specular) * radiance * NdotL;
+    }
 
     // --- Final Color ---
     // Add a simple ambient term and apply tone mapping

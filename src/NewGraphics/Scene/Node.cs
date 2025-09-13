@@ -43,6 +43,39 @@ namespace RenderMaster.src.NewGraphics.Scene
         }
     }
 
+    enum LightKind
+    {
+        Directional = 0,
+        Point = 1,
+        Spot = 2
+    }
+
+    class LightComponent : INodeComponent
+    {
+        public LightKind Kind { get; }
+        public Vector3 Color { get; }
+        public float Intensity { get; }
+        public float Range { get; }
+        public float InnerConeAngle { get; }
+        public float OuterConeAngle { get; }
+
+        public LightComponent(
+            LightKind kind,
+            Vector3 color,
+            float intensity,
+            float range,
+            float innerConeAngle,
+            float outerConeAngle)
+        {
+            Kind = kind;
+            Color = color;
+            Intensity = intensity;
+            Range = range;
+            InnerConeAngle = innerConeAngle;
+            OuterConeAngle = outerConeAngle;
+        }
+    }
+
     class Node
     {
         readonly List<INodeComponent> _components = new();

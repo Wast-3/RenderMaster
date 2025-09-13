@@ -4,6 +4,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("RenderMaster.src.ControlPlane")]
 namespace RenderMaster.src.NewGraphics.Scene
 {
+    readonly record struct LightEntry(LightComponent Light, Matrix4x4 World);
+
     internal class LoadedNodes
     {
         readonly List<Node> _roots = new();
@@ -60,6 +62,22 @@ namespace RenderMaster.src.NewGraphics.Scene
 
             foreach (var child in node.Children)
                 UpdateRecursive(child, world);
+        }
+
+        public List<LightEntry> GatherLights()
+        {
+            List<LightEntry> lights = new();
+            foreach (var node in _all)
+            {
+                var lc = node.GetComponent<LightComponent>();
+                if (lc != null)
+                {
+                    var tc = node.GetComponent<TransformComponent>();
+                    var world = tc?.WorldTransform ?? Matrix4x4.Identity;
+                    lights.Add(new LightEntry(lc, world));
+                }
+            }
+            return lights;
         }
     }
 }

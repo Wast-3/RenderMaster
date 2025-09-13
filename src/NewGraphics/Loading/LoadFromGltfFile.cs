@@ -112,6 +112,21 @@ namespace RenderMaster.src.NewGraphics.Loading
                     }
                 }
 
+                if (src.PunctualLight != null)
+                {
+                    var l = src.PunctualLight;
+                    var kind = l.LightType switch
+                    {
+                        PunctualLightType.Directional => LightKind.Directional,
+                        PunctualLightType.Spot => LightKind.Spot,
+                        _ => LightKind.Point
+                    };
+                    var color = new Vector3(l.Color.X, l.Color.Y, l.Color.Z);
+                    node.AddComponent(new LightComponent(
+                        kind, color, l.Intensity, l.Range,
+                        l.InnerConeAngle, l.OuterConeAngle));
+                }
+
                 foreach (var child in src.VisualChildren)
                 {
                     var c = ConvertNode(child);

@@ -26,4 +26,22 @@ namespace RenderMaster.src.NewGraphics.Programs
         public float AlphaCutoff;
         public float Flags;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    struct GpuLight
+    {
+        public Vector4 PositionType;
+        public Vector4 DirectionRange;
+        public Vector4 ColorIntensity;
+        public Vector4 SpotAngles;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    unsafe struct LightsBlock
+    {
+        public const int MaxLights = 16;
+        public int Count;
+        private Vector3 _pad;
+        public fixed float Lights[MaxLights * 16];
+    }
 }
