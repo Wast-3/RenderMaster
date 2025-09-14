@@ -83,7 +83,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                     var mb = new MaterialBlock
                     {
                         BaseColorFactor = m.BaseColorFactor ?? new Vector4(1, 1, 1, 1),
-                        Metallic = m.MetallicFactor ?? 1f,
+                        Metallic = m.MetallicFactor ?? 0f,
                         Roughness = m.RoughnessFactor ?? 1f,
                         AlphaCutoff = 0.5f,
                         Flags = 0f

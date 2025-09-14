@@ -155,10 +155,17 @@ namespace RenderMaster.src.NewGraphics.Frame
             const int NormalUnit = 1;
             const int MetallicRoughnessUnit = 2;
 
+            EnsureDefaults();
+
             if (mat.textures.TryGetValue("BaseColorTexture", out var bc))
             {
                 GL.BindTextureUnit(BaseColorUnit, bc.textureId);
                 GL.BindSampler(BaseColorUnit, bc.samplerId);
+            }
+            else
+            {
+                GL.BindTextureUnit(BaseColorUnit, _defaultWhiteTex);
+                GL.BindSampler(BaseColorUnit, _defaultSampler);
             }
 
             if (mat.textures.TryGetValue("NormalTexture", out var n))
@@ -166,12 +173,50 @@ namespace RenderMaster.src.NewGraphics.Frame
                 GL.BindTextureUnit(NormalUnit, n.textureId);
                 GL.BindSampler(NormalUnit, n.samplerId);
             }
+            else
+            {
+                GL.BindTextureUnit(NormalUnit, _defaultNormalTex);
+                GL.BindSampler(NormalUnit, _defaultSampler);
+            }
 
             if (mat.textures.TryGetValue("MetallicRoughnessTexture", out var mr))
             {
                 GL.BindTextureUnit(MetallicRoughnessUnit, mr.textureId);
                 GL.BindSampler(MetallicRoughnessUnit, mr.samplerId);
             }
+            else
+            {
+                GL.BindTextureUnit(MetallicRoughnessUnit, _defaultMetalRoughTex);
+                GL.BindSampler(MetallicRoughnessUnit, _defaultSampler);
+            }
+        }
+
+        static int _defaultWhiteTex, _defaultNormalTex, _defaultMetalRoughTex, _defaultSampler;
+
+        static void EnsureDefaults()
+        {
+            if (_defaultWhiteTex != 0) return;
+
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out _defaultWhiteTex);
+            GL.TextureStorage2D(_defaultWhiteTex, 1, SizedInternalFormat.Rgba8, 1, 1);
+            byte[] white = { 255, 255, 255, 255 };
+            GL.TextureSubImage2D(_defaultWhiteTex, 0, 0, 0, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, white);
+
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out _defaultNormalTex);
+            GL.TextureStorage2D(_defaultNormalTex, 1, SizedInternalFormat.Rgba8, 1, 1);
+            byte[] normal = { 128, 128, 255, 255 };
+            GL.TextureSubImage2D(_defaultNormalTex, 0, 0, 0, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, normal);
+
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out _defaultMetalRoughTex);
+            GL.TextureStorage2D(_defaultMetalRoughTex, 1, SizedInternalFormat.Rgba8, 1, 1);
+            byte[] mr = { 255, 255, 255, 255 };
+            GL.TextureSubImage2D(_defaultMetalRoughTex, 0, 0, 0, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, mr);
+
+            GL.CreateSamplers(1, out _defaultSampler);
+            GL.SamplerParameter(_defaultSampler, SamplerParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.SamplerParameter(_defaultSampler, SamplerParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.SamplerParameter(_defaultSampler, SamplerParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.SamplerParameter(_defaultSampler, SamplerParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
 
         private static int GetIndexElementSizeBytes(DrawElementsType type) => type switch
