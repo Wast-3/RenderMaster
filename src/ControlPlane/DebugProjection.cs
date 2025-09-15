@@ -91,6 +91,8 @@ sealed class DebugProjection : IProjection, IDebugProjectionReader
         var tags = new List<string>(3);
         if (n.GetComponent<TransformComponent>() != null) tags.Add("Transform");
         foreach (var _ in n.GetComponents<MeshComponent>()) tags.Add("Mesh");
+        if (n.GetComponent<PointLightComponent>() != null) tags.Add("PointLight");
+        if (n.GetComponent<SpotLightComponent>() != null) tags.Add("SpotLight");
         return tags.ToArray();
     }
 
@@ -130,6 +132,34 @@ sealed class DebugProjection : IProjection, IDebugProjectionReader
                     new PropertyDescriptor("HasBaseColorTex", "bool", HasTex(cpu, mc.Material, "BaseColorTexture")),
                     new PropertyDescriptor("HasNormalTex", "bool", HasTex(cpu, mc.Material, "NormalTexture")),
                     new PropertyDescriptor("HasMetalRoughTex", "bool", HasTex(cpu, mc.Material, "MetallicRoughnessTexture")),
+                }));
+        }
+
+        foreach (var plc in n.GetComponents<PointLightComponent>())
+        {
+            list.Add(new ComponentDescriptor(
+                "PointLight",
+                new[]
+                {
+                    new PropertyDescriptor("Color", "vec3", plc.Color),
+                    new PropertyDescriptor("Intensity", "float", plc.Intensity),
+                    new PropertyDescriptor("Range", "float", plc.Range),
+                }));
+        }
+
+        foreach (var slc in n.GetComponents<SpotLightComponent>())
+        {
+            float innerDeg = slc.InnerConeAngle * (180f / MathF.PI);
+            float outerDeg = slc.OuterConeAngle * (180f / MathF.PI);
+            list.Add(new ComponentDescriptor(
+                "SpotLight",
+                new[]
+                {
+                    new PropertyDescriptor("Color", "vec3", slc.Color),
+                    new PropertyDescriptor("Intensity", "float", slc.Intensity),
+                    new PropertyDescriptor("Range", "float", slc.Range),
+                    new PropertyDescriptor("InnerCone", "float", innerDeg),
+                    new PropertyDescriptor("OuterCone", "float", outerDeg),
                 }));
         }
 

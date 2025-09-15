@@ -43,6 +43,38 @@ namespace RenderMaster.src.NewGraphics.Scene
         }
     }
 
+    class PointLightComponent : INodeComponent
+    {
+        public Vector3 Color { get; }
+        public float Intensity { get; }
+        public float Range { get; }
+
+        public PointLightComponent(Vector3 color, float intensity, float range)
+        {
+            Color = color;
+            Intensity = intensity;
+            Range = range;
+        }
+    }
+
+    class SpotLightComponent : INodeComponent
+    {
+        public Vector3 Color { get; }
+        public float Intensity { get; }
+        public float Range { get; }
+        public float InnerConeAngle { get; }
+        public float OuterConeAngle { get; }
+
+        public SpotLightComponent(Vector3 color, float intensity, float range, float innerConeAngle, float outerConeAngle)
+        {
+            Color = color;
+            Intensity = intensity;
+            Range = range;
+            InnerConeAngle = innerConeAngle;
+            OuterConeAngle = outerConeAngle;
+        }
+    }
+
     class Node
     {
         readonly List<INodeComponent> _components = new();

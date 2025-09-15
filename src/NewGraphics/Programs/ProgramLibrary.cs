@@ -88,6 +88,7 @@ namespace RenderMaster.src.NewGraphics.Programs
             Bind("FrameBlock",    BindingPoints.Frame);
             Bind("ObjectBlock",   BindingPoints.Object);
             Bind("MaterialBlock", BindingPoints.Material);
+            Bind("LightBlock",    BindingPoints.Lights);
 
             void SetSampler(string name, int unit)
             {
