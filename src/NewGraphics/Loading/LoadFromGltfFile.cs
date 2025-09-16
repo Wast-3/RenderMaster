@@ -107,7 +107,7 @@ namespace RenderMaster.src.NewGraphics.Loading
                 {
                     var color = punctual.Color;
                     var intensity = punctual.Intensity;
-                    var range = punctual.Range.HasValue ? punctual.Range.Value : -1f;
+                    var range = NormalizeLightRange(punctual.Range);
 
                     switch (punctual.LightType)
                     {
@@ -170,6 +170,13 @@ namespace RenderMaster.src.NewGraphics.Loading
                     $"Loaded lights: point={pointLightCount} spot={spotLightCount} skipped={skippedLightCount}",
                     RenderMaster.Engine.LogLevel.Info);
             }
+        }
+
+        static float NormalizeLightRange(float rawRange)
+        {
+            if (rawRange > 0f && !float.IsNaN(rawRange) && !float.IsInfinity(rawRange))
+                return rawRange;
+            return -1f;
         }
     }
 }
