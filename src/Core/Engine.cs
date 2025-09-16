@@ -53,7 +53,8 @@ public sealed class Engine : IDisposable
 
         _uniforms = new ProgramUniforms();
 
-        _physics = new PhysicsEngine();
+        var initialPlayerPosition = new System.Numerics.Vector3(_camera.Position.X, _camera.Position.Y, _camera.Position.Z);
+        _physics = new PhysicsEngine(initialPlayerPosition);
 
         _control = new EngineControl(
             _programs, _nodes, _cpu, _gpu, _map);
@@ -107,7 +108,24 @@ public sealed class Engine : IDisposable
 
         _input.Update(args);
 
-        _physics.Update(args, (float)args.Time);
+        if (_input.RequestedCharacterSnap)
+        {
+            var cameraPosition = _camera.Position;
+            _physics.Player.TeleportToMatchCamera(new System.Numerics.Vector3(cameraPosition.X, cameraPosition.Y, cameraPosition.Z));
+            _input.AcknowledgeCharacterSnap();
+            _input.SetMode(MovementMode.Character);
+            _input.SetMouseGrab(true);
+        }
+
+        var inputState = _input.State;
+        _physics.Update((float)args.Time, inputState, _camera.Front, _camera.Right);
+
+        if (inputState.Mode == MovementMode.Character)
+        {
+            var eye = _physics.Player.EyeWorldPosition;
+            _camera.Position = new OpenTK.Mathematics.Vector3(eye.X, eye.Y, eye.Z);
+            _camera.UpdateViewMatrix();
+        }
 
         _userInterface.Update(args, _camera, _input.MouseGrabbed);
 
