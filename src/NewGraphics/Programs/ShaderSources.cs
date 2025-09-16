@@ -23,6 +23,8 @@ namespace RenderMaster.src.NewGraphics.Programs
 $@"#version 450 core
 #define TECH_{key.Tech} 1
 #define PASS_{key.Pass} 1
+#define MAX_POINT_LIGHTS {LightingLimits.MaxPointLights}
+#define MAX_SPOT_LIGHTS {LightingLimits.MaxSpotLights}
 {(key.Variants.HasFlag(ProgramVariants.DoubleSided) ? "#define VAR_DOUBLESIDED 1" : "")}
 {(key.Variants.HasFlag(ProgramVariants.AlphaBlend)  ? "#define VAR_ALPHABLEND 1" : "")}
 ";

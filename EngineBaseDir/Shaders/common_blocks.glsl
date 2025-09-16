@@ -14,3 +14,20 @@ layout(std140, binding = 2) uniform MaterialBlock {
     float uFlags;
 };
 
+struct GPUPointLight {
+    vec4 positionRange;
+    vec4 colorIntensity;
+};
+
+struct GPUSpotLight {
+    vec4 positionRange;
+    vec4 directionInner;
+    vec4 colorOuter;
+};
+
+layout(std140, binding = 3) uniform LightBlock {
+    vec4 uLightCounts; // x = point, y = spot
+    GPUPointLight uPointLights[MAX_POINT_LIGHTS];
+    GPUSpotLight uSpotLights[MAX_SPOT_LIGHTS];
+};
+

@@ -91,12 +91,50 @@ namespace RenderMaster.src.NewGraphics.Loading
                 meshMap[mesh] = (meshHandle, prepared.Submeshes.ToArray());
             }
 
+            int pointLightCount = 0;
+            int spotLightCount = 0;
+            int skippedLightCount = 0;
+
             SceneNode ConvertNode(SharpGLTF.Schema2.Node src)
             {
                 var local = src.LocalMatrix;
                 var node = new SceneNode();
                 node.AddComponent(new NameComponent(src.Name ?? "(unnamed)"));
                 node.AddComponent(new TransformComponent(local));
+
+                var punctual = src.PunctualLight;
+                if (punctual != null)
+                {
+                    var color = punctual.Color;
+                    var intensity = punctual.Intensity;
+                    var range = NormalizeLightRange(punctual.Range);
+
+                    switch (punctual.LightType)
+                    {
+                        case SharpGLTF.Schema2.PunctualLightType.Point:
+                            node.AddComponent(new PointLightComponent(color, intensity, range));
+                            pointLightCount++;
+                            break;
+
+                        case SharpGLTF.Schema2.PunctualLightType.Spot:
+                        {
+                            float inner = punctual.InnerConeAngle;
+                            float outer = punctual.OuterConeAngle;
+                            if (outer <= 0f)
+                                outer = MathF.PI / 4f;
+                            node.AddComponent(new SpotLightComponent(color, intensity, range, inner, outer));
+                            spotLightCount++;
+                            break;
+                        }
+
+                        default:
+                            skippedLightCount++;
+                            RenderMaster.Engine.Logger.Log(
+                                $"Skipping unsupported light '{punctual.LightType}' on node '{src.Name ?? "(unnamed)"}'",
+                                RenderMaster.Engine.LogLevel.Warning);
+                            break;
+                    }
+                }
 
                 if (src.Mesh != null && meshMap.TryGetValue(src.Mesh, out var meshInfo))
                 {
@@ -126,6 +164,20 @@ namespace RenderMaster.src.NewGraphics.Loading
                 var n = ConvertNode(root);
                 Nodes.AddNode(n);
             }
+
+            if (pointLightCount > 0 || spotLightCount > 0 || skippedLightCount > 0)
+            {
+                RenderMaster.Engine.Logger.Log(
+                    $"Loaded lights: point={pointLightCount} spot={spotLightCount} skipped={skippedLightCount}",
+                    RenderMaster.Engine.LogLevel.Info);
+            }
+        }
+
+        static float NormalizeLightRange(float rawRange)
+        {
+            if (rawRange > 0f && !float.IsNaN(rawRange) && !float.IsInfinity(rawRange))
+                return rawRange;
+            return -1f;
         }
     }
 }

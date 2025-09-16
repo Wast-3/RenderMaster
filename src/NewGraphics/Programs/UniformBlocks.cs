@@ -3,6 +3,12 @@ using System.Runtime.InteropServices;
 
 namespace RenderMaster.src.NewGraphics.Programs
 {
+    internal static class LightingLimits
+    {
+        public const int MaxPointLights = 32;
+        public const int MaxSpotLights = 16;
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
     struct FrameBlock
     {
@@ -25,5 +31,31 @@ namespace RenderMaster.src.NewGraphics.Programs
         public float Roughness;
         public float AlphaCutoff;
         public float Flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    struct PointLightGpu
+    {
+        public Vector4 PositionRange;
+        public Vector4 ColorIntensity;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    struct SpotLightGpu
+    {
+        public Vector4 PositionRange;
+        public Vector4 DirectionInner;
+        public Vector4 ColorOuter;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 16)]
+    unsafe struct LightBlock
+    {
+        public const int PointLightFloatCount = 8;   // 2 * vec4
+        public const int SpotLightFloatCount = 12;   // 3 * vec4
+
+        public Vector4 Counts;
+        public fixed float PointLights[LightingLimits.MaxPointLights * PointLightFloatCount];
+        public fixed float SpotLights[LightingLimits.MaxSpotLights * SpotLightFloatCount];
     }
 }

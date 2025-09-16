@@ -16,6 +16,11 @@ namespace RenderMaster.src.NewGraphics.Frame
             uniforms.Frame.Update(frame);
             uniforms.Frame.Bind(BindingPoints.Frame);
 
+            var preparedLights = LightExtractor.Build(nodes);
+            var lightBlock = LightEncoder.BuildBlock(preparedLights);
+            uniforms.Lights.Update(lightBlock);
+            uniforms.Lights.Bind(BindingPoints.Lights);
+
             //returns a list of draws, classified by technique and pass, for best drawing order
             var draws = DrawExtractor.Build(nodes, cpu, map);
             if (draws.Count == 0)
