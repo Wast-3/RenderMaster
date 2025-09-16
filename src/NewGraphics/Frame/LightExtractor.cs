@@ -88,7 +88,7 @@ namespace RenderMaster.src.NewGraphics.Frame
         static bool pointWarningIssued;
         static bool spotWarningIssued;
 
-        public static LightBlock BuildBlock(in PreparedLights lights)
+        public static unsafe LightBlock BuildBlock(in PreparedLights lights)
         {
             var block = new LightBlock();
 
@@ -132,7 +132,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             return block;
         }
 
-        static void WritePoint(ref LightBlock block, int index, in PreparedPointLight src)
+        static unsafe void WritePoint(ref LightBlock block, int index, in PreparedPointLight src)
         {
             float range = src.Range > 0f ? src.Range : -1f;
             var colorIntensity = src.Color * src.Intensity;
@@ -149,7 +149,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             block.PointLights[baseIndex + 7] = src.Intensity;
         }
 
-        static void ClearPointTail(ref LightBlock block, int startIndex)
+        static unsafe void ClearPointTail(ref LightBlock block, int startIndex)
         {
             int start = startIndex * LightBlock.PointLightFloatCount;
             int end = LightingLimits.MaxPointLights * LightBlock.PointLightFloatCount;
@@ -157,7 +157,7 @@ namespace RenderMaster.src.NewGraphics.Frame
                 block.PointLights[i] = 0f;
         }
 
-        static void WriteSpot(ref LightBlock block, int index, in PreparedSpotLight src)
+        static unsafe void WriteSpot(ref LightBlock block, int index, in PreparedSpotLight src)
         {
             float range = src.Range > 0f ? src.Range : -1f;
             var colorIntensity = src.Color * src.Intensity;
@@ -179,7 +179,7 @@ namespace RenderMaster.src.NewGraphics.Frame
             block.SpotLights[baseIndex + 11] = src.OuterConeCos;
         }
 
-        static void ClearSpotTail(ref LightBlock block, int startIndex)
+        static unsafe void ClearSpotTail(ref LightBlock block, int startIndex)
         {
             int start = startIndex * LightBlock.SpotLightFloatCount;
             int end = LightingLimits.MaxSpotLights * LightBlock.SpotLightFloatCount;

@@ -118,9 +118,10 @@ namespace RenderMaster.src.NewGraphics.Loading
 
                         case SharpGLTF.Schema2.PunctualLightType.Spot:
                         {
-                            var spot = punctual.Spot;
-                            float inner = spot?.InnerConeAngle ?? 0f;
-                            float outer = spot?.OuterConeAngle ?? (MathF.PI / 4f);
+                            float inner = punctual.InnerConeAngle;
+                            float outer = punctual.OuterConeAngle;
+                            if (outer <= 0f)
+                                outer = MathF.PI / 4f;
                             node.AddComponent(new SpotLightComponent(color, intensity, range, inner, outer));
                             spotLightCount++;
                             break;
