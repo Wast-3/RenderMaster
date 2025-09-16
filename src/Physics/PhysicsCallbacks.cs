@@ -16,6 +16,10 @@ namespace RenderMaster.src.Physics
     {
         public struct narrowPhase : INarrowPhaseCallbacks
         {
+            public PlayerController? Player;
+            public BodyHandle PlayerBodyHandle;
+            public Vector3 Up;
+
             public void Initialize(Simulation simulation)
             {
                 // Optionally stash references to Simulation/BufferPool/etc.
@@ -35,7 +39,40 @@ namespace RenderMaster.src.Physics
                     frictionCoefficient: 0.01f,
                     maximumRecoveryVelocity: 2f,
                     springSettings: new SpringSettings(30f, 1f)); // (stiffness, damping)
+
+                TryCaptureSupport(pair, ref manifold);
                 return true; // create a constraint for this manifold
+            }
+
+            void TryCaptureSupport<TManifold>(CollidablePair pair, ref TManifold manifold)
+                where TManifold : unmanaged, IContactManifold<TManifold>
+            {
+                if (Player == null || manifold.Count == 0)
+                    return;
+
+                var playerHandleValue = PlayerBodyHandle.Value;
+                bool aIsPlayer = pair.A.Mobility != CollidableMobility.Static && pair.A.BodyHandle.Value == playerHandleValue;
+                bool bIsPlayer = pair.B.Mobility != CollidableMobility.Static && pair.B.BodyHandle.Value == playerHandleValue;
+
+                if (!(aIsPlayer || bIsPlayer))
+                    return;
+
+                var up = Up == default ? Vector3.UnitY : Up;
+                var slopeThreshold = Player!.CosMaximumSlope;
+
+                for (int i = 0; i < manifold.Count; i++)
+                {
+                    var normal = manifold.GetNormal(i);
+                    if (bIsPlayer)
+                        normal = -normal;
+
+                    var dot = Vector3.Dot(normal, up);
+                    if (dot >= slopeThreshold)
+                    {
+                        var depth = manifold.GetDepth(i);
+                        Player!.RegisterSupport(normal, depth);
+                    }
+                }
             }
 
             // Child-level filter (when compounds/meshes are involved). Return false to skip a particular child-child pair.
