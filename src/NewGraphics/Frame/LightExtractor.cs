@@ -108,8 +108,9 @@ namespace RenderMaster.src.NewGraphics.Frame
 
             unsafe
             {
-                fixed (PointLightGpu* dest = block.PointLights)
+                fixed (float* pointPtr = block.PointLights)
                 {
+                    var dest = (PointLightGpu*)pointPtr;
                     for (int i = 0; i < pointCount; i++)
                     {
                         var src = lights.Points[i];
@@ -126,8 +127,9 @@ namespace RenderMaster.src.NewGraphics.Frame
                         dest[i] = default;
                 }
 
-                fixed (SpotLightGpu* dest = block.SpotLights)
+                fixed (float* spotPtr = block.SpotLights)
                 {
+                    var dest = (SpotLightGpu*)spotPtr;
                     for (int i = 0; i < spotCount; i++)
                     {
                         var src = lights.Spots[i];

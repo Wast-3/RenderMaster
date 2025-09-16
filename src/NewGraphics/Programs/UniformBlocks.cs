@@ -51,8 +51,11 @@ namespace RenderMaster.src.NewGraphics.Programs
     [StructLayout(LayoutKind.Sequential, Pack = 16)]
     unsafe struct LightBlock
     {
+        public const int PointLightFloatCount = 8;   // 2 * vec4
+        public const int SpotLightFloatCount = 12;   // 3 * vec4
+
         public Vector4 Counts;
-        public fixed PointLightGpu PointLights[LightingLimits.MaxPointLights];
-        public fixed SpotLightGpu SpotLights[LightingLimits.MaxSpotLights];
+        public fixed float PointLights[LightingLimits.MaxPointLights * PointLightFloatCount];
+        public fixed float SpotLights[LightingLimits.MaxSpotLights * SpotLightFloatCount];
     }
 }
